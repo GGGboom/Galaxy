@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Galaxy.dao.BlogMapper">
+  <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.Blog">
+    <result column="blog_id" jdbcType="BIGINT" property="blogId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="blog_title" jdbcType="VARCHAR" property="blogTitle" />
+    <result column="blog_views" jdbcType="BIGINT" property="blogViews" />
+    <result column="blog_comment_account" jdbcType="BIGINT" property="blogCommentAccount" />
+    <result column="blog_like_account" jdbcType="BIGINT" property="blogLikeAccount" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.Galaxy.entity.Blog">
+    <result column="blog_content" jdbcType="LONGVARCHAR" property="blogContent" />
+  </resultMap>
+  <sql id="Blob_Column_List">
+    blog_id,user_id,blog_title,blog_views,blog_comment_account,blog_like_account,create_time,update_time,is_deleted
+  </sql>
+  <insert id="insert" parameterType="com.example.Galaxy.entity.Blog">
+    insert into blog (blog_id, user_id, blog_title, 
+      blog_views, blog_comment_account, blog_like_account, 
+      create_time, update_time, is_deleted, 
+      blog_content)
+    values (#{blogId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{blogTitle,jdbcType=VARCHAR}, 
+      #{blogViews,jdbcType=BIGINT}, #{blogCommentAccount,jdbcType=BIGINT}, #{blogLikeAccount,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=BIT}, 
+      #{blogContent,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.Galaxy.entity.Blog">
+    insert into blog
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="blogId != null">
+        blog_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="blogTitle != null">
+        blog_title,
+      </if>
+      <if test="blogViews != null">
+        blog_views,
+      </if>
+      <if test="blogCommentAccount != null">
+        blog_comment_account,
+      </if>
+      <if test="blogLikeAccount != null">
+        blog_like_account,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+      <if test="blogContent != null">
+        blog_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="blogId != null">
+        #{blogId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="blogTitle != null">
+        #{blogTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="blogViews != null">
+        #{blogViews,jdbcType=BIGINT},
+      </if>
+      <if test="blogCommentAccount != null">
+        #{blogCommentAccount,jdbcType=BIGINT},
+      </if>
+      <if test="blogLikeAccount != null">
+        #{blogLikeAccount,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=BIT},
+      </if>
+      <if test="blogContent != null">
+        #{blogContent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Blob_Column_List"/>
+    from blog
+  </select>
+  <select id="selectByUserId" resultMap="BaseResultMap">
+    select
+    <include refid="Blob_Column_List"/>
+    from blog
+    where blog.user_id = #{userId,jdbcType = BIGINT} and blog.is_deleted != 1
+  </select>
+</mapper>
