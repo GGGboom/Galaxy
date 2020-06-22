@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.Galaxy.entity.User;
 import com.example.Galaxy.service.UserService;
+import com.example.Galaxy.service.authorization.TokenService;
 import com.example.Galaxy.util.FileUtil;
 import com.example.Galaxy.util.JsonResponse;
+import com.example.Galaxy.util.exception.CodeEnums;
+import com.example.Galaxy.util.exception.GalaxyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +23,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TokenService tokenService;
     /**
      * showdoc
      * @param name              必选 String 名字
@@ -49,6 +54,32 @@ public class UserController {
         }
         res.setCode(1);
         return  res.getJsonRes();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/login", method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
+    public Object login(@RequestBody JSONObject param){
+        JsonResponse res = new JsonResponse();
+        String account = param.getString("account");
+        String passWd = param.getString("passwd");
+        System.out.println(account+","+passWd);
+        if(account==null || passWd==null){
+            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(),CodeEnums.MISS_INFO.getMessage());
+        }
+        User user = userService.login(account,passWd);
+        if (user==null){
+            res.setCode(0);
+            res.setMessage("账号或密码不正确");
+            res.setData(null);
+        }else{
+            String token = tokenService.getToken(user);
+            JSONObject data = JSON.parseObject(user.toString());
+            data.put("token",token);
+            res.setCode(0);
+            res.setMessage("登录成功");
+            res.setData(data);
+        }
+        return res.getJsonRes();
     }
 
     @ResponseBody

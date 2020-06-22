@@ -1,8 +1,12 @@
 package com.example.Galaxy.controller;
 
+import com.auth0.jwt.JWT;
 import com.example.Galaxy.service.BlogService;
+import com.example.Galaxy.util.authorization.UserLoginToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(value = "/blog")
@@ -17,9 +21,11 @@ public class BlogController {
         return blogService.getAll(pageNum,pageSize);
     }
 
+    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/mine",method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
-    public Object selectBlogByUserId(@RequestParam(name = "userId", required = false) Integer userId){
-        return blogService.getByUserId(userId);
+    public Object selectBlogByUserId( HttpServletRequest httpServletRequest) throws RuntimeException{
+        String userId = JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0);
+        return blogService.getByUserId(Integer.parseInt(userId));
     }
 }
