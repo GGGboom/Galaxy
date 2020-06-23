@@ -12,5 +12,5 @@ public interface BlogMapper {
 
     List<Blog>selectAll();
 
-    List<Blog>selectByUserId(@Param("userId") Integer userId);
+    List<Blog> selectByUserId(@Param("userId") Integer userId);
 }

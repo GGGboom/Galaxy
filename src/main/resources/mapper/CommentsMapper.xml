@@ -5,27 +5,29 @@
     <result column="comment_id" jdbcType="BIGINT" property="commentId" />
     <result column="blog_id" jdbcType="BIGINT" property="blogId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="user_avatar" jdbcType="VARCHAR" property="userAvatar" />
     <result column="parent_comment_id" jdbcType="BIGINT" property="parentCommentId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="comment_like_account" jdbcType="BIGINT" property="commentLikeAccount" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+    <result column="is_read" jdbcType="BIT" property="isRead" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.Galaxy.entity.Comments">
     <result column="comment_content" jdbcType="LONGVARCHAR" property="commentContent" />
   </resultMap>
   <sql id="Blob_Column_List">
-    comment_id,blog_id,user_id,parent_comment_id,create_time,update_time,comment_like_account,is_deleted
+    comment_content
   </sql>
   <insert id="insert" parameterType="com.example.Galaxy.entity.Comments">
     insert into comments (comment_id, blog_id, user_id, 
-      parent_comment_id, create_time, update_time, 
-      comment_like_account, is_deleted, comment_content
-      )
+      user_avatar, parent_comment_id, create_time, 
+      update_time, comment_like_account, is_deleted, 
+      is_read, comment_content)
     values (#{commentId,jdbcType=BIGINT}, #{blogId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, 
-      #{parentCommentId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{commentLikeAccount,jdbcType=BIGINT}, #{isDeleted,jdbcType=BIT}, #{commentContent,jdbcType=LONGVARCHAR}
-      )
+      #{userAvatar,jdbcType=VARCHAR}, #{parentCommentId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{commentLikeAccount,jdbcType=BIGINT}, #{isDeleted,jdbcType=BIT}, 
+      #{isRead,jdbcType=BIT}, #{commentContent,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.example.Galaxy.entity.Comments">
     insert into comments
@@ -38,6 +40,9 @@
       </if>
       <if test="userId != null">
         user_id,
+      </if>
+      <if test="userAvatar != null">
+        user_avatar,
       </if>
       <if test="parentCommentId != null">
         parent_comment_id,
@@ -54,6 +59,9 @@
       <if test="isDeleted != null">
         is_deleted,
       </if>
+      <if test="isRead != null">
+        is_read,
+      </if>
       <if test="commentContent != null">
         comment_content,
       </if>
@@ -67,6 +75,9 @@
       </if>
       <if test="userId != null">
         #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="userAvatar != null">
+        #{userAvatar,jdbcType=VARCHAR},
       </if>
       <if test="parentCommentId != null">
         #{parentCommentId,jdbcType=BIGINT},
@@ -82,6 +93,9 @@
       </if>
       <if test="isDeleted != null">
         #{isDeleted,jdbcType=BIT},
+      </if>
+      <if test="isRead != null">
+        #{isRead,jdbcType=BIT},
       </if>
       <if test="commentContent != null">
         #{commentContent,jdbcType=LONGVARCHAR},

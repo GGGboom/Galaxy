@@ -41,7 +41,7 @@
         <!--生成对应表及类名-->
 
 
-        <table tableName="comments" domainObjectName="Comments" enableCountByExample="false" enableUpdateByExample="false"
+        <table tableName="blog" domainObjectName="Blog" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 

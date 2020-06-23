@@ -9,6 +9,8 @@ import com.example.Galaxy.entity.User;
 import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.authorization.PassToken;
 import com.example.Galaxy.util.authorization.UserLoginToken;
+import com.example.Galaxy.util.exception.CodeEnums;
+import com.example.Galaxy.util.exception.GalaxyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -43,7 +45,7 @@ public class tokenInterceptor implements HandlerInterceptor {
             if (userLoginToken.required()) {
                 // 执行认证
                 if (token == null) {
-                    throw new RuntimeException("无token，请重新登录");
+                    throw new GalaxyException(CodeEnums.NOT_LOGIN.getCode(),CodeEnums.NOT_LOGIN.getMessage());
                 }
                 // 获取 token 中的 user id
                 String userId;
@@ -55,14 +57,14 @@ public class tokenInterceptor implements HandlerInterceptor {
                 }
                 User user = userService.selectByUserId(userId);
                 if (user == null) {
-                    throw new RuntimeException("用户不存在，请重新登录");
+                    throw new GalaxyException(CodeEnums.NO_USER.getCode(),CodeEnums.NO_USER.getMessage());
                 }
                 // 验证 token
                 JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(user.getPasswd())).build();
                 try {
                     jwtVerifier.verify(token);
                 } catch (JWTVerificationException e) {
-                    throw new RuntimeException("401");
+                    throw new GalaxyException(CodeEnums.JWT_ERROR.getCode(),CodeEnums.JWT_ERROR.getMessage());
                 }
                 //将验证通过后的用户信息放到请求中
                 httpServletRequest.setAttribute("currentUser", user);

@@ -24,4 +24,9 @@ public class BlogServiceImpl implements BlogService {
     public String getByUserId(Integer userId){
         return blogMapper.selectByUserId(userId).toString();
     }
+
+    @Override
+    public int addBlog(Blog blog){
+        return blogMapper.insertSelective(blog);
+    }
 }

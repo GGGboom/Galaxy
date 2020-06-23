@@ -23,7 +23,7 @@ public enum CodeEnums {
 
     ERROR_VERIFY_CODE(4, "手机验证码错误"),
 
-    NO_USER(3, "用户名不存在"),
+    NO_USER(3, "用户不存在，请重新登录"),
 
     ERROR_PASSWORD_AUTH(5, "密码错误"),
 
@@ -40,6 +40,10 @@ public enum CodeEnums {
     MISS_INFO(23,"信息不完整"),
 
     NO_PERMISSION(24,"无权限"),
+
+    JWT_ERROR(25, "JWT异常"),
+
+    UPLOAD_ERROR(26, "文件上传异常"),
 
     EMAIL_ERROR(31, "邮件发送异常"),
 

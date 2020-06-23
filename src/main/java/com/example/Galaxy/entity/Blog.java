@@ -7,6 +7,8 @@ public class Blog {
 
     private Long userId;
 
+    private String userAvatar;
+
     private String blogTitle;
 
     private Long blogViews;
@@ -37,6 +39,14 @@ public class Blog {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar == null ? null : userAvatar.trim();
     }
 
     public String getBlogTitle() {
@@ -108,6 +118,7 @@ public class Blog {
         String str = "{"+
                 "\"blogId\":"+blogId+","+
                 "\"userId\":"+userId+","+
+                "\"userAvatar\":"+userAvatar+","+
                 "\"blogTitle\":\""+blogTitle+"\","+
                 "\"blogViews\":"+blogTitle+","+
                 "\"blogLikeAccount\":"+blogLikeAccount+","+

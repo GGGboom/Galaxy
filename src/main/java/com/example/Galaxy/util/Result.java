@@ -1,12 +1,36 @@
 package com.example.Galaxy.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.Galaxy.util.exception.CodeEnums;
 
-public class JsonResponse {
+public class Result {
     private int code;
     private String message;
     private JSONObject data;
     private final String []map = {"成功","失败"};
+
+    public Result(){}
+
+    public static JSONObject SUCCESS(){
+        return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage()).getJsonRes();
+    }
+
+    public Result(CodeEnums codeEnums){
+        this.code = codeEnums.getCode();
+        this.message = codeEnums.getMessage();
+    }
+
+    public Result(int code, String message){
+        this.code = code;
+        this.message = message;
+    }
+
+    public Result(int code,String message,JSONObject data){
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
     public int getCode() {
         return code;
     }
@@ -33,8 +57,6 @@ public class JsonResponse {
 
     public JSONObject getJsonRes(){
         JSONObject jsonRes = new JSONObject();
-        jsonRes.put("code",this.code);
-        jsonRes.put("message",this.map[this.code]);
         if(this.data!=null)
             jsonRes.put("data",this.data);
         return jsonRes;

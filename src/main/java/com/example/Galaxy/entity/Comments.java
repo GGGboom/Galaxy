@@ -9,6 +9,8 @@ public class Comments {
 
     private Long userId;
 
+    private String userAvatar;
+
     private Long parentCommentId;
 
     private Date createTime;
@@ -18,6 +20,8 @@ public class Comments {
     private Long commentLikeAccount;
 
     private Boolean isDeleted;
+
+    private Boolean isRead;
 
     private String commentContent;
 
@@ -43,6 +47,14 @@ public class Comments {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar == null ? null : userAvatar.trim();
     }
 
     public Long getParentCommentId() {
@@ -83,6 +95,14 @@ public class Comments {
 
     public void setIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public Boolean getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(Boolean isRead) {
+        this.isRead = isRead;
     }
 
     public String getCommentContent() {

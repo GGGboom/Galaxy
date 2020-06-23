@@ -8,4 +8,6 @@ public interface BlogService {
     String getAll(int pageNum,int pageSize);
 
     String getByUserId(Integer userId);
+
+    int addBlog(Blog blog);
 }
