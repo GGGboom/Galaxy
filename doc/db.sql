@@ -11,6 +11,34 @@ CREATE TABLE `user`(
     PRIMARY KEY(`user_id`),
     UNIQUE KEY `id_UNIQUE`(`user_id`)
 );
+
+CREATE TABLE `sys_role`(
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '角色ID',
+    `role_name` varchar(32) COMMENT '角色名',
+    `enabled` INT COMMENT '有效标记',
+    `create_by` bigint(20) COMMENT '创建人',
+    `create_time` datetime COMMENT '创建时间',
+    `update_time` datetime COMMENT '更新时间',
+    primary key(`id`)
+);
+
+CREATE TABLE `sys_privilege`(
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '权限ID',
+    `privilege_name` varchar(32) COMMENT'权限名',
+    `privilege_url` varchar(32) COMMENT'权限url',
+    primary key(`id`)
+);
+
+CREATE TABLE `sys_user_role`(
+    `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+    `role_id` bigint(20) NOT NULL COMMENT '角色ID'
+);
+
+CREATE TABLE `sys_role_privilege`(
+    `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+    `privilege_id` bigint(20) NOT NULL COMMENT '权限ID'
+);
+
 CREATE TABLE `blog`(
     `blog_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT'博文id',
     `user_id` bigint(20) NOT NULL COMMENT '发表用户id',
@@ -40,12 +68,24 @@ CREATE TABLE `comments`(
     PRIMARY KEY(`comment_id`)
 );
 
-CREATE TABLE `bloglike`(
-    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT'主键id', 
-    `blog_user_id` bigint(20) NOT NULL COMMENT '博文用户id',
+CREATE TABLE `blog_like`(
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT'主键id',
+    `blog_id` bigint(20) NOT NULL COMMENT '博客id',
+    `create_by` bigint(20) NOT NULL COMMENT '博文用户id',
     `like_user_id` bigint(20) NOT NULL COMMENT '点赞用户id',
     `create_time` datetime COMMENT '创建时间',
     `update_time` datetime COMMENT '更新时间',
+    `is_deleted` tinyint(1) DEFAULT'0' COMMENT'是否删除标记',
+    PRIMARY KEY(`id`)
+);
+
+CREATE TABLE `blog_file`(
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT'主键id',
+    `blog_id` bigint(20) NOT NULL COMMENT'博客id',
+    `file_type` tinyint(2) DEFAULT '0' COMMENT'文件类型，0为图片,1为文件',
+    `create_time` datetime COMMENT '创建时间',
+    `update_time` datetime COMMENT '更新时间',
+    `file_path` varchar(100) DEFAULT NULL COMMENT'文件保存路径',
     `is_deleted` tinyint(1) DEFAULT'0' COMMENT'是否删除标记',
     PRIMARY KEY(`id`)
 );

@@ -11,8 +11,8 @@ public class Result {
 
     public Result(){}
 
-    public static JSONObject SUCCESS(){
-        return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage()).getJsonRes();
+    public static Object SUCCESS(){
+        return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage());
     }
 
     public Result(CodeEnums codeEnums){
@@ -55,10 +55,4 @@ public class Result {
         this.data = data;
     }
 
-    public JSONObject getJsonRes(){
-        JSONObject jsonRes = new JSONObject();
-        if(this.data!=null)
-            jsonRes.put("data",this.data);
-        return jsonRes;
-    }
 }

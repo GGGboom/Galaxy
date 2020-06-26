@@ -113,4 +113,47 @@
         from blog
         where blog.user_id = #{userId,jdbcType = BIGINT} and blog.is_deleted != 1
     </select>
+    <select id="getBlogByBlogId" resultMap="BaseResultMap">
+        select
+        <include refid="Blob_Column_List"/>
+        from blog
+        where blog_id = #{blogId,jdbcType=BIGINT}
+    </select>
+    <update id="updateSelective" parameterType="com.example.Galaxy.entity.Blog">
+        update blog
+        <set>
+            <if test="userId!=null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="userAvatar!=null and userAvatar!=''">
+                user_avatar = #{userAvatar,jdbcType=VARCHAR},
+            </if>
+            <if test="blogTitle!=null and blogTitle!=''">
+                blog_title = #{blogTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="blogViews!=null">
+                blog_views = #{blogViews,jdbcType=BIGINT},
+            </if>
+            <if test="blogCommentAccount!=null">
+                blog_comment_account = #{blogCommentAccount,jdbcType=BIGINT},
+            </if>
+            <if test="blogContent!=null and blogContent!=''">
+                blog_content = #{blogContent,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="createTime!=null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime!=null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted!=null">
+                is_deleted = #{isDeleted,jdbcType=BIT},
+            </if>
+            <if test="blogLikeAccount!=null">
+                blog_like_account = #{blogLikeAccount,jdbcType=BIGINT},
+            </if>
+            blog_id = #{blogId,jdbcType = BIGINT}
+        </set>
+        where blog_id = #{blogId,jdbcType = BIGINT}
+    </update>
 </mapper>

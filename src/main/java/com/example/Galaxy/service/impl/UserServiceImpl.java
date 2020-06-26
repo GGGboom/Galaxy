@@ -25,4 +25,9 @@ public class UserServiceImpl implements UserService {
     public User login(String account,String passWd){
         return userMapper.login(account,passWd);
     }
+
+    @Override
+    public int updateSelective(User user){
+        return userMapper.updateSelective(user);
+    }
 }

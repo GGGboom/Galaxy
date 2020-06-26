@@ -86,18 +86,47 @@
             </if>
         </trim>
     </insert>
-
     <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from user
         where user_id = #{userId,jdbcType=VARCHAR}
     </select>
-
     <select id="login" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from user
         where account = #{account,jdbcType = VARCHAR} and passwd = #{passWd,jdbcType = VARCHAR}
     </select>
+    <update id="updateSelective" parameterType="com.example.Galaxy.entity.User">
+        update user
+        <set>
+            <if test="name!=null and name!=''">
+                name=#{name,jdbcType=VARCHAR},
+            </if>
+            <if test="headImgPath!=null and headImgPath!=''">
+                head_img_path=#{headImgPath,jdbcType=VARCHAR},
+            </if>
+            <if test="account!=null and account!=''">
+                account=#{account,jdbcType=VARCHAR},
+            </if>
+            <if test="passwd!=null and passwd!=''">
+                passwd=#{passwd,jdbcType=VARCHAR},
+            </if>
+            <if test="identityType!=null">
+                identity_type=#{identityType,jdbcType=SMALLINT},
+            </if>
+            <if test="cellphone!=null and cellphone!=''">
+                cellphone=#{cellphone,jdbcType=VARCHAR},
+            </if>
+            <if test="email!=null and email!=''">
+                email=#{email,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyCode!=null and verifyCode!=''">
+                verify_code=#{verifyCode,jdbcType=VARCHAR},
+            </if>
+            user_id = #{userId,jdbcType=BIGINT}
+        </set>
+        where user_id = #{userId,jdbcType=BIGINT}
+    </update>
 </mapper>

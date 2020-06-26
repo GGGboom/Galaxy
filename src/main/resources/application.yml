@@ -17,7 +17,13 @@ mybatis:
   type-aliases-package: com.example.Galaxy
 
 pagehelper:
-  helper-dialect: mysql
+  helperDialect: mysql
   reasonable: true
-  support-methods-arguments: true
+  supportMethodsArguments: true
   params: count=countSql
+
+
+#MyBatis sql日志输出
+logging:
+  level:
+    com.example.Galaxy: trace

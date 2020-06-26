@@ -20,9 +20,7 @@ public class FileUtil {
         //获取根目录
         File path = new File(ResourceUtils.getURL("classpath:").getPath());
         String originName = file.getOriginalFilename();
-        System.out.println("根目录"+path);
         String targetPath = path.getAbsolutePath() + "/img/";
-        System.out.println("根目录"+targetPath);
         String suffix = originName.substring(originName.indexOf('.'));
         String newName = UUID.randomUUID().toString().replace("-", "");
         newName = newName + suffix;
@@ -45,7 +43,6 @@ public class FileUtil {
                 e.printStackTrace();
             }
         }
-        System.out.println(targetPath+newName);
-        return targetPath+newName;
+        return newName;
     }
 }

@@ -2,10 +2,15 @@
 <!DOCTYPE generatorConfiguration PUBLIC
         "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!--generatorConfiguration有3个子标签，分别是properties、classPathEntry和context-->
+    <!--properties：包含resource和url两种属性，只能使用其中一种来指定，同时出现会出错。resource：指定classpath下的属性文件。url：指定文件系统上的特定位置-->
+    <!--classPathEntry：该标签可以配置多个，也可以不配置，其最常见的用法是通过属性location指定驱动的路径-->
+        <!--<classPathEntry location="D:\张恒华\demo\lib\mysql-connector-java-8.0.11.jar"/>-->
+    <!--context：该标签至少配置一个，可以配置多个。该标签只有一个必选属性id，用来唯一确定该标签，该id属性可以在运行MBG时使用-->
 <generatorConfiguration>
-    <!--<classPathEntry location="D:\张恒华\demo\lib\mysql-connector-java-8.0.11.jar"/>-->
 
-    <context id="DB2Tables" targetRuntime="MyBatis3">
+        <!--defaultModelType="flat"表示只为每张表生成一个实体类-->
+    <context id="DB2Tables" targetRuntime="MyBatis3" defaultModelType="flat">
         <commentGenerator>
             <property name="suppressDate" value="true"/>
             <property name="suppressAllComments" value="true"/>
@@ -17,19 +22,21 @@
                 userId="root"
                 password="qingren.7">
         </jdbcConnection>
+
+
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
 
         <!--生成Model类存放位置-->
         <javaModelGenerator targetPackage="com.example.Galaxy.entity" targetProject="src/main/java">
-            <property name="enableSubPackages" value="true"/>
+            <property name="enableSubPackages" value="false"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <!--生成映射文件存放位置-->
         <sqlMapGenerator targetPackage="com.example.Galaxy.mapper" targetProject="src/main/java">
-            <property name="enableSubPackages" value="true"/>
+            <property name="enableSubPackages" value="false"/>
         </sqlMapGenerator>
 
         <!--生成Dao类存放位置-->
@@ -39,9 +46,7 @@
         </javaClientGenerator>
 
         <!--生成对应表及类名-->
-
-
-        <table tableName="blog" domainObjectName="Blog" enableCountByExample="false" enableUpdateByExample="false"
+        <table tableName="blog_like" domainObjectName="BlogLike" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 

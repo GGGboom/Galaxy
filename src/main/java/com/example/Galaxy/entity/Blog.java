@@ -118,9 +118,9 @@ public class Blog {
         String str = "{"+
                 "\"blogId\":"+blogId+","+
                 "\"userId\":"+userId+","+
-                "\"userAvatar\":"+userAvatar+","+
+                "\"userAvatar\":\""+userAvatar+"\","+
                 "\"blogTitle\":\""+blogTitle+"\","+
-                "\"blogViews\":"+blogTitle+","+
+                "\"blogViews\":"+blogViews+","+
                 "\"blogLikeAccount\":"+blogLikeAccount+","+
                 "\"createTime\":"+createTime.getTime()+","+
                 "\"updateTime\":"+updateTime.getTime()+","+

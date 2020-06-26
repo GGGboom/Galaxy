@@ -8,4 +8,6 @@ public interface UserService {
     User selectByUserId(String userId);
 
     User login(String account,String passWd);
+
+    int updateSelective(User user);
 }

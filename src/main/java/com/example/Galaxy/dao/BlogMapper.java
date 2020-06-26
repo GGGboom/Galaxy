@@ -13,4 +13,8 @@ public interface BlogMapper {
     List<Blog>selectAll();
 
     List<Blog> selectByUserId(@Param("userId") Integer userId);
+
+    int updateSelective(Blog blog);
+
+    Blog getBlogByBlogId(Long blogId);
 }
