@@ -64,8 +64,20 @@ CREATE TABLE `comments`(
     `comment_content` text COMMENT '评论内容',
     `comment_like_account` bigint(20) COMMENT '点赞数',
     `is_deleted` tinyint(1) DEFAULT'0' COMMENT'是否删除标记',
-    `is_read` tinyint(1) DEFAULT '1' COMMENT'是否已读标记',
+    `is_read` tinyint(1) DEFAULT '0' COMMENT'是否已读标记',
     PRIMARY KEY(`comment_id`)
+);
+
+CREATE TABLE `comment_like`(
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT'主键id',
+    `comment_id` bigint(20) NOT NULL COMMENT '评论id',
+    `create_by` bigint(20) NOT NULL COMMENT '原评论用户id',
+    `like_user_id` bigint(20) NOT NULL COMMENT '点赞用户id',
+    `create_time` datetime COMMENT '创建时间',
+    `update_time` datetime COMMENT '更新时间',
+    `is_deleted` tinyint(1) DEFAULT'0' COMMENT'是否删除标记',
+    `is_read` tinyint(1) DEFAULT'0' COMMENT'是否阅读标记',
+    PRIMARY KEY(`id`)
 );
 
 CREATE TABLE `blog_like`(

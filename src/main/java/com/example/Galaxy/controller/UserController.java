@@ -12,6 +12,7 @@ import com.example.Galaxy.util.authorization.UserLoginToken;
 import com.example.Galaxy.util.exception.CodeEnums;
 import com.example.Galaxy.util.exception.GalaxyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +33,7 @@ public class UserController {
 
     /**
      * showdoc
+     *
      * @param name    必选 String 名字
      * @param account 必选 String 账户
      * @param passwd  必选 String  密码
@@ -64,8 +66,9 @@ public class UserController {
 
     /**
      * showdoc
-     * @param account    必选 String 账号
-     * @param passwd    必选 String  密码
+     *
+     * @param account 必选 String 账号
+     * @param passwd  必选 String  密码
      * @return {"code":0,message:"",data:{}}
      * @catalog 用户
      * @title
@@ -94,13 +97,14 @@ public class UserController {
 
     /**
      * showdoc
-     * @param file    必选 file 文件
+     *
+     * @param file 必选 file 文件
      * @return {"code":0,message:"",data:{}}
      * @catalog 用户
      * @title
      * @description 上传头像
      * @method post
-     * @url localhost:8080/user/login
+     * @url localhost:8080/user/upload
      */
     @UserLoginToken
     @ResponseBody
@@ -119,5 +123,60 @@ public class UserController {
             e.printStackTrace();
             return new Result(CodeEnums.UPLOAD_ERROR.getCode(), CodeEnums.UPLOAD_ERROR.getMessage());
         }
+    }
+
+    /**
+     * showdoc
+     *
+     * @param name      必选 String  账号
+     * @param passwd    必选 String  密码
+     * @param cellphone 必选 String  手机号码
+     * @param email     必选 String  邮箱
+     * @return {"code":0,message:"",data:{}}
+     * @catalog 用户
+     * @title
+     * @description 登录
+     * @method post
+     * @url localhost:8080/user/login
+     */
+    @UserLoginToken
+    @ResponseBody
+    @RequestMapping(value = "/updateInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Object updateInfo(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
+        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        User user = new User();
+        String name = params.getString("name");
+        String passwd = params.getString("passwd");
+        String cellphone = params.getString("cellphone");
+        String email = params.getString("email");
+        if (name == null || passwd == null || cellphone == null || email == null) {
+            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+        }
+        user.setUserId(userId);
+        user.setName(name);
+        user.setPasswd(passwd);
+        user.setCellphone(cellphone);
+        user.setEmail(email);
+        userService.updateSelective(user);
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage());
+    }
+
+    /**
+     * showdoc
+     * @return {"code":0,message:"",data:{}}
+     * @catalog 用户
+     * @title
+     * @description 登录
+     * @method post
+     * @url localhost:8080/user/login
+     */
+    @UserLoginToken
+    @ResponseBody
+    @RequestMapping(value = "/info", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public Object getUserInfo(HttpServletRequest httpServletRequest){
+        String userId = JWT.decode(httpServletRequest.getHeader("Authorization"))
+                .getAudience()
+                .get(0);
+        return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage(),JSON.parseObject(userService.selectByUserId(userId).toString()));
     }
 }

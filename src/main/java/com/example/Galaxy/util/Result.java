@@ -1,12 +1,11 @@
 package com.example.Galaxy.util;
 
-import com.alibaba.fastjson.JSONObject;
 import com.example.Galaxy.util.exception.CodeEnums;
 
 public class Result {
     private int code;
     private String message;
-    private JSONObject data;
+    private Object data;
     private final String []map = {"成功","失败"};
 
     public Result(){}
@@ -15,20 +14,26 @@ public class Result {
         return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage());
     }
 
-    public Result(CodeEnums codeEnums){
-        this.code = codeEnums.getCode();
-        this.message = codeEnums.getMessage();
-    }
+//    public Result(CodeEnums codeEnums){
+//        this.code = codeEnums.getCode();
+//        this.message = codeEnums.getMessage();
+//    }
 
     public Result(int code, String message){
         this.code = code;
         this.message = message;
     }
 
-    public Result(int code,String message,JSONObject data){
+    public Result(int code,String message,Object data){
         this.code = code;
         this.message = message;
         this.data = data;
+    }
+
+    public Result(Object data){
+        this.setCode(CodeEnums.SUCCESS.getCode());
+        this.setMessage(CodeEnums.SUCCESS.getMessage());
+        this.setData(data);
     }
 
     public int getCode() {
@@ -47,11 +52,11 @@ public class Result {
         this.message = message;
     }
 
-    public JSONObject getData() {
+    public Object getData() {
         return data;
     }
 
-    public void setData(JSONObject data) {
+    public void setData(Object data) {
         this.data = data;
     }
 

@@ -1,0 +1,177 @@
+package com.example.Galaxy.controller;
+
+
+import com.alibaba.fastjson.JSONObject;
+import com.auth0.jwt.JWT;
+import com.example.Galaxy.entity.CommentLike;
+import com.example.Galaxy.entity.Comments;
+import com.example.Galaxy.service.CommentLikeService;
+import com.example.Galaxy.service.CommentService;
+import com.example.Galaxy.util.Result;
+import com.example.Galaxy.util.authorization.UserLoginToken;
+import com.example.Galaxy.util.exception.CodeEnums;
+import com.example.Galaxy.util.exception.GalaxyException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+
+@RestController
+@RequestMapping(value = "/comment")
+public class CommentController {
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private CommentLikeService commentLikeService;
+
+    /**
+     * showdoc
+     * @param blogId 必选 Long  博客id
+     * @return {"code":0,message:"请求成功",data:{}}
+     * @catalog 博客
+     * @title
+     * @description 根据博客id获取所有评论
+     * @method post
+     * @url /blog/getAll
+     */
+    @UserLoginToken
+    @ResponseBody
+    @RequestMapping(value = "/getAll", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public Object getAllComments(@RequestParam(name = "blogId", required = false, defaultValue = "1") Long blogId) {
+        if (blogId == null) throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+        return new Result(commentService.getAll(0L, blogId));
+    }
+
+    /**
+     * showdoc
+     * @param blogId                必选 Long     博客id
+     * @param userAvatar            必选 String   用户头像
+     * @param parentCommentId       必选 Long     父评论id
+     * @param commentContent        必选 Long     评论内容
+     * @return {"code":0,message:"请求成功",data:{}}
+     * @catalog 博客评论
+     * @title
+     * @description 添加评论
+     * @method post
+     * @url /comment/add
+     */
+    @UserLoginToken
+    @ResponseBody
+    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Object addComment(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
+        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        Long blogId = params.getLong("blogId");
+        String userAvatar = params.getString("userAvatar");
+        Long parentCommentId = params.getLong("commentId");
+        String commentContent = params.getString("commentContent");
+        if (blogId == null || userId == null || userAvatar == null || parentCommentId == null || commentContent == null)
+            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+        Comments comments = new Comments();
+        comments.setBlogId(blogId);
+        comments.setUserId(userId);
+        comments.setUserAvatar(userAvatar);
+        comments.setParentCommentId(parentCommentId);
+        comments.setCommentContent(commentContent);
+        comments.setCreateTime(new Date());
+        comments.setUpdateTime(new Date());
+        commentService.insertSelective(comments);
+        return Result.SUCCESS();
+    }
+
+    /**
+     * showdoc
+     * @param commentId          必选 Long  博客id
+     * @param commentUserId      必选 Long  原评论userId
+     * @param commentLikeAccount 必选Long   总点赞量
+     * @return {"code":0,message:"请求成功",data:{}}
+     * @catalog 博客评论
+     * @title
+     * @description 添加点赞，需要登录
+     * @method post
+     * @url /comment/addLike
+     */
+    @UserLoginToken
+    @ResponseBody
+    @RequestMapping(value = "/addLike", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Object addCommentLike(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
+        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        Comments comments = new Comments();
+        CommentLike commentLike = new CommentLike();
+        Long commentId = params.getLong("commentId");
+        Long commentUserId = params.getLong("commentUserId");
+        Long commentLikeAccount = params.getLong("commentLikeAccount");
+        if (commentId == null || commentUserId == null || commentLikeAccount == null)
+            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+        comments.setCommentId(commentId);
+        comments.setCommentLikeAccount(commentLikeAccount + 1);
+        commentService.updateSelective(comments);
+
+        commentLike.setCreateBy(commentUserId);
+        commentLike.setCommentId(commentId);
+        commentLike.setLikeUserId(userId);
+        if (commentLikeService.getCommentLike(commentLike) == null){//不存在则插入新数据
+            commentLikeService.insertSelective(commentLike);
+        }else
+            commentLikeService.updateSelective(commentLike);
+        return Result.SUCCESS();
+    }
+
+
+    /**
+     * showdoc
+     * @param commentId          必选 Long  博客id
+     * @param commentUserId      必选 Long  原评论userId
+     * @param commentLikeAccount 必选Long   总点赞量
+     * @return {"code":0,message:"请求成功",data:{}}
+     * @catalog 博客
+     * @title
+     * @description 删除点赞
+     * @method post
+     * @url /comment/deleteLike
+     */
+    @ResponseBody
+    @RequestMapping(value = "/deleteLike", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Object deleteCommentLike(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
+        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        Long commentId = params.getLong("commentId");
+        Long commentUserId = params.getLong("commentUserId");
+        Long commentLikeAccount = params.getLong("commentLikeAccount");
+        Comments comments = new Comments();
+        CommentLike commentLike = new CommentLike();
+        if (commentId == null || commentUserId == null || commentLikeAccount == null)
+            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+        comments.setCommentId(commentId);
+        comments.setCommentLikeAccount(commentLikeAccount - 1);
+        commentService.updateSelective(comments);
+
+        commentLike.setCreateBy(commentUserId);
+        commentLike.setCommentId(commentId);
+        commentLike.setLikeUserId(userId);
+        commentLike.setUpdateTime(new Date());
+        commentLike.setIsDeleted(true);
+        commentLikeService.updateSelective(commentLike);
+        return Result.SUCCESS();
+    }
+
+    /**
+     * showdoc
+     * @param commentId          必选 Long  博客id
+     * @param commentUserId      必选 Long  原评论userId
+     * @param commentLikeAccount 必选Long   总点赞量
+     * @return {"code":0,message:"请求成功",data:{}}
+     * @catalog 博客
+     * @title
+     * @description 获取未阅读的评论总数
+     * @method get
+     * @url /comment/unreadCommentAccount
+     */
+    @UserLoginToken
+    @ResponseBody
+    @RequestMapping(value = "/unreadCommentAccount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public Object getUnreadCommentAccount(HttpServletRequest httpServletRequest) {
+        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), commentService.getUnread(userId));
+    }
+}

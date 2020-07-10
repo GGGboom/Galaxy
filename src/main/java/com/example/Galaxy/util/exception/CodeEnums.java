@@ -33,7 +33,7 @@ public enum CodeEnums {
 
     CODE_ERROR(12, "状态异常"),
 
-    BUSINESS_EXCEPTION(21, "业务异常"),
+    MISS_DATA_EXCEPTION(21, "数据库中无此数据"),
 
     NO_DATA(22, "暂无更多数据"),
 
