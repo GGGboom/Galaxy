@@ -1,3 +1,5 @@
+
+-- 一个用户拥有若干角色，一个角色拥有若干权限：“用户-角色-权限模型”
 CREATE TABLE `user`(
     `user_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name` varchar(32) DEFAULT NULL COMMENT '姓名',

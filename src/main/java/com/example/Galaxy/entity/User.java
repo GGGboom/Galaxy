@@ -1,5 +1,7 @@
 package com.example.Galaxy.entity;
 
+import java.util.List;
+
 public class User {
     private Long userId;
 
@@ -18,6 +20,16 @@ public class User {
     private String email;
 
     private String verifyCode;
+
+    private List<SysRole>roleList;
+
+    public List<SysRole> getRoleList() {
+        return roleList;
+    }
+
+    public void setRoleList(List<SysRole> roleList) {
+        this.roleList = roleList;
+    }
 
     public Long getUserId() {
         return userId;

@@ -46,7 +46,7 @@
         </javaClientGenerator>
 
         <!--生成对应表及类名-->
-        <table tableName="comment_like" domainObjectName="CommentLike" enableCountByExample="false" enableUpdateByExample="false"
+        <table tableName="sys_user_role" domainObjectName="SysUserRole" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
