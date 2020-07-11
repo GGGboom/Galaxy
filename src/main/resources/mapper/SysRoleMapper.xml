@@ -9,8 +9,13 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
-  <resultMap id="rolePrivilegeListMap" type="com.example.Galaxy.entity.SysRole" extends="BaseResultMap">
+  <resultMap id="userRole" type="com.example.Galaxy.entity.SysRole" extends="BaseResultMap">
     <collection property="privilegeList" resultMap="com.example.Galaxy.dao.SysPrivilegeMapper.BaseResultMap"/>
+  </resultMap>
+  <resultMap id="roleAndPrivilegeSelect" type="com.example.Galaxy.entity.SysRole" extends="BaseResultMap">
+    <collection property="privilegeList"
+                column="{roleId=id}"
+                select="com.example.Galaxy.dao.SysPrivilegeMapper.selectPrivilegeByRoleId"/>
   </resultMap>
   <sql id="Base_Column_List">
     id, role_name, enabled, create_by, create_time, update_time
@@ -66,4 +71,11 @@
       </if>
     </trim>
   </insert>
+  <select id="selectRoleAndPrivilegeByUserId" resultMap="roleAndPrivilegeSelect">
+    select
+      <include refid="Base_Column_List"/>
+    from sys_role r
+    inner join sys_user_role ur on ur.role_id = r.id
+    where ur.user_id = #{userId,jdbcType=BIGINT}
+  </select>
 </mapper>

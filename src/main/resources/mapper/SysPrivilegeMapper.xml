@@ -40,4 +40,11 @@
       </if>
     </trim>
   </insert>
+  <select id="selectPrivilegeByRoleId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from sys_privilege p
+    inner join sys_role_privilege rp on rp.privilege_id = p.id
+    where rp.role_id = #{roleId,jdbcType=BIGINT}
+  </select>
 </mapper>

@@ -33,7 +33,6 @@ public class UserController {
 
     /**
      * showdoc
-     *
      * @param name    必选 String 名字
      * @param account 必选 String 账户
      * @param passwd  必选 String  密码
@@ -66,7 +65,6 @@ public class UserController {
 
     /**
      * showdoc
-     *
      * @param account 必选 String 账号
      * @param passwd  必选 String  密码
      * @return {"code":0,message:"",data:{}}
@@ -97,7 +95,6 @@ public class UserController {
 
     /**
      * showdoc
-     *
      * @param file 必选 file 文件
      * @return {"code":0,message:"",data:{}}
      * @catalog 用户
@@ -127,7 +124,6 @@ public class UserController {
 
     /**
      * showdoc
-     *
      * @param name      必选 String  账号
      * @param passwd    必选 String  密码
      * @param cellphone 必选 String  手机号码

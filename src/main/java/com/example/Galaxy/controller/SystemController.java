@@ -21,18 +21,24 @@ public class SystemController {
     @Autowired
     private SystemService systemService;
 
-    @UserLoginToken
+//    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getUserRole(HttpServletRequest httpServletRequest){
-        return systemService.getUserRole();
+        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        try{
+            systemService.selectRoleAndPrivilegeByUserId(userId);
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("error");
+        }
+
+        return systemService.selectRoleAndPrivilegeByUserId(userId);
     }
 
-    @UserLoginToken
     @ResponseBody
-    @RequestMapping(value = "/myRole", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public Object getMyRoleList(HttpServletRequest httpServletRequest){
-        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
-        return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage(),systemService.getRoleListByUserId(userId));
+    @RequestMapping(value = "/role", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public Object test(HttpServletRequest httpServletRequest){
+        return systemService.selcetRole(1L);
     }
 }

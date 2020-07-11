@@ -9,4 +9,5 @@ public interface SysPrivilegeMapper {
 
     int insertSelective(SysPrivilege record);
 
+    List<SysPrivilege> selectPrivilegeByRoleId(Long roleId);
 }

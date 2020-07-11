@@ -16,8 +16,7 @@ public interface UserMapper {
 
     int updateSelective(User user);
 
+    User selectAllUserAndRoles(Long userId);
 
-    List<User>selectAllUserAndRoles();
-
-    List<User>selectUserRoleList(Long userId);
+    User selectUserRoleAndPrivilege(Long userId);
 }
