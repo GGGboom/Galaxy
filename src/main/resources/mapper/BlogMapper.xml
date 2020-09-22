@@ -12,12 +12,13 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+        <result column="blog_content" jdbcType="LONGVARCHAR" property="blogContent"/>
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.Galaxy.entity.Blog">
         <result column="blog_content" jdbcType="LONGVARCHAR" property="blogContent"/>
     </resultMap>
     <sql id="Blob_Column_List">
-    blog_id,user_id,user_avatar,blog_title,blog_views,blog_comment_account,blog_like_account,create_time,update_time,is_deleted
+    blog_id,user_id,user_avatar,blog_title,blog_views,blog_comment_account,blog_like_account,create_time,update_time,is_deleted,blog_content
   </sql>
     <insert id="insert" parameterType="com.example.Galaxy.entity.Blog">
     insert into blog (blog_id, user_id, user_avatar, 

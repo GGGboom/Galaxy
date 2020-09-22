@@ -62,6 +62,13 @@ public class BlogController {
         return blogService.getByUserId(Integer.parseInt(userId), pageNum, pageSize);
     }
 
+    @UserLoginToken
+    @ResponseBody
+    @RequestMapping(value = "/{blogId}" ,method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
+    public Object selectBlogByBlogId(@PathVariable("blogId") Long blogId){
+        return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage(),blogService.getBlogByBlogId(blogId));
+    }
+
 
     /**
      * showdoc

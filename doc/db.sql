@@ -104,4 +104,17 @@ CREATE TABLE `blog_file`(
     PRIMARY KEY(`id`)
 );
 
+CREATE TABLE `record`(
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT'主键id',
+    `user_id` bigint(20) NOT NULL COMMENT '欠数的用户',
+    `blog_id` bigint(20) NOT NULL COMMENT'博客id',
+    `edit_by` bigint(20) NOT NULL COMMENT'修改人',
+    `reason` longtext DEFAULT NULL  COMMENT'上记录的原因',
+    `amount` bigint(20) DEFAULT NULL COMMENT'总数',
+    `create_time` datetime COMMENT '创建时间',
+    `update_time` datetime COMMENT '更新时间',
+    `is_deleted` tinyint(1) DEFAULT'0' COMMENT'是否删除标记',
+    PRIMARY KEY(`id`)
+);
+
 
