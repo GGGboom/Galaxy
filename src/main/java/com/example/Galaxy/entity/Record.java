@@ -92,19 +92,4 @@ public class Record {
     public void setReason(String reason) {
         this.reason = reason == null ? null : reason.trim();
     }
-
-    @Override
-    public String toString() {
-        return "Record{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", blogId=" + blogId +
-                ", editBy=" + editBy +
-                ", amount=" + amount +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                ", isDeleted=" + isDeleted +
-                ", reason='" + reason + '\'' +
-                '}';
-    }
 }

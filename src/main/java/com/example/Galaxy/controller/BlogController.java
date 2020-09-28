@@ -4,11 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Blog;
+import com.example.Galaxy.entity.User;
 import com.example.Galaxy.service.BlogService;
+import com.example.Galaxy.service.UserService;
+import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
-import com.example.Galaxy.util.authorization.UserLoginToken;
-import com.example.Galaxy.util.exception.CodeEnums;
-import com.example.Galaxy.util.exception.GalaxyException;
+import com.example.Galaxy.exception.CodeEnums;
+import com.example.Galaxy.exception.GalaxyException;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +23,9 @@ import java.util.Date;
 public class BlogController {
     @Autowired
     private BlogService blogService;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * showdoc
@@ -52,17 +58,16 @@ public class BlogController {
      * @method get
      * @url /blog/mine
      */
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/mine", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectBlogByUserId(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                      @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                      HttpServletRequest httpServletRequest) throws RuntimeException {
-        String userId = JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0);
-        return blogService.getByUserId(Integer.parseInt(userId), pageNum, pageSize);
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        Long userId = JWTUtil.getUserId(token);
+        return blogService.getByUserId(userId.intValue(), pageNum, pageSize);
     }
 
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/{blogId}" ,method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
     public Object selectBlogByBlogId(@PathVariable("blogId") Long blogId){
@@ -72,7 +77,6 @@ public class BlogController {
 
     /**
      * showdoc
-     *
      * @param userAvatar  必选 String  用户头像
      * @param blogTitle   必选 String  博文标题
      * @param blogContent 必选 String  博文内容
@@ -84,15 +88,16 @@ public class BlogController {
      * @method post
      * @url /blog/add
      */
-    @UserLoginToken
     @ResponseBody
+    @RequiresRoles("admin")
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object addBlog(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) throws RuntimeException {
-        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        Long userId = JWTUtil.getUserId(token);
         String userAvatar = params.getString("userAvatar");
         String blogTitle = params.getString("blogTitle");
         String blogContent = params.getString("blogContent");
-        if (userId == null || userAvatar == null || blogTitle == null || blogContent == null) {
+        if (userAvatar == null || blogTitle == null || blogContent == null) {
             throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
         }
         Blog blog = new Blog();
@@ -121,7 +126,6 @@ public class BlogController {
      * @method post
      * @url /blog/addViews
      */
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/addViews", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public Object blogViewsIncrement(@RequestBody JSONObject params) {
@@ -148,11 +152,9 @@ public class BlogController {
      * @method post
      * @url /blog/favorite
      */
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/favorite", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public Object addFavorite(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) throws RuntimeException {
-        String logedUserId = JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0);
         Long blogId = params.getLong("blogId");
         Long blogLikeAccount = params.getLong("blogLikeAccount");
         Long blogUserId = params.getLong("blogUserId");

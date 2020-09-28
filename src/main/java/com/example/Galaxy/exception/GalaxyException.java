@@ -1,4 +1,4 @@
-package com.example.Galaxy.util.exception;
+package com.example.Galaxy.exception;
 
 /**
  * 系统异常类

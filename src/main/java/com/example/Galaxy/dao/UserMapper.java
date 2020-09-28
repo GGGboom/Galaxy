@@ -12,6 +12,8 @@ public interface UserMapper {
 
     User selectById(String userId);
 
+    User selectByAccount(String account);
+
     User login(@Param("account")String account,@Param("passWd") String passWd);
 
     int updateSelective(User user);

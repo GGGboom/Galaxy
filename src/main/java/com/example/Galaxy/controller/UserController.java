@@ -5,14 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.User;
 import com.example.Galaxy.service.UserService;
-import com.example.Galaxy.service.authorization.TokenService;
 import com.example.Galaxy.util.FileUtil;
+import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
-import com.example.Galaxy.util.authorization.UserLoginToken;
-import com.example.Galaxy.util.exception.CodeEnums;
-import com.example.Galaxy.util.exception.GalaxyException;
+import com.example.Galaxy.exception.CodeEnums;
+import com.example.Galaxy.exception.GalaxyException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,8 +25,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private TokenService tokenService;
 
 
     /**
@@ -86,9 +82,9 @@ public class UserController {
         if (user == null) {
             return new Result(CodeEnums.ERROR_PASSWORD.getCode(), CodeEnums.ERROR_PASSWORD.getMessage());
         } else {
-            String token = tokenService.getToken(user);
+            String sign = JWTUtil.sign(user.getAccount(), user.getPasswd(),user.getUserId());
             JSONObject data = JSON.parseObject(user.toString());
-            data.put("token", token);
+            data.put("token",sign);
             return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
         }
     }
@@ -103,7 +99,6 @@ public class UserController {
      * @method post
      * @url localhost:8080/user/upload
      */
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object uploadImg(@RequestParam(value = "file") MultipartFile file, HttpServletRequest httpServletRequest) {
@@ -135,7 +130,6 @@ public class UserController {
      * @method post
      * @url localhost:8080/user/login
      */
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/updateInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object updateInfo(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
@@ -166,7 +160,6 @@ public class UserController {
      * @method post
      * @url localhost:8080/user/login
      */
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/info", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getUserInfo(HttpServletRequest httpServletRequest){

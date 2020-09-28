@@ -1,4 +1,4 @@
-package com.example.Galaxy.util.exception;
+package com.example.Galaxy.exception;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

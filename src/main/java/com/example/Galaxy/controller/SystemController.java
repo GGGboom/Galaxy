@@ -3,9 +3,7 @@ package com.example.Galaxy.controller;
 
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.service.SystemService;
-import com.example.Galaxy.util.Result;
-import com.example.Galaxy.util.authorization.UserLoginToken;
-import com.example.Galaxy.util.exception.CodeEnums;
+import com.example.Galaxy.exception.CodeEnums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,7 +19,6 @@ public class SystemController {
     @Autowired
     private SystemService systemService;
 
-//    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getUserRole(HttpServletRequest httpServletRequest){

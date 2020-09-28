@@ -7,10 +7,10 @@ import com.example.Galaxy.entity.CommentLike;
 import com.example.Galaxy.entity.Comments;
 import com.example.Galaxy.service.CommentLikeService;
 import com.example.Galaxy.service.CommentService;
+import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
-import com.example.Galaxy.util.authorization.UserLoginToken;
-import com.example.Galaxy.util.exception.CodeEnums;
-import com.example.Galaxy.util.exception.GalaxyException;
+import com.example.Galaxy.exception.CodeEnums;
+import com.example.Galaxy.exception.GalaxyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +36,6 @@ public class CommentController {
      * @method post
      * @url /blog/getAll
      */
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/getAll", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getAllComments(@RequestParam(name = "blogId", required = false, defaultValue = "1") Long blogId) {
@@ -57,11 +56,11 @@ public class CommentController {
      * @method post
      * @url /comment/add
      */
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object addComment(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
-        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        Long userId = JWTUtil.getUserId(token);
         Long blogId = params.getLong("blogId");
         String userAvatar = params.getString("userAvatar");
         Long parentCommentId = params.getLong("commentId");
@@ -92,11 +91,11 @@ public class CommentController {
      * @method post
      * @url /comment/addLike
      */
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/addLike", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object addCommentLike(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
-        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        Long userId = JWTUtil.getUserId(token);
         Comments comments = new Comments();
         CommentLike commentLike = new CommentLike();
         Long commentId = params.getLong("commentId");
@@ -134,7 +133,8 @@ public class CommentController {
     @ResponseBody
     @RequestMapping(value = "/deleteLike", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object deleteCommentLike(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
-        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        Long userId = JWTUtil.getUserId(token);
         Long commentId = params.getLong("commentId");
         Long commentUserId = params.getLong("commentUserId");
         Long commentLikeAccount = params.getLong("commentLikeAccount");
@@ -145,7 +145,6 @@ public class CommentController {
         comments.setCommentId(commentId);
         comments.setCommentLikeAccount(commentLikeAccount - 1);
         commentService.updateSelective(comments);
-
         commentLike.setCreateBy(commentUserId);
         commentLike.setCommentId(commentId);
         commentLike.setLikeUserId(userId);
@@ -167,11 +166,10 @@ public class CommentController {
      * @method get
      * @url /comment/unreadCommentAccount
      */
-    @UserLoginToken
     @ResponseBody
     @RequestMapping(value = "/unreadCommentAccount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getUnreadCommentAccount(HttpServletRequest httpServletRequest) {
-        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), commentService.getUnread(userId));
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), commentService.getUnread(JWTUtil.getUserId(token)));
     }
 }

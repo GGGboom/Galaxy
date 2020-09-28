@@ -1,6 +1,6 @@
 package com.example.Galaxy.util;
 
-import com.example.Galaxy.util.exception.CodeEnums;
+import com.example.Galaxy.exception.CodeEnums;
 
 public class Result {
     private int code;

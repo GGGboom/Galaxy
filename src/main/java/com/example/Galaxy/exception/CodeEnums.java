@@ -1,4 +1,4 @@
-package com.example.Galaxy.util.exception;
+package com.example.Galaxy.exception;
 
 
 /**
@@ -8,7 +8,7 @@ package com.example.Galaxy.util.exception;
  *  11-20： 参数相关的异常
  *  21-30： 业务相关的异常
  *  31-40:  第三方相关异常
- *  .
+ *  41-50:  无权限异常
  *  99   ： 系统异常
  *  100 以上:为其他异常
  * @author zhh
@@ -46,6 +46,8 @@ public enum CodeEnums {
     UPLOAD_ERROR(26, "文件上传异常"),
 
     EMAIL_ERROR(31, "邮件发送异常"),
+
+    AUTHORITY_ERROR(41,"无权限"),
 
     REDIS_ERROR(101,"redis异常"),
 

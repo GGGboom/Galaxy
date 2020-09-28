@@ -70,6 +70,12 @@
 			<version>3.7.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+
 		<!--数据库查询日志-->
 		<dependency>
 			<groupId>log4j</groupId>

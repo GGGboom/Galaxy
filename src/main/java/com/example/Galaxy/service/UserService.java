@@ -7,6 +7,8 @@ public interface UserService {
 
     User selectByUserId(String userId);
 
+    User selectByUserAccount(String account);
+
     User login(String account,String passWd);
 
     int updateSelective(User user);
