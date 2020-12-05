@@ -1,6 +1,8 @@
 package com.example.Galaxy.entity;
 
-public class SysPrivilege {
+import java.io.Serializable;
+
+public class SysPrivilege implements Serializable {
     private Long id;
 
     private String privilegeName;

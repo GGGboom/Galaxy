@@ -10,6 +10,7 @@ import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
 import com.example.Galaxy.exception.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,13 +23,16 @@ import java.io.IOException;
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
+    private static final Logger logger = Logger.getLogger(UserController.class);
+
+
     @Autowired
     private UserService userService;
 
 
-
     /**
      * showdoc
+     *
      * @param name    必选 String 名字
      * @param account 必选 String 账户
      * @param passwd  必选 String  密码
@@ -61,6 +65,7 @@ public class UserController {
 
     /**
      * showdoc
+     *
      * @param account 必选 String 账号
      * @param passwd  必选 String  密码
      * @return {"code":0,message:"",data:{}}
@@ -73,6 +78,7 @@ public class UserController {
     @ResponseBody
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object login(@RequestBody JSONObject param) {
+        logger.info("用户登录");
         String account = param.getString("account");
         String passWd = param.getString("passwd");
         if (account == null || passWd == null) {
@@ -82,15 +88,17 @@ public class UserController {
         if (user == null) {
             return new Result(CodeEnums.ERROR_PASSWORD.getCode(), CodeEnums.ERROR_PASSWORD.getMessage());
         } else {
-            String sign = JWTUtil.sign(user.getAccount(), user.getPasswd(),user.getUserId());
-            JSONObject data = JSON.parseObject(user.toString());
-            data.put("token",sign);
+            String sign = JWTUtil.sign(user.getAccount(), user.getPasswd(), user.getUserId());
+//            JSONObject data = JSON.parseObject(user.toString());
+            JSONObject data = (JSONObject) JSON.toJSON(user);
+            data.put("token", sign);
             return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
         }
     }
 
     /**
      * showdoc
+     *
      * @param file 必选 file 文件
      * @return {"code":0,message:"",data:{}}
      * @catalog 用户
@@ -103,7 +111,7 @@ public class UserController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object uploadImg(@RequestParam(value = "file") MultipartFile file, HttpServletRequest httpServletRequest) {
         String headImgPath = null;
-        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        Long userId = JWTUtil.getUserId(httpServletRequest.getHeader("Authorization"));
         try {
             headImgPath = FileUtil.uploadFile(file);
             User user = new User();
@@ -119,6 +127,7 @@ public class UserController {
 
     /**
      * showdoc
+     *
      * @param name      必选 String  账号
      * @param passwd    必选 String  密码
      * @param cellphone 必选 String  手机号码
@@ -133,7 +142,7 @@ public class UserController {
     @ResponseBody
     @RequestMapping(value = "/updateInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object updateInfo(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
-        Long userId = Long.parseLong(JWT.decode(httpServletRequest.getHeader("Authorization")).getAudience().get(0));
+        Long userId = JWTUtil.getUserId(httpServletRequest.getHeader("Authorization"));
         User user = new User();
         String name = params.getString("name");
         String passwd = params.getString("passwd");
@@ -153,19 +162,18 @@ public class UserController {
 
     /**
      * showdoc
+     *
      * @return {"code":0,message:"",data:{}}
      * @catalog 用户
      * @title
      * @description 登录
      * @method post
-     * @url localhost:8080/user/login
+     * @url localhost:8080/user/info
      */
     @ResponseBody
     @RequestMapping(value = "/info", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public Object getUserInfo(HttpServletRequest httpServletRequest){
-        String userId = JWT.decode(httpServletRequest.getHeader("Authorization"))
-                .getAudience()
-                .get(0);
-        return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage(),JSON.parseObject(userService.selectByUserId(userId).toString()));
+    public Object getUserInfo(HttpServletRequest httpServletRequest) {
+        String userId = String.valueOf(JWTUtil.getUserId(httpServletRequest.getHeader("Authorization")));
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), userService.selectByUserId(userId));
     }
 }

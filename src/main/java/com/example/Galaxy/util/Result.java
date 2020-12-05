@@ -14,10 +14,10 @@ public class Result {
         return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage());
     }
 
-//    public Result(CodeEnums codeEnums){
-//        this.code = codeEnums.getCode();
-//        this.message = codeEnums.getMessage();
-//    }
+    public Result(CodeEnums codeEnums){
+        this.code = codeEnums.getCode();
+        this.message = codeEnums.getMessage();
+    }
 
     public Result(int code, String message){
         this.code = code;

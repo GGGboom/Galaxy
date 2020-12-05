@@ -1,9 +1,10 @@
 package com.example.Galaxy.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class Comments {
+public class Comments implements Serializable {
     private Long commentId;
 
     private Long blogId;

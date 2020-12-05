@@ -1,8 +1,9 @@
 package com.example.Galaxy.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class User {
+public class User implements Serializable {
     private Long userId;
 
     private String name;
@@ -103,19 +104,4 @@ public class User {
         this.verifyCode = verifyCode == null ? null : verifyCode.trim();
     }
 
-    @Override
-    public String toString() {
-        String str = "{" +
-                "\"userId\":" + userId +","+
-                "\"name\":\"" + name + "\"," +
-                "\"headImgPath\":\"" + headImgPath + "\"," +
-                "\"account\":\"" + account + "\"," +
-                "\"passwd\":\"" + passwd + "\"," +
-                "\"identityType\":" + identityType +","+
-                "\"cellphone\":\"" + cellphone + "\"," +
-                "\"email\":\"" + email + "\"," +
-                "\"verifyCode\":\"" + verifyCode + "\"" +
-                "}";
-        return str;
-    }
 }

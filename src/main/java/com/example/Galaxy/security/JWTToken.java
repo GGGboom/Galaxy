@@ -1,4 +1,4 @@
-package com.example.Galaxy.config.shiro;
+package com.example.Galaxy.security;
 
 import org.apache.shiro.authc.AuthenticationToken;
 

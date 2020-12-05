@@ -1,8 +1,9 @@
 package com.example.Galaxy.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Blog {
+public class Blog implements Serializable {
     private Long blogId;
 
     private Long userId;
@@ -111,22 +112,5 @@ public class Blog {
 
     public void setBlogContent(String blogContent) {
         this.blogContent = blogContent == null ? null : blogContent.trim();
-    }
-
-    @Override
-    public String toString(){
-        String str = "{"+
-                "\"blogId\":"+blogId+","+
-                "\"userId\":"+userId+","+
-                "\"userAvatar\":\""+userAvatar+"\","+
-                "\"blogTitle\":\""+blogTitle+"\","+
-                "\"blogViews\":"+blogViews+","+
-                "\"blogLikeAccount\":"+blogLikeAccount+","+
-                "\"createTime\":"+createTime.getTime()+","+
-                "\"updateTime\":"+updateTime.getTime()+","+
-                "\"isDeleted\":"+isDeleted+","+
-                "\"blogContent\":\""+blogContent+"\","+
-                "}";
-        return str;
     }
 }

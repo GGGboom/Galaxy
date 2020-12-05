@@ -1,10 +1,8 @@
 package com.example.Galaxy.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Blog;
-import com.example.Galaxy.entity.User;
 import com.example.Galaxy.service.BlogService;
 import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.JWTUtil;
@@ -12,6 +10,7 @@ import com.example.Galaxy.util.Result;
 import com.example.Galaxy.exception.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,8 +42,7 @@ public class BlogController {
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectAll(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(),
-                JSON.parseObject(JSONObject.toJSONString(blogService.getAll(pageNum, pageSize))));
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.getAll(pageNum, pageSize));
     }
 
 
@@ -58,6 +56,7 @@ public class BlogController {
      * @method get
      * @url /blog/mine
      */
+    @RequiresUser
     @ResponseBody
     @RequestMapping(value = "/mine", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectBlogByUserId(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
@@ -69,14 +68,15 @@ public class BlogController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{blogId}" ,method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
-    public Object selectBlogByBlogId(@PathVariable("blogId") Long blogId){
-        return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage(),blogService.getBlogByBlogId(blogId));
+    @RequestMapping(value = "/{blogId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public Object selectBlogByBlogId(@PathVariable("blogId") Long blogId) {
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.getBlogByBlogId(blogId));
     }
 
 
     /**
      * showdoc
+     *
      * @param userAvatar  必选 String  用户头像
      * @param blogTitle   必选 String  博文标题
      * @param blogContent 必选 String  博文内容
@@ -158,7 +158,6 @@ public class BlogController {
         Long blogId = params.getLong("blogId");
         Long blogLikeAccount = params.getLong("blogLikeAccount");
         Long blogUserId = params.getLong("blogUserId");
-
         Blog blog = new Blog();
         blog.setBlogLikeAccount(blogLikeAccount + 1);
         blog.setBlogId(blogId);

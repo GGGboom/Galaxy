@@ -17,11 +17,13 @@ package com.example.Galaxy.exception;
 public enum CodeEnums {
     SUCCESS(0, "请求成功"),
 
-    NOT_LOGIN(1, "该用户未登录"),
+    NOT_LOGIN(1, "请登录后再进行操作"),
 
     ERROR_PASSWORD(2, "用户名或密码错误"),
 
     ERROR_VERIFY_CODE(4, "手机验证码错误"),
+
+    EMPTY_TOKEN(4, "token为空"),
 
     NO_USER(3, "用户不存在，请重新登录"),
 

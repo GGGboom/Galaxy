@@ -1,6 +1,8 @@
 package com.example.Galaxy.entity;
 
-public class SysUserRole {
+import java.io.Serializable;
+
+public class SysUserRole implements Serializable {
     private Long userId;
 
     private Long roleId;

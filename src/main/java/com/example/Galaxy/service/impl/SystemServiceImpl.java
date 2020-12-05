@@ -8,6 +8,7 @@ import com.example.Galaxy.entity.SysRole;
 import com.example.Galaxy.entity.User;
 import com.example.Galaxy.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    @Cacheable(cacheNames = "System", key = "'selectUserRoleAndPrivilege'")
     public User selectRoleAndPrivilegeByUserId(Long userId) {
         return userMapper.selectUserRoleAndPrivilege(userId);
     }

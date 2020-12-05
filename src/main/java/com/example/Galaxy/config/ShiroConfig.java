@@ -1,5 +1,10 @@
-package com.example.Galaxy.config.shiro;
+package com.example.Galaxy.config;
 
+import com.example.Galaxy.cache.RedisCacheManager;
+import com.example.Galaxy.security.GalaxyRealm;
+import com.example.Galaxy.security.JWTFilter;
+import com.example.Galaxy.service.SystemService;
+import com.example.Galaxy.service.UserService;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
@@ -19,7 +24,7 @@ import java.util.Map;
 public class ShiroConfig {
 
     @Bean("securityManager")
-    public DefaultWebSecurityManager getManager(MyRealm realm) {
+    public DefaultWebSecurityManager getManager(GalaxyRealm realm) {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
         // 使用自己的realm
         manager.setRealm(realm);
@@ -46,17 +51,13 @@ public class ShiroConfig {
         filterMap.put("jwt", new JWTFilter());
         factoryBean.setFilters(filterMap);
         factoryBean.setSecurityManager(securityManager);
-
-        /*
-         * 自定义url规则
-         * http://shiro.apache.org/web.html#urls-
-         */
         Map<String, String> filterRuleMap = new HashMap<>();
         // 所有请求通过我们自己的JWT Filter
         filterRuleMap.put("/**", "jwt");
         // 登录和注册等请求不通过我们的Filter
         filterRuleMap.put("/user/login", "anon");
         filterRuleMap.put("/user/register", "anon");
+        filterRuleMap.put("/blog/**", "anon");
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);
         return factoryBean;
     }
@@ -84,5 +85,18 @@ public class ShiroConfig {
         AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
         advisor.setSecurityManager(securityManager);
         return advisor;
+    }
+
+    @Bean(name = "MyRealm")
+    public GalaxyRealm realm(SystemService systemService, UserService userService) {
+        GalaxyRealm galaxyRealm = new GalaxyRealm();
+        galaxyRealm.setUserService(systemService, userService);
+        galaxyRealm.setCacheManager(new RedisCacheManager());
+        galaxyRealm.setCachingEnabled(true);
+        galaxyRealm.setAuthenticationCachingEnabled(true);
+        galaxyRealm.setAuthenticationCacheName("authenticationCache");
+        galaxyRealm.setAuthorizationCachingEnabled(true);
+        galaxyRealm.setAuthorizationCacheName("authorizationCache");
+        return galaxyRealm;
     }
 }

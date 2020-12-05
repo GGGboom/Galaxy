@@ -1,8 +1,9 @@
 package com.example.Galaxy.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Record {
+public class Record implements Serializable {
     private Long id;
 
     private Long userId;

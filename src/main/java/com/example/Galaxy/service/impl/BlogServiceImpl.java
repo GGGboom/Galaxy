@@ -6,6 +6,7 @@ import com.example.Galaxy.service.BlogService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,31 +15,34 @@ public class BlogServiceImpl implements BlogService {
     private BlogMapper blogMapper;
 
     @Override
-    public PageInfo<Blog> getAll(int pageNum, int pageSize){
-        PageHelper.startPage(pageNum,pageSize);
+    @Cacheable(cacheNames = "BlogCache", key = "'getAllBlog'")
+    public PageInfo<Blog> getAll(int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
         PageInfo<Blog> pageInfo = new PageInfo(blogMapper.selectAll());
         return pageInfo;
     }
 
     @Override
-    public PageInfo<Blog> getByUserId(Integer userId,int pageNum, int pageSize){
-        PageHelper.startPage(pageNum,pageSize);
+    @Cacheable(cacheNames = "BlogCache", key = "'selectByUserId'")
+    public PageInfo<Blog> getByUserId(Integer userId, int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
         PageInfo<Blog> pageInfo = new PageInfo(blogMapper.selectByUserId(userId));
         return pageInfo;
     }
 
     @Override
-    public int addBlog(Blog blog){
+    public int addBlog(Blog blog) {
         return blogMapper.insertSelective(blog);
     }
 
     @Override
-    public int updateBlogSelective(Blog blog){
+    public int updateBlogSelective(Blog blog) {
         return blogMapper.updateSelective(blog);
     }
 
     @Override
-    public Blog getBlogByBlogId(Long blogId){
+    @Cacheable(cacheNames = "BlogCache", key = "'getBlogByBlogId'")
+    public Blog getBlogByBlogId(Long blogId) {
         return blogMapper.getBlogByBlogId(blogId);
     }
 }

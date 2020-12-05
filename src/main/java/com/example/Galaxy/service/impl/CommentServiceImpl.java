@@ -4,6 +4,7 @@ import com.example.Galaxy.dao.CommentsMapper;
 import com.example.Galaxy.entity.Comments;
 import com.example.Galaxy.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +30,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comments>getAll(Long parentId,Long blogId){
-        return commentsMapper.getAllByParent(parentId,blogId);
+    @Cacheable(cacheNames = "Comment", key = "'getAll'")
+    public List<Comments> getAll(Long parentId, Long blogId) {
+        return commentsMapper.getAllByParent(parentId, blogId);
     }
 }

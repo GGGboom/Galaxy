@@ -1,4 +1,4 @@
-package com.example.Galaxy.config.shiro;
+package com.example.Galaxy.security;
 
 import com.example.Galaxy.entity.SysRole;
 import com.example.Galaxy.entity.User;
@@ -13,19 +13,17 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 
 import java.util.List;
 
-@Service
-public class MyRealm extends AuthorizingRealm {
+//@Service
+public class GalaxyRealm extends AuthorizingRealm {
     
     private SystemService systemService;
 
     private UserService userService;
-    @Autowired
+//    @Autowired
     public void setUserService(SystemService systemService,UserService userService) {
         this.systemService = systemService;
         this.userService = userService;
@@ -52,9 +50,6 @@ public class MyRealm extends AuthorizingRealm {
         sysRoles.forEach(item->{
             simpleAuthorizationInfo.addRole(item.getRoleName());
         });
-//        simpleAuthorizationInfo.addRole(user.getRole());
-//        Set<String> permission = new HashSet<>(Arrays.asList(user.getPermission().split(",")));
-//        simpleAuthorizationInfo.addStringPermissions(permission);
         return simpleAuthorizationInfo;
     }
 
