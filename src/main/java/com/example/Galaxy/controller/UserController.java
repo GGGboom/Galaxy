@@ -56,7 +56,7 @@ public class UserController {
         user.setName(name);
         user.setAccount(account);
         user.setPasswd(passwd);
-        if (userService.register(user) != 1) {
+        if (userService.insertSelective(user) != 1) {
             return new Result(CodeEnums.EXCEPTION.getCode(), CodeEnums.EXCEPTION.getMessage());
         }
         return Result.SUCCESS();
@@ -84,12 +84,11 @@ public class UserController {
         if (account == null || passWd == null) {
             throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
         }
-        User user = userService.login(account, passWd);
+        User user = userService.selectByAccountAndPasswd(account, passWd);
         if (user == null) {
             return new Result(CodeEnums.ERROR_PASSWORD.getCode(), CodeEnums.ERROR_PASSWORD.getMessage());
         } else {
             String sign = JWTUtil.sign(user.getAccount(), user.getPasswd(), user.getUserId());
-//            JSONObject data = JSON.parseObject(user.toString());
             JSONObject data = (JSONObject) JSON.toJSON(user);
             data.put("token", sign);
             return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);

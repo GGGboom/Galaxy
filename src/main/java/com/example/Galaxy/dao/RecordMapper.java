@@ -20,4 +20,6 @@ public interface RecordMapper {
     int updateByPrimaryKey(Record record);
 
     List<Record> selectAll();
+
+    Record selectByUserId(Long userId);
 }

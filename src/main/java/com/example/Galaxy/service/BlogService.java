@@ -6,13 +6,13 @@ import com.github.pagehelper.PageInfo;
 import java.util.List;
 
 public interface BlogService {
-    PageInfo<Blog> getAll(int pageNum, int pageSize);
+    PageInfo<Blog> selectAll(Integer pageNum, Integer pageSize);
 
-    PageInfo<Blog> getByUserId(Integer userId,int pageNum, int pageSize);
+    PageInfo<Blog> selectBlogByUserId(Integer userId,Integer pageNum, Integer pageSize);
 
-    int addBlog(Blog blog);
+    int insertSelective(Blog blog);
 
     int updateBlogSelective(Blog blog);
 
-    Blog getBlogByBlogId(Long blogId);
+    Blog selectBlogByBlogId(Long blogId);
 }

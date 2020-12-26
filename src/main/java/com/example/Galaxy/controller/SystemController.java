@@ -41,6 +41,6 @@ public class SystemController {
     @RequiresRoles(value = {"admin"})
     @RequestMapping(value = "/role", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object test(HttpServletRequest httpServletRequest) {
-        return systemService.selcetRole(1L);
+        return systemService.selectRoleByUserId(1L);
     }
 }

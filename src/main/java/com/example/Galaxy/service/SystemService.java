@@ -9,7 +9,7 @@ import java.util.List;
 public interface SystemService {
     User selectRoleAndPrivilegeByUserId(Long userId);
 
-    List<SysPrivilege> selectPrivilege(Long roleId);
+    List<SysPrivilege> selectPrivilegeByRoleId(Long roleId);
 
-    List<SysRole>selcetRole(Long userId);
+    List<SysRole> selectRoleByUserId(Long userId);
 }

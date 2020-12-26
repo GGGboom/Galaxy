@@ -44,8 +44,8 @@ public class GalaxyRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         String account = JWTUtil.getAccount(principals.toString());
-        User user = userService.selectByUserAccount(account);
-        List<SysRole> sysRoles = systemService.selcetRole(user.getUserId());
+        User user = userService.selectByAccount(account);
+        List<SysRole> sysRoles = systemService.selectRoleByUserId(user.getUserId());
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         sysRoles.forEach(item->{
             simpleAuthorizationInfo.addRole(item.getRoleName());
@@ -65,7 +65,7 @@ public class GalaxyRealm extends AuthorizingRealm {
             throw new AuthenticationException("token invalid");
         }
 
-        User user = userService.selectByUserAccount(account);
+        User user = userService.selectByAccount(account);
         if (user == null) {
             throw new AuthenticationException("User didn't existed!");
         }

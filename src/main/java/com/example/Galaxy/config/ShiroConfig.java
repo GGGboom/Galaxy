@@ -1,6 +1,5 @@
 package com.example.Galaxy.config;
 
-import com.example.Galaxy.cache.RedisCacheManager;
 import com.example.Galaxy.security.GalaxyRealm;
 import com.example.Galaxy.security.JWTFilter;
 import com.example.Galaxy.service.SystemService;
@@ -91,12 +90,6 @@ public class ShiroConfig {
     public GalaxyRealm realm(SystemService systemService, UserService userService) {
         GalaxyRealm galaxyRealm = new GalaxyRealm();
         galaxyRealm.setUserService(systemService, userService);
-        galaxyRealm.setCacheManager(new RedisCacheManager());
-        galaxyRealm.setCachingEnabled(true);
-        galaxyRealm.setAuthenticationCachingEnabled(true);
-        galaxyRealm.setAuthenticationCacheName("authenticationCache");
-        galaxyRealm.setAuthorizationCachingEnabled(true);
-        galaxyRealm.setAuthorizationCacheName("authorizationCache");
         return galaxyRealm;
     }
 }

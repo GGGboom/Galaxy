@@ -11,6 +11,7 @@ import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
 import com.example.Galaxy.exception.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +41,7 @@ public class CommentController {
     @RequestMapping(value = "/getAll", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getAllComments(@RequestParam(name = "blogId", required = false, defaultValue = "1") Long blogId) {
         if (blogId == null) throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
-        return new Result(commentService.getAll(0L, blogId));
+        return new Result(commentService.selectAll(0L, blogId));
     }
 
     /**
@@ -57,6 +58,7 @@ public class CommentController {
      * @url /comment/add
      */
     @ResponseBody
+    @RequiresUser
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object addComment(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
@@ -92,6 +94,7 @@ public class CommentController {
      * @url /comment/addLike
      */
     @ResponseBody
+    @RequiresUser
     @RequestMapping(value = "/addLike", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object addCommentLike(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
@@ -131,6 +134,7 @@ public class CommentController {
      * @url /comment/deleteLike
      */
     @ResponseBody
+    @RequiresUser
     @RequestMapping(value = "/deleteLike", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object deleteCommentLike(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
@@ -167,9 +171,10 @@ public class CommentController {
      * @url /comment/unreadCommentAccount
      */
     @ResponseBody
+    @RequiresUser
     @RequestMapping(value = "/unreadCommentAccount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getUnreadCommentAccount(HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), commentService.getUnread(JWTUtil.getUserId(token)));
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), commentService.selectUnread(JWTUtil.getUserId(token)));
     }
 }

@@ -7,6 +7,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,24 +15,33 @@ public class BlogServiceImpl implements BlogService {
     @Autowired
     private BlogMapper blogMapper;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
-    @Cacheable(cacheNames = "BlogCache", key = "'getAllBlog'")
-    public PageInfo<Blog> getAll(int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        PageInfo<Blog> pageInfo = new PageInfo(blogMapper.selectAll());
+    public PageInfo<Blog> selectAll(Integer pageNum, Integer pageSize) {
+        PageInfo<Blog>pageInfo = (PageInfo<Blog>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selectAll");
+        if (pageInfo==null){
+            PageHelper.startPage(pageNum, pageSize);
+            pageInfo = new PageInfo(blogMapper.selectAll());
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selectAll",pageInfo);
+        }
         return pageInfo;
     }
 
     @Override
-    @Cacheable(cacheNames = "BlogCache", key = "'selectByUserId'")
-    public PageInfo<Blog> getByUserId(Integer userId, int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        PageInfo<Blog> pageInfo = new PageInfo(blogMapper.selectByUserId(userId));
+    public PageInfo<Blog> selectBlogByUserId(Integer userId, Integer pageNum, Integer pageSize) {
+        PageInfo<Blog>pageInfo = (PageInfo<Blog>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selectBlogByUserId");
+        if (pageInfo==null){
+            PageHelper.startPage(pageNum, pageSize);
+            pageInfo = new PageInfo(blogMapper.selectByUserId(userId));
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selectBlogByUserId",pageInfo);
+        }
         return pageInfo;
     }
 
     @Override
-    public int addBlog(Blog blog) {
+    public int insertSelective(Blog blog) {
         return blogMapper.insertSelective(blog);
     }
 
@@ -41,8 +51,13 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @Cacheable(cacheNames = "BlogCache", key = "'getBlogByBlogId'")
-    public Blog getBlogByBlogId(Long blogId) {
-        return blogMapper.getBlogByBlogId(blogId);
+    @Cacheable(cacheNames = "BlogCache", key = "#blogId")
+    public Blog selectBlogByBlogId(Long blogId) {
+        Blog blog = (Blog) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectBlogByBlogId");
+        if (blog == null) {
+            blog = blogMapper.getBlogByBlogId(blogId);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectBlogByBlogId", blog);
+        }
+        return blog;
     }
 }

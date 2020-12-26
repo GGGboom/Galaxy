@@ -5,6 +5,7 @@ import com.example.Galaxy.entity.User;
 import com.example.Galaxy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,30 +14,45 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    @Cacheable(cacheNames = "User", key = "selectByAccount")
-    public User selectByUserAccount(String account) {
-        return userMapper.selectByAccount(account);
+    public int updateSelective(User user) {
+        return userMapper.updateSelective(user);
     }
 
     @Override
-    public int register(User user) {
+    public int insertSelective(User user) {
         return userMapper.insertSelective(user);
     }
 
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
+
     @Override
-//    @Cacheable(cacheNames = "User", key = "'selectById'")
+    public User selectByAccount(String account) {
+        User user = (User) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectByAccount");
+        if (user == null) {
+            user = userMapper.selectByAccount(account);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectByAccount", user);
+        }
+        return user;
+    }
+
+    @Override
     public User selectByUserId(String userId) {
-        return userMapper.selectById(userId);
+        User user = (User) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectByUserId");
+        if (user == null) {
+            user = userMapper.selectById(userId);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectByUserId", user);
+        }
+        return user;
     }
 
     @Override
-//    @Cacheable(cacheNames = "User", key = "'login'")
-    public User login(String account, String passWd) {
-        return userMapper.login(account, passWd);
-    }
-
-    @Override
-    public int updateSelective(User user) {
-        return userMapper.updateSelective(user);
+    public User selectByAccountAndPasswd(String account, String passWd) {
+        User user = (User) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectByAccountAndPasswd");
+        if (user == null) {
+            user = userMapper.login(account, passWd);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectByAccountAndPasswd", user);
+        }
+        return user;
     }
 }

@@ -16,7 +16,7 @@
       user_id, name, head_img_path, account, passwd, identity_type, cellphone,email,verify_code
     </sql>
     <insert id="insert" parameterType="com.example.Galaxy.entity.User">
-    insert into user (user_id, name, head_img_path, 
+    insert into user (user_id, name, head_img_path,
       account, passwd, identity_type, 
       cellphone, email, verify_code
       )
@@ -135,10 +135,10 @@
         </set>
         where user_id = #{userId,jdbcType=BIGINT}
     </update>
+
     <resultMap id="userRoleListMapSelect" type="com.example.Galaxy.entity.User" extends="BaseResultMap">
         <collection property="roleList" resultMap="com.example.Galaxy.dao.SysRoleMapper.userRole"/>
     </resultMap>
-
     <select id="selectAllUserAndRoles" resultMap="userRoleListMapSelect">
         select
           u.user_id,
@@ -166,8 +166,6 @@
         inner join sys_privilege p on p.id = rp.privilege_id
         where  u.user_id = #{userId,jdbcType=BIGINT}
     </select>
-
-
     <resultMap id="userRoleAndPrivilegeSelectMap" type="com.example.Galaxy.entity.User">
         <collection property="roleList"
                     column="{userId = user_id}"

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Blog;
 import com.example.Galaxy.service.BlogService;
+import com.example.Galaxy.service.RedisService;
 import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
@@ -26,6 +27,9 @@ public class BlogController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RedisService redisService;
+
     /**
      * showdoc
      *
@@ -42,7 +46,7 @@ public class BlogController {
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectAll(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.getAll(pageNum, pageSize));
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectAll(pageNum, pageSize));
     }
 
 
@@ -64,13 +68,13 @@ public class BlogController {
                                      HttpServletRequest httpServletRequest) throws RuntimeException {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
-        return blogService.getByUserId(userId.intValue(), pageNum, pageSize);
+        return blogService.selectBlogByUserId(userId.intValue(), pageNum, pageSize);
     }
 
     @ResponseBody
     @RequestMapping(value = "/{blogId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectBlogByBlogId(@PathVariable("blogId") Long blogId) {
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.getBlogByBlogId(blogId));
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectBlogByBlogId(blogId));
     }
 
 
@@ -108,9 +112,11 @@ public class BlogController {
         blog.setCreateTime(new Date());
         blog.setUpdateTime(new Date());
         blog.setBlogViews(0L);
-        if (blogService.addBlog(blog) != 0) {
+        if (blogService.insertSelective(blog) != 0) {
+            redisService.deleteCacheByClass(blogService.getClass());
             return Result.SUCCESS();
         }
+        redisService.deleteCacheByClass(blogService.getClass());
         return new Result(CodeEnums.EXCEPTION.getCode(), CodeEnums.EXCEPTION.getMessage());
     }
 
@@ -132,9 +138,10 @@ public class BlogController {
         Long blogId = params.getLong("blogId");
         if (blogId == null)
             throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
-        Blog blog = blogService.getBlogByBlogId(params.getLong("blogId"));
+        Blog blog = blogService.selectBlogByBlogId(params.getLong("blogId"));
         blog.setBlogViews(blog.getBlogViews() + 1);
         blogService.updateBlogSelective(blog);
+        redisService.deleteCacheByClass(blogService.getClass());
         return Result.SUCCESS();
     }
 
@@ -162,6 +169,7 @@ public class BlogController {
         blog.setBlogLikeAccount(blogLikeAccount + 1);
         blog.setBlogId(blogId);
         blogService.updateBlogSelective(blog);
+        redisService.deleteCacheByClass(blogService.getClass());
         return Result.SUCCESS();
     }
 
