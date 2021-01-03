@@ -86,11 +86,11 @@
             </if>
         </trim>
     </insert>
-    <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <select id="selectById" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from user
-        where user_id = #{userId,jdbcType=VARCHAR}
+        where user_id = #{userId,jdbcType=BIGINT}
     </select>
     <select id="selectByAccount" parameterType="java.lang.String" resultMap="BaseResultMap">
         select

@@ -13,7 +13,7 @@ public interface UserMapper {
 
     int updateSelective(User user);
 
-    User selectById(String userId);
+    User selectById(Long userId);
 
     User selectByAccount(String account);
 

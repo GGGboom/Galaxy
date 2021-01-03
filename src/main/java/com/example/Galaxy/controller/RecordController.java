@@ -5,13 +5,12 @@ import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Record;
 import com.example.Galaxy.exception.CodeEnums;
 import com.example.Galaxy.service.RecordService;
-import com.example.Galaxy.service.RedisService;
+import com.example.Galaxy.service.RedisCacheService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +25,7 @@ public class RecordController {
     private RecordService recordService;
 
     @Autowired
-    private RedisService redisService;
+    private RedisCacheService redisCacheService;
 
 
     /**
@@ -73,7 +72,7 @@ public class RecordController {
             record.setCreateTime(createTime);
             recordService.insertSelective(record);
         }
-        redisService.deleteCacheByClass(recordService.getClass());
+        redisCacheService.deleteCacheByClass(recordService.getClass());
         return Result.SUCCESS();
     }
 

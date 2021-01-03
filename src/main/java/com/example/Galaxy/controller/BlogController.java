@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Blog;
 import com.example.Galaxy.service.BlogService;
-import com.example.Galaxy.service.RedisService;
+import com.example.Galaxy.service.RedisCacheService;
 import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
@@ -28,7 +28,7 @@ public class BlogController {
     private UserService userService;
 
     @Autowired
-    private RedisService redisService;
+    private RedisCacheService redisCacheService;
 
     /**
      * showdoc
@@ -68,7 +68,7 @@ public class BlogController {
                                      HttpServletRequest httpServletRequest) throws RuntimeException {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
-        return blogService.selectBlogByUserId(userId.intValue(), pageNum, pageSize);
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectBlogByUserId(userId.intValue(), pageNum, pageSize));
     }
 
     @ResponseBody
@@ -113,10 +113,10 @@ public class BlogController {
         blog.setUpdateTime(new Date());
         blog.setBlogViews(0L);
         if (blogService.insertSelective(blog) != 0) {
-            redisService.deleteCacheByClass(blogService.getClass());
+            redisCacheService.deleteCacheByClass(blogService.getClass());
             return Result.SUCCESS();
         }
-        redisService.deleteCacheByClass(blogService.getClass());
+        redisCacheService.deleteCacheByClass(blogService.getClass());
         return new Result(CodeEnums.EXCEPTION.getCode(), CodeEnums.EXCEPTION.getMessage());
     }
 
@@ -141,7 +141,7 @@ public class BlogController {
         Blog blog = blogService.selectBlogByBlogId(params.getLong("blogId"));
         blog.setBlogViews(blog.getBlogViews() + 1);
         blogService.updateBlogSelective(blog);
-        redisService.deleteCacheByClass(blogService.getClass());
+        redisCacheService.deleteCacheByClass(blogService.getClass());
         return Result.SUCCESS();
     }
 
@@ -169,7 +169,7 @@ public class BlogController {
         blog.setBlogLikeAccount(blogLikeAccount + 1);
         blog.setBlogId(blogId);
         blogService.updateBlogSelective(blog);
-        redisService.deleteCacheByClass(blogService.getClass());
+        redisCacheService.deleteCacheByClass(blogService.getClass());
         return Result.SUCCESS();
     }
 

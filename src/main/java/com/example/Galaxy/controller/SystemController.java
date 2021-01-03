@@ -39,8 +39,10 @@ public class SystemController {
 
     @ResponseBody
     @RequiresRoles(value = {"admin"})
-    @RequestMapping(value = "/role", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/myRole", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object test(HttpServletRequest httpServletRequest) {
-        return systemService.selectRoleByUserId(1L);
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        Long userId = JWTUtil.getUserId(token);
+        return systemService.selectRoleByUserId(userId);
     }
 }

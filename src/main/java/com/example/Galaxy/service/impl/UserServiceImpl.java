@@ -2,6 +2,7 @@ package com.example.Galaxy.service.impl;
 
 import com.example.Galaxy.dao.UserMapper;
 import com.example.Galaxy.entity.User;
+import com.example.Galaxy.service.RedisCacheService;
 import com.example.Galaxy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,8 +14,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private RedisCacheService redisCacheService;
+
     @Override
     public int updateSelective(User user) {
+        redisCacheService.deleteCacheByClass(this.getClass());
         return userMapper.updateSelective(user);
     }
 
@@ -28,30 +33,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User selectByAccount(String account) {
-        User user = (User) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectByAccount");
+        User user = (User) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectByAccount:" + account);
         if (user == null) {
             user = userMapper.selectByAccount(account);
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectByAccount", user);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectByAccount:" + account, user);
         }
         return user;
     }
 
     @Override
-    public User selectByUserId(String userId) {
-        User user = (User) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectByUserId");
+    public User selectByUserId(Long userId) {
+        User user = (User) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectByUserId:" + userId);
         if (user == null) {
             user = userMapper.selectById(userId);
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectByUserId", user);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectByUserId:" + userId, user);
         }
         return user;
     }
 
     @Override
     public User selectByAccountAndPasswd(String account, String passWd) {
-        User user = (User) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectByAccountAndPasswd");
+        User user = (User) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectByAccountAndPasswd:" + account);
         if (user == null) {
             user = userMapper.login(account, passWd);
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectByAccountAndPasswd", user);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectByAccountAndPasswd:" + account, user);
         }
         return user;
     }

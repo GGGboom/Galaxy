@@ -21,15 +21,19 @@ public enum CodeEnums {
 
     ERROR_PASSWORD(2, "用户名或密码错误"),
 
-    ERROR_VERIFY_CODE(4, "手机验证码错误"),
-
-    EMPTY_TOKEN(4, "token为空"),
-
     NO_USER(3, "用户不存在，请重新登录"),
+
+    ERROR_VERIFY_CODE(4, "手机验证码错误"),
 
     ERROR_PASSWORD_AUTH(5, "密码错误"),
 
     ERROR_SEND_VERIFY_CODE(6, "手机验证码发送失败"),
+
+    ERROR_SIGN_TOKEN(7, "token生成失败"),
+
+    ERROR_TOKEN_EXPIRED(8, "token过期"),
+
+    ERROR_TOKEN_INVALID(9,"token解析异常"),
 
     PARAM_ERROR(11,"非法参数"),
 

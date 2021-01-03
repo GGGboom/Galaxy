@@ -52,7 +52,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             try {
                 executeLogin(request, response);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
                 throw new GalaxyException(CodeEnums.AUTHORITY_ERROR.getCode(),CodeEnums.AUTHORITY_ERROR.getMessage());
             }
         }

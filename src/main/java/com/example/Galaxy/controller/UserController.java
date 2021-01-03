@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.User;
+import com.example.Galaxy.service.RedisCacheService;
+import com.example.Galaxy.service.SystemService;
 import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.FileUtil;
 import com.example.Galaxy.util.JWTUtil;
@@ -12,12 +14,15 @@ import com.example.Galaxy.exception.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
@@ -29,13 +34,19 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SystemService systemService;
+
+    @Autowired
+    private RedisCacheService redisCacheService;
+
 
     /**
      * showdoc
      *
-     * @param name    必选 String 名字
-     * @param account 必选 String 账户
-     * @param passwd  必选 String  密码
+     * @param name     必选 String 名字
+     * @param account  必选 String 账户
+     * @param password 必选 String  密码
      * @return {"code":0,message:"",data:{}}
      * @catalog 用户
      * @title
@@ -48,14 +59,14 @@ public class UserController {
     public Object addUser(@RequestBody JSONObject param) {
         String name = param.getString("name");
         String account = param.getString("account");
-        String passwd = param.getString("passwd");
-        if (name == null || account == null || passwd == null) {
+        String password = param.getString("password");
+        if (name == null || account == null || password == null) {
             return new Result(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
         }
         User user = new User();
         user.setName(name);
         user.setAccount(account);
-        user.setPasswd(passwd);
+        user.setPasswd(password);
         if (userService.insertSelective(user) != 1) {
             return new Result(CodeEnums.EXCEPTION.getCode(), CodeEnums.EXCEPTION.getMessage());
         }
@@ -66,8 +77,8 @@ public class UserController {
     /**
      * showdoc
      *
-     * @param account 必选 String 账号
-     * @param passwd  必选 String  密码
+     * @param account  必选 String 账号
+     * @param password 必选 String  密码
      * @return {"code":0,message:"",data:{}}
      * @catalog 用户
      * @title
@@ -80,19 +91,28 @@ public class UserController {
     public Object login(@RequestBody JSONObject param) {
         logger.info("用户登录");
         String account = param.getString("account");
-        String passWd = param.getString("passwd");
-        if (account == null || passWd == null) {
+        String password = param.getString("password");
+        if (account == null || password == null) {
             throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
         }
-        User user = userService.selectByAccountAndPasswd(account, passWd);
+        User user = userService.selectByAccountAndPasswd(account, password);
         if (user == null) {
             return new Result(CodeEnums.ERROR_PASSWORD.getCode(), CodeEnums.ERROR_PASSWORD.getMessage());
         } else {
-            String sign = JWTUtil.sign(user.getAccount(), user.getPasswd(), user.getUserId());
+            String token = JWTUtil.sign(user.getAccount(), user.getPasswd(), user.getUserId());
             JSONObject data = (JSONObject) JSON.toJSON(user);
-            data.put("token", sign);
+            data.put("token", token);
+            redisCacheService.putTokenCache(token);
             return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/logout", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Object doLogout(HttpServletRequest httpServletRequest) {
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        redisCacheService.deleteTokenCacheByToken(token);
+        return Result.SUCCESS();
     }
 
     /**
@@ -119,7 +139,6 @@ public class UserController {
             userService.updateSelective(user);
             return Result.SUCCESS();
         } catch (IOException e) {
-            e.printStackTrace();
             return new Result(CodeEnums.UPLOAD_ERROR.getCode(), CodeEnums.UPLOAD_ERROR.getMessage());
         }
     }
@@ -127,10 +146,10 @@ public class UserController {
     /**
      * showdoc
      *
-     * @param name      必选 String  账号
-     * @param passwd    必选 String  密码
-     * @param cellphone 必选 String  手机号码
+     * @param name      必选 String  名字
      * @param email     必选 String  邮箱
+     * @param password  可选 String  密码
+     * @param cellphone 可选 String  手机号码
      * @return {"code":0,message:"",data:{}}
      * @catalog 用户
      * @title
@@ -144,15 +163,15 @@ public class UserController {
         Long userId = JWTUtil.getUserId(httpServletRequest.getHeader("Authorization"));
         User user = new User();
         String name = params.getString("name");
-        String passwd = params.getString("passwd");
+        String password = params.getString("password");
         String cellphone = params.getString("cellphone");
         String email = params.getString("email");
-        if (name == null || passwd == null || cellphone == null || email == null) {
+        if (name == null || email == null) {
             throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
         }
         user.setUserId(userId);
         user.setName(name);
-        user.setPasswd(passwd);
+        user.setPasswd(password);
         user.setCellphone(cellphone);
         user.setEmail(email);
         userService.updateSelective(user);
@@ -172,7 +191,15 @@ public class UserController {
     @ResponseBody
     @RequestMapping(value = "/info", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getUserInfo(HttpServletRequest httpServletRequest) {
-        String userId = String.valueOf(JWTUtil.getUserId(httpServletRequest.getHeader("Authorization")));
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), userService.selectByUserId(userId));
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        Long userId = JWTUtil.getUserId(token);
+        JSONObject data = new JSONObject();
+        List<String> roles = new ArrayList<>();
+        systemService.selectRoleByUserId(userId).forEach(item -> {
+            roles.add(item.getRoleName());
+        });
+        data.put("roles", roles);
+        data.put("user", userService.selectByUserId(userId));
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
     }
 }

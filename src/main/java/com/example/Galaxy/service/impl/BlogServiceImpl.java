@@ -20,22 +20,22 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public PageInfo<Blog> selectAll(Integer pageNum, Integer pageSize) {
-        PageInfo<Blog>pageInfo = (PageInfo<Blog>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selectAll");
-        if (pageInfo==null){
+        PageInfo<Blog> pageInfo = (PageInfo<Blog>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectAll:" + pageNum + pageSize.toString());
+        if (pageInfo == null) {
             PageHelper.startPage(pageNum, pageSize);
             pageInfo = new PageInfo(blogMapper.selectAll());
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selectAll",pageInfo);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectAll:" + pageNum + pageSize, pageInfo);
         }
         return pageInfo;
     }
 
     @Override
     public PageInfo<Blog> selectBlogByUserId(Integer userId, Integer pageNum, Integer pageSize) {
-        PageInfo<Blog>pageInfo = (PageInfo<Blog>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selectBlogByUserId");
-        if (pageInfo==null){
+        PageInfo<Blog> pageInfo = (PageInfo<Blog>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectBlogByUserId:" + userId + pageNum + pageSize.toString());
+        if (pageInfo == null) {
             PageHelper.startPage(pageNum, pageSize);
             pageInfo = new PageInfo(blogMapper.selectByUserId(userId));
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selectBlogByUserId",pageInfo);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectBlogByUserId:" + userId + pageNum + pageSize, pageInfo);
         }
         return pageInfo;
     }
@@ -51,12 +51,11 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    @Cacheable(cacheNames = "BlogCache", key = "#blogId")
     public Blog selectBlogByBlogId(Long blogId) {
-        Blog blog = (Blog) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectBlogByBlogId");
+        Blog blog = (Blog) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectBlogByBlogId:" + blogId);
         if (blog == null) {
             blog = blogMapper.getBlogByBlogId(blogId);
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectBlogByBlogId", blog);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName() + blogId, "selectBlogByBlogId:", blog);
         }
         return blog;
     }

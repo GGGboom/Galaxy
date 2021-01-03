@@ -2,6 +2,8 @@ package com.example.Galaxy.security;
 
 import com.example.Galaxy.entity.SysRole;
 import com.example.Galaxy.entity.User;
+import com.example.Galaxy.exception.CodeEnums;
+import com.example.Galaxy.exception.GalaxyException;
 import com.example.Galaxy.service.SystemService;
 import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.JWTUtil;
@@ -13,18 +15,24 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 
 import java.util.List;
 
 //@Service
 public class GalaxyRealm extends AuthorizingRealm {
-    
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     private SystemService systemService;
 
     private UserService userService;
-//    @Autowired
-    public void setUserService(SystemService systemService,UserService userService) {
+
+    //    @Autowired
+    public void setUserService(SystemService systemService, UserService userService) {
         this.systemService = systemService;
         this.userService = userService;
     }
@@ -47,7 +55,7 @@ public class GalaxyRealm extends AuthorizingRealm {
         User user = userService.selectByAccount(account);
         List<SysRole> sysRoles = systemService.selectRoleByUserId(user.getUserId());
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-        sysRoles.forEach(item->{
+        sysRoles.forEach(item -> {
             simpleAuthorizationInfo.addRole(item.getRoleName());
         });
         return simpleAuthorizationInfo;
@@ -62,18 +70,22 @@ public class GalaxyRealm extends AuthorizingRealm {
         // 解密获得username，用于和数据库进行对比
         String account = JWTUtil.getAccount(token);
         if (account == null) {
-            throw new AuthenticationException("token invalid");
+            throw new GalaxyException(CodeEnums.ERROR_TOKEN_INVALID.getCode(), CodeEnums.ERROR_TOKEN_INVALID.getMessage());
         }
 
         User user = userService.selectByAccount(account);
         if (user == null) {
-            throw new AuthenticationException("User didn't existed!");
+            throw new GalaxyException(CodeEnums.NO_USER.getCode(), CodeEnums.NO_USER.getMessage());
         }
 
-        if (! JWTUtil.verify(token, account, user.getPasswd())) {
-            throw new AuthenticationException("Username or password error");
+        if (!JWTUtil.verify(token, account, user.getPasswd())) {
+            throw new GalaxyException(CodeEnums.ERROR_PASSWORD.getCode(), CodeEnums.ERROR_PASSWORD.getMessage());
         }
 
-        return new SimpleAuthenticationInfo(token,token,this.getName());
+        //判断redis是否有缓存，没有缓存则认为已经注销登录
+        if (redisTemplate.opsForHash().get("tokenCache", token) == null) {
+            throw new GalaxyException(CodeEnums.ERROR_TOKEN_EXPIRED.getCode(), CodeEnums.ERROR_TOKEN_EXPIRED.getMessage());
+        }
+        return new SimpleAuthenticationInfo(token, token, this.getName());
     }
 }

@@ -5,7 +5,7 @@ import com.example.Galaxy.entity.User;
 public interface UserService {
     int insertSelective(User user);
 
-    User selectByUserId(String userId);
+    User selectByUserId(Long userId);
 
     User selectByAccount(String account);
 
