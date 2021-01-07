@@ -19,7 +19,7 @@ public interface UserMapper {
 
     User login(@Param("account") String account, @Param("passWd") String passWd);
 
-    User selectAllUserAndRoles(Long userId);
+    List<User> selectAllUserWithRoles();
 
-    User selectUserRoleAndPrivilege(Long userId);
+    User selectUserWithRoleAndPrivilegeByUserId(Long userId);
 }

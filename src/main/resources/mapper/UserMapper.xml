@@ -25,7 +25,7 @@
       #{cellphone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{verifyCode,jdbcType=VARCHAR}
       )
   </insert>
-    <insert id="insertSelective" parameterType="com.example.Galaxy.entity.User">
+    <insert id="insertSelective" parameterType="com.example.Galaxy.entity.User" useGeneratedKeys="true" keyProperty="userId">
         insert into user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -136,42 +136,22 @@
         where user_id = #{userId,jdbcType=BIGINT}
     </update>
 
-    <resultMap id="userRoleListMapSelect" type="com.example.Galaxy.entity.User" extends="BaseResultMap">
-        <collection property="roleList" resultMap="com.example.Galaxy.dao.SysRoleMapper.userRole"/>
+    <resultMap id="userWithRoleListMapSelect" type="com.example.Galaxy.entity.User" extends="BaseResultMap">
+        <collection property="roleList" resultMap="com.example.Galaxy.dao.SysRoleMapper.BaseResultMap"/>
     </resultMap>
-    <select id="selectAllUserAndRoles" resultMap="userRoleListMapSelect">
+    <select id="selectAllUserWithRoles" resultMap="userWithRoleListMapSelect">
         select
-          u.user_id,
-          u.name,
-          u.head_img_path,
-          u.account,
-          u.passwd,
-          u.identity_type,
-          u.cellphone,
-          u.email,
-          u.verify_code,
-          r.id,
-          r.role_name,
-          r.enabled,
-          r.create_by,
-          r.create_time,
-          r.update_time,
-          p.id,
-          p.privilege_name,
-          p.privilege_url
+          *
         from user u
         inner join sys_user_role ur on ur.user_id = u.user_id
         inner join sys_role r on r.id = ur.role_id
-        inner join sys_role_privilege rp on rp.role_id = r.id
-        inner join sys_privilege p on p.id = rp.privilege_id
-        where  u.user_id = #{userId,jdbcType=BIGINT}
     </select>
-    <resultMap id="userRoleAndPrivilegeSelectMap" type="com.example.Galaxy.entity.User">
+    <resultMap id="userWithRoleAndPrivilegeSelectMap" type="com.example.Galaxy.entity.User">
         <collection property="roleList"
                     column="{userId = user_id}"
                     select="com.example.Galaxy.dao.SysRoleMapper.selectRoleAndPrivilegeByUserId"/>
     </resultMap>
-    <select id="selectUserRoleAndPrivilege" resultMap="userRoleAndPrivilegeSelectMap">
+    <select id="selectUserWithRoleAndPrivilegeByUserId" resultMap="userWithRoleAndPrivilegeSelectMap">
         select
         <include refid="Base_Column_List"/>
         from user

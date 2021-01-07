@@ -54,7 +54,6 @@ public class RedisCacheServiceImp implements RedisCacheService {
         Set keys = redisTemplate.opsForHash().keys(className);
         try {
             for (Object item : keys) {
-                System.out.println("delete:" + item);
                 redisTemplate.opsForHash().delete(className, item);
             }
         } catch (Exception e) {

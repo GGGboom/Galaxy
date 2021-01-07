@@ -15,4 +15,6 @@ public interface CommentsMapper {
     int updateSelective(Comments comments);
 
     Long getUnread(Long userId);
+
+    Long selectCommentSumByBlogId(Long blogId);
 }

@@ -1,50 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.Galaxy.dao.SysPrivilegeMapper">
-  <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.SysPrivilege">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="privilege_name" jdbcType="VARCHAR" property="privilegeName" />
-    <result column="privilege_url" jdbcType="VARCHAR" property="privilegeUrl" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.SysPrivilege">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="privilege_name" jdbcType="VARCHAR" property="privilegeName"/>
+        <result column="privilege_url" jdbcType="VARCHAR" property="privilegeUrl"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, privilege_name, privilege_url
   </sql>
-  <insert id="insert" parameterType="com.example.Galaxy.entity.SysPrivilege">
+    <insert id="insert" parameterType="com.example.Galaxy.entity.SysPrivilege">
     insert into sys_privilege (id, privilege_name, privilege_url
       )
     values (#{id,jdbcType=BIGINT}, #{privilegeName,jdbcType=VARCHAR}, #{privilegeUrl,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.example.Galaxy.entity.SysPrivilege">
-    insert into sys_privilege
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="privilegeName != null">
-        privilege_name,
-      </if>
-      <if test="privilegeUrl != null">
-        privilege_url,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="privilegeName != null">
-        #{privilegeName,jdbcType=VARCHAR},
-      </if>
-      <if test="privilegeUrl != null">
-        #{privilegeUrl,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <select id="selectPrivilegeByRoleId" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List"/>
-    from sys_privilege p
-    inner join sys_role_privilege rp on rp.privilege_id = p.id
-    where rp.role_id = #{roleId,jdbcType=BIGINT}
-  </select>
+    <insert id="insertSelective" parameterType="com.example.Galaxy.entity.SysPrivilege">
+        insert into sys_privilege
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="privilegeName != null">
+                privilege_name,
+            </if>
+            <if test="privilegeUrl != null">
+                privilege_url,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="privilegeName != null">
+                #{privilegeName,jdbcType=VARCHAR},
+            </if>
+            <if test="privilegeUrl != null">
+                #{privilegeUrl,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="selectPrivilegeByRoleId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_privilege p
+        inner join sys_role_privilege rp on rp.privilege_id = p.id
+        where rp.role_id = #{roleId,jdbcType=BIGINT}
+    </select>
 </mapper>

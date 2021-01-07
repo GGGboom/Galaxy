@@ -51,6 +51,8 @@ public enum CodeEnums {
 
     UPLOAD_ERROR(26, "文件上传异常"),
 
+    PASSWROD_CRYPT_ERROR(27, "密码加密错误"),
+
     EMAIL_ERROR(31, "邮件发送异常"),
 
     AUTHORITY_ERROR(41,"无权限"),

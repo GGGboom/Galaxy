@@ -57,6 +57,10 @@ public class ShiroConfig {
         filterRuleMap.put("/user/login", "anon");
         filterRuleMap.put("/user/register", "anon");
         filterRuleMap.put("/blog/**", "anon");
+//        //放行以下页面，来保证swagger页面的正常访问：
+//        filterRuleMap.put("/swagger*/**","anon");
+//        filterRuleMap.put("/v2/**","anon");
+//        filterRuleMap.put("/webjars/**","anon");
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);
         return factoryBean;
     }

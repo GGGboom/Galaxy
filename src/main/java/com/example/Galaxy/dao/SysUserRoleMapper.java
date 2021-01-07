@@ -10,4 +10,5 @@ public interface SysUserRoleMapper {
 
     int insertSelective(SysUserRole record);
 
+    int updateRoleIdByUserId(SysUserRole sysUserRole);
 }

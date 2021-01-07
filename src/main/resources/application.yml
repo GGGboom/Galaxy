@@ -30,6 +30,6 @@ mybatis:
 #MyBatis sql日志输出
 logging:
   level:
-    com.example.Galaxy: info
+    com.example.Galaxy: trace
 
 

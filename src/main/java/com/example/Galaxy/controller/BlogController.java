@@ -46,6 +46,8 @@ public class BlogController {
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectAll(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
+        System.out.println("pageNum:"+pageNum);
+        System.out.println("pageSize:"+pageSize);
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectAll(pageNum, pageSize));
     }
 
@@ -71,9 +73,10 @@ public class BlogController {
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectBlogByUserId(userId.intValue(), pageNum, pageSize));
     }
 
+    @RequiresUser
     @ResponseBody
-    @RequestMapping(value = "/{blogId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public Object selectBlogByBlogId(@PathVariable("blogId") Long blogId) {
+    @RequestMapping(value = "/getBlog", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public Object selectBlogByBlogId(@RequestParam("blogId") Long blogId) {
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectBlogByBlogId(blogId));
     }
 
@@ -120,6 +123,44 @@ public class BlogController {
         return new Result(CodeEnums.EXCEPTION.getCode(), CodeEnums.EXCEPTION.getMessage());
     }
 
+    @ResponseBody
+    @RequiresRoles("admin")
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Object updateBlog(@RequestBody JSONObject params) {
+        Long blogId = params.getLong("blogId");
+        String userAvatar = params.getString("userAvatar");
+        String blogTitle = params.getString("blogTitle");
+        String blogContent = params.getString("blogContent");
+        if (blogTitle == null || blogContent == null || blogId == null) {
+            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+        }
+        Blog blog = blogService.selectBlogByBlogId(blogId);
+        blog.setBlogTitle(blogTitle);
+        blog.setBlogContent(blogContent);
+        if (userAvatar != null) {
+            blog.setUserAvatar(userAvatar);
+        }
+        blogService.updateBlogSelective(blog);
+        redisCacheService.deleteCacheByClass(blogService.getClass());
+        return Result.SUCCESS();
+    }
+
+
+    @ResponseBody
+    @RequiresRoles("admin")
+    @RequestMapping(value = "/delete", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public Object deleteBlog(@RequestParam(name = "blogId", required = true) Long blogId, HttpServletRequest httpServletRequest) {
+//        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+//        Long userId = JWTUtil.getUserId(token);
+        if (blogId == null) {
+            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+        }
+        Blog blog = new Blog();
+        blog.setBlogId(blogId);
+        blog.setIsDeleted(true);
+        blogService.updateBlogSelective(blog);
+        return Result.SUCCESS();
+    }
 
     /**
      * showdoc

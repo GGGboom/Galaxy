@@ -9,6 +9,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -25,6 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int insertSelective(User user) {
+        redisCacheService.deleteCacheByClass(this.getClass());
         return userMapper.insertSelective(user);
     }
 

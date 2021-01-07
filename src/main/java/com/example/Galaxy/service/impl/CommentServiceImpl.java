@@ -29,16 +29,21 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public Long selectCommentSumByBlogId(Long blogId) {
+        return commentsMapper.selectCommentSumByBlogId(blogId);
+    }
+
+    @Override
     public int insertSelective(Comments comments) {
         return commentsMapper.insertSelective(comments);
     }
 
     @Override
     public List<Comments> selectAll(Long parentId, Long blogId) {
-        List<Comments>list = (List<Comments>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selectAll");
-        if(list==null){
-            list = commentsMapper.getAllByParent(parentId,blogId);
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selectAll",list);
+        List<Comments> list = (List<Comments>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(), "selectAll");
+        if (list == null) {
+            list = commentsMapper.getAllByParent(parentId, blogId);
+            redisTemplate.opsForHash().put(this.getClass().getSimpleName(), "selectAll", list);
         }
         return list;
     }

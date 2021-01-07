@@ -12,4 +12,6 @@ public interface CommentService {
     int updateSelective(Comments comments);
 
     Long selectUnread(Long userId);
+
+    Long selectCommentSumByBlogId(Long blogId);
 }

@@ -107,6 +107,7 @@
         select
         <include refid="Blob_Column_List"/>
         from blog
+        where is_deleted!=1
     </select>
     <select id="selectByUserId" resultMap="BaseResultMap">
         select

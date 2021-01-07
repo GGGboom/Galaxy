@@ -10,7 +10,9 @@ public interface SysRoleMapper {
 
     int insertSelective(SysRole record);
 
-    List<SysRole>selectRoleAndPrivilegeByUserId(Long userId);
+    List<SysRole> selectRoleWithPrivilegeByUserId(Long userId);
 
-    List<SysRole>selectRolesByUserId(Long userId);
+    List<SysRole> selectRolesByUserId(Long userId);
+
+    List<SysRole> selectAllRoleWIthPrivilege();
 }

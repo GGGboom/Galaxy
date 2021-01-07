@@ -177,4 +177,11 @@ public class CommentController {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), commentService.selectUnread(JWTUtil.getUserId(token)));
     }
+
+    @ResponseBody
+    @RequiresUser
+    @RequestMapping(value = "/getCommentSum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public Object commentSum(@RequestParam(name = "blogId", required = false, defaultValue = "-1") Long blogId) {
+        return Result.SUCCESS(commentService.selectCommentSumByBlogId(blogId));
+    }
 }

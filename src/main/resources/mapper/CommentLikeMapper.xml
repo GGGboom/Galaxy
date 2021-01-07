@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.Galaxy.dao.CommentLikeMapper">
-  <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.CommentLike">
-    <result column="id" jdbcType="BIGINT" property="id" />
-    <result column="comment_id" jdbcType="BIGINT" property="commentId" />
-    <result column="create_by" jdbcType="BIGINT" property="createBy" />
-    <result column="like_user_id" jdbcType="BIGINT" property="likeUserId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
-    <result column="is_read" jdbcType="BIT" property="isRead" />
-  </resultMap>
-  <insert id="insert" parameterType="com.example.Galaxy.entity.CommentLike">
+    <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.CommentLike">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="comment_id" jdbcType="BIGINT" property="commentId"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="like_user_id" jdbcType="BIGINT" property="likeUserId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+        <result column="is_read" jdbcType="BIT" property="isRead"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.example.Galaxy.entity.CommentLike">
     insert into comment_like (id, comment_id, create_by, 
       like_user_id, create_time, update_time, 
       is_deleted, is_read)
@@ -19,91 +19,91 @@
       #{likeUserId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
       #{isDeleted,jdbcType=BIT}, #{isRead,jdbcType=BIT})
   </insert>
-  <insert id="insertSelective" parameterType="com.example.Galaxy.entity.CommentLike">
-    insert into comment_like
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="commentId != null">
-        comment_id,
-      </if>
-      <if test="createBy != null">
-        create_by,
-      </if>
-      <if test="likeUserId != null">
-        like_user_id,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="isDeleted != null">
-        is_deleted,
-      </if>
-      <if test="isRead != null">
-        is_read,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="commentId != null">
-        #{commentId,jdbcType=BIGINT},
-      </if>
-      <if test="createBy != null">
-        #{createBy,jdbcType=BIGINT},
-      </if>
-      <if test="likeUserId != null">
-        #{likeUserId,jdbcType=BIGINT},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isDeleted != null">
-        #{isDeleted,jdbcType=BIT},
-      </if>
-      <if test="isRead != null">
-        #{isRead,jdbcType=BIT},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateSelective" parameterType="com.example.Galaxy.entity.CommentLike">
-    update comment_like
-    <set>
-      <if test="commentId!=null">
-        comment_id=#{commentId,jdbcType=BIGINT},
-      </if>
-      <if test="createBy!=null">
-        create_by=#{createBy,jdbcType=BIGINT},
-      </if>
-      <if test="likeUserId!=null">
-        like_user_id=#{likeUserId,jdbcType=BIGINT},
-      </if>
-      <if test="createTime!=null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime!=null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isDeleted!=null">
-        is_deleted = #{isDeleted,jdbcType=BIT},
-      </if>
-      <if test="isRead!=null">
-        is_read = #{isRead,jdbcType=BIT},
-      </if>
-      comment_id  = #{commentId,jdbcType=BIGINT}
-    </set>
-    where comment_id  = #{commentId,jdbcType=BIGINT} and create_by  = #{createBy,jdbcType=BIGINT}
-    and like_user_id  = #{likeUserId,jdbcType=BIGINT}
-  </update>
-  <select id="selectByCommentIdAndCreateByAndLikeUserId" resultMap="BaseResultMap">
+    <insert id="insertSelective" parameterType="com.example.Galaxy.entity.CommentLike">
+        insert into comment_like
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="commentId != null">
+                comment_id,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="likeUserId != null">
+                like_user_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="isRead != null">
+                is_read,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="commentId != null">
+                #{commentId,jdbcType=BIGINT},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="likeUserId != null">
+                #{likeUserId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=BIT},
+            </if>
+            <if test="isRead != null">
+                #{isRead,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateSelective" parameterType="com.example.Galaxy.entity.CommentLike">
+        update comment_like
+        <set>
+            <if test="commentId!=null">
+                comment_id=#{commentId,jdbcType=BIGINT},
+            </if>
+            <if test="createBy!=null">
+                create_by=#{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="likeUserId!=null">
+                like_user_id=#{likeUserId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime!=null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime!=null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted!=null">
+                is_deleted = #{isDeleted,jdbcType=BIT},
+            </if>
+            <if test="isRead!=null">
+                is_read = #{isRead,jdbcType=BIT},
+            </if>
+            comment_id = #{commentId,jdbcType=BIGINT}
+        </set>
+        where comment_id = #{commentId,jdbcType=BIGINT} and create_by = #{createBy,jdbcType=BIGINT}
+        and like_user_id = #{likeUserId,jdbcType=BIGINT}
+    </update>
+    <select id="selectByCommentIdAndCreateByAndLikeUserId" resultMap="BaseResultMap">
     select *
     from comment_like
     where comment_id  = #{commentId,jdbcType=BIGINT} and create_by  = #{createBy,jdbcType=BIGINT}

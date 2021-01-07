@@ -29,9 +29,9 @@ public class BasicConfig implements WebMvcConfigurer {
                 .allowedHeaders("*");
     }
 
-    @Bean(name = "exceptionResolver")
-    public OverallExceptionResolver exceptionResolver() {
-        OverallExceptionResolver resolver = new OverallExceptionResolver();
-        return resolver;
-    }
+//    @Bean(name = "exceptionResolver")
+//    public OverallExceptionResolver exceptionResolver() {
+//        OverallExceptionResolver resolver = new OverallExceptionResolver();
+//        return resolver;
+//    }
 }

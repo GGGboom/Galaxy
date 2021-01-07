@@ -2,6 +2,8 @@ package com.example.Galaxy.service;
 
 import com.example.Galaxy.entity.User;
 
+import java.util.List;
+
 public interface UserService {
     int insertSelective(User user);
 

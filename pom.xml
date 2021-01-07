@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>Galaxy</artifactId>
-	<version>alpha</version>
+	<version>alpha-1.0.0</version>
 	<name>Galaxy</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -23,6 +23,8 @@
 		<java-jwt.version>3.7.0</java-jwt.version>
 		<shiro-spring.version>1.5.2</shiro-spring.version>
 		<log4j.version>1.2.17</log4j.version>
+		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
+		<springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
 	</properties>
 
 	<dependencies>
@@ -100,6 +102,20 @@
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 		<!--Redis-->
+
+		<!--swagger-->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${springfox-swagger2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${springfox-swagger-ui.version}</version>
+		</dependency>
+		<!--swagger-->
+
 	</dependencies>
 
 	<build>

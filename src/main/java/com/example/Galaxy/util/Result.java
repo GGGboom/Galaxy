@@ -6,31 +6,36 @@ public class Result {
     private int code;
     private String message;
     private Object data;
-    private final String []map = {"成功","失败"};
+    private final String[] map = {"成功", "失败"};
 
-    public Result(){}
-
-    public static Object SUCCESS(){
-        return new Result(CodeEnums.SUCCESS.getCode(),CodeEnums.SUCCESS.getMessage());
+    public Result() {
     }
 
-    public Result(CodeEnums codeEnums){
+    public static Object SUCCESS() {
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage());
+    }
+
+    public static Object SUCCESS(Object data) {
+        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
+    }
+
+    public Result(CodeEnums codeEnums) {
         this.code = codeEnums.getCode();
         this.message = codeEnums.getMessage();
     }
 
-    public Result(int code, String message){
+    public Result(int code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public Result(int code,String message,Object data){
+    public Result(int code, String message, Object data) {
         this.code = code;
         this.message = message;
         this.data = data;
     }
 
-    public Result(Object data){
+    public Result(Object data) {
         this.setCode(CodeEnums.SUCCESS.getCode());
         this.setMessage(CodeEnums.SUCCESS.getMessage());
         this.setData(data);
