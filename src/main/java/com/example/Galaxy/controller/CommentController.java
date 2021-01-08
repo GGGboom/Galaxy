@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.CommentLike;
 import com.example.Galaxy.entity.Comments;
-import com.example.Galaxy.service.CommentLikeService;
 import com.example.Galaxy.service.CommentService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
@@ -23,9 +22,6 @@ import java.util.Date;
 public class CommentController {
     @Autowired
     private CommentService commentService;
-
-    @Autowired
-    private CommentLikeService commentLikeService;
 
     /**
      * showdoc
@@ -113,10 +109,10 @@ public class CommentController {
         commentLike.setCreateBy(commentUserId);
         commentLike.setCommentId(commentId);
         commentLike.setLikeUserId(userId);
-        if (commentLikeService.getCommentLike(commentLike) == null){//不存在则插入新数据
-            commentLikeService.insertSelective(commentLike);
+        if (commentService.getCommentLike(commentLike) == null){//不存在则插入新数据
+            commentService.insertSelective(commentLike);
         }else
-            commentLikeService.updateSelective(commentLike);
+            commentService.updateSelective(commentLike);
         return Result.SUCCESS();
     }
 
@@ -154,7 +150,7 @@ public class CommentController {
         commentLike.setLikeUserId(userId);
         commentLike.setUpdateTime(new Date());
         commentLike.setIsDeleted(true);
-        commentLikeService.updateSelective(commentLike);
+        commentService.updateSelective(commentLike);
         return Result.SUCCESS();
     }
 

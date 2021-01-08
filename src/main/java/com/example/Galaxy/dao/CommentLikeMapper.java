@@ -7,7 +7,7 @@ public interface CommentLikeMapper {
 
     int insertSelective(CommentLike record);
 
-    int updateSelective(CommentLike commentLike);
+    int updateByPrimaryKeySelective(CommentLike commentLike);
 
     CommentLike selectByCommentIdAndCreateByAndLikeUserId(CommentLike commentLike);
 }

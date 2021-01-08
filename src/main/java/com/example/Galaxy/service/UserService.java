@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserService {
     int insertSelective(User user);
 
-    User selectByUserId(Long userId);
+    User selectByPrimaryKey(Long userId);
 
     User selectByAccount(String account);
 

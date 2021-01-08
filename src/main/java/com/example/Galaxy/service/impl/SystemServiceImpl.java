@@ -8,10 +8,8 @@ import com.example.Galaxy.entity.SysPrivilege;
 import com.example.Galaxy.entity.SysRole;
 import com.example.Galaxy.entity.SysUserRole;
 import com.example.Galaxy.entity.User;
-import com.example.Galaxy.service.RedisCacheService;
 import com.example.Galaxy.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,20 +28,9 @@ public class SystemServiceImpl implements SystemService {
     @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
 
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
-
-    @Autowired
-    private RedisCacheService redisCacheService;
-
     @Override
     public List<SysPrivilege> selectPrivilegeByRoleId(Long roleId) {
-        List<SysPrivilege>list = (List<SysPrivilege>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selectPrivilege");
-        if(list==null){
-            list = sysPrivilegeMapper.selectPrivilegeByRoleId(roleId);
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selectPrivilege",list);
-        }
-        return list;
+        return sysPrivilegeMapper.selectPrivilegeByRoleId(roleId);
     }
 
     @Override
@@ -53,13 +40,11 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public int updateRoleIdByUserId(SysUserRole sysUserRole) {
-        redisCacheService.deleteCacheByClass(this.getClass());
         return sysUserRoleMapper.updateRoleIdByUserId(sysUserRole);
     }
 
     @Override
     public int insertSelective(SysUserRole sysUserRole) {
-        redisCacheService.deleteCacheByClass(this.getClass());
         return sysUserRoleMapper.insertSelective(sysUserRole);
     }
 
@@ -70,21 +55,11 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public List<SysRole> selectRoleByUserId(Long userId) {
-        List<SysRole> list = (List<SysRole>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selcetRole");
-        if (list==null){
-            list = sysRoleMapper.selectRoleWithPrivilegeByUserId(userId);
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selcetRole",list);
-        }
-        return list;
+        return sysRoleMapper.selectRoleWithPrivilegeByUserId(userId);
     }
 
     @Override
     public User selectRoleAndPrivilegeByUserId(Long userId) {
-        User user = (User)redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selectUserWithRoleAndPrivilegeByUserId");
-        if(user==null){
-            user = userMapper.selectUserWithRoleAndPrivilegeByUserId(userId);
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selectUserWithRoleAndPrivilegeByUserId",user);
-        }
-        return user;
+        return userMapper.selectUserWithRoleAndPrivilegeByPrimaryKey(userId);
     }
 }

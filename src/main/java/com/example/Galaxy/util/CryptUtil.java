@@ -6,7 +6,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 
-public class Crypt {
+public class CryptUtil {
     private static final String Seed = "COCONUT";
 
     private final static String HEX = "0123456789ABCDEF";

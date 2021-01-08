@@ -10,11 +10,11 @@ public interface CommentsMapper {
 
     int insertSelective(Comments record);
 
-    List<Comments>getAllByParent(@Param("parentCommentId")Long parentCommentId,@Param("blogId")Long blogId);
+    List<Comments>selectAllByParentCommentIdAndBlogId(@Param("parentCommentId")Long parentCommentId,@Param("blogId")Long blogId);
 
-    int updateSelective(Comments comments);
+    int updateByPrimaryKeySelective(Comments comments);
 
-    Long getUnread(Long userId);
+    Long selectUnreadSumByUserId(Long userId);
 
     Long selectCommentSumByBlogId(Long blogId);
 }

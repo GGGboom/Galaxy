@@ -86,7 +86,7 @@
             </if>
         </trim>
     </insert>
-    <select id="selectById" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from user
@@ -104,7 +104,7 @@
         from user
         where account = #{account,jdbcType = VARCHAR} and passwd = #{passWd,jdbcType = VARCHAR}
     </select>
-    <update id="updateSelective" parameterType="com.example.Galaxy.entity.User">
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.Galaxy.entity.User">
         update user
         <set>
             <if test="name!=null and name!=''">
@@ -151,7 +151,7 @@
                     column="{userId = user_id}"
                     select="com.example.Galaxy.dao.SysRoleMapper.selectRoleAndPrivilegeByUserId"/>
     </resultMap>
-    <select id="selectUserWithRoleAndPrivilegeByUserId" resultMap="userWithRoleAndPrivilegeSelectMap">
+    <select id="selectUserWithRoleAndPrivilegeByPrimaryKey" resultMap="userWithRoleAndPrivilegeSelectMap">
         select
         <include refid="Base_Column_List"/>
         from user

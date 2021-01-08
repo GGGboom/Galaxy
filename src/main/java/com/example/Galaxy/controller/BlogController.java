@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Blog;
 import com.example.Galaxy.service.BlogService;
-import com.example.Galaxy.service.RedisCacheService;
 import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
@@ -27,8 +26,6 @@ public class BlogController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private RedisCacheService redisCacheService;
 
     /**
      * showdoc
@@ -116,10 +113,8 @@ public class BlogController {
         blog.setUpdateTime(new Date());
         blog.setBlogViews(0L);
         if (blogService.insertSelective(blog) != 0) {
-            redisCacheService.deleteCacheByClass(blogService.getClass());
             return Result.SUCCESS();
         }
-        redisCacheService.deleteCacheByClass(blogService.getClass());
         return new Result(CodeEnums.EXCEPTION.getCode(), CodeEnums.EXCEPTION.getMessage());
     }
 
@@ -141,7 +136,6 @@ public class BlogController {
             blog.setUserAvatar(userAvatar);
         }
         blogService.updateBlogSelective(blog);
-        redisCacheService.deleteCacheByClass(blogService.getClass());
         return Result.SUCCESS();
     }
 
@@ -182,7 +176,6 @@ public class BlogController {
         Blog blog = blogService.selectBlogByBlogId(params.getLong("blogId"));
         blog.setBlogViews(blog.getBlogViews() + 1);
         blogService.updateBlogSelective(blog);
-        redisCacheService.deleteCacheByClass(blogService.getClass());
         return Result.SUCCESS();
     }
 
@@ -210,7 +203,6 @@ public class BlogController {
         blog.setBlogLikeAccount(blogLikeAccount + 1);
         blog.setBlogId(blogId);
         blogService.updateBlogSelective(blog);
-        redisCacheService.deleteCacheByClass(blogService.getClass());
         return Result.SUCCESS();
     }
 

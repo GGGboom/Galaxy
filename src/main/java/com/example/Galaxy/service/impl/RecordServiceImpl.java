@@ -16,22 +16,21 @@ public class RecordServiceImpl implements RecordService {
     @Autowired
     private RecordMapper recordMapper;
 
-    @Autowired
-    private RedisTemplate redisTemplate;
-
     @Override
-    public int insertSelective(Record record) {
-        return recordMapper.insertSelective(record);
+    public PageInfo<Record> selectAll(int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        PageInfo<Record> pageInfo = new PageInfo(recordMapper.selectAll());
+        return pageInfo;
     }
 
     @Override
     public Record selectByUserId(Long userId) {
-        Record record = (Record) redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selectByUserId");
-        if (record==null){
-            record = recordMapper.selectByUserId(userId);
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selectByUserId",record);
-        }
-        return record;
+        return recordMapper.selectByUserId(userId);
+    }
+
+    @Override
+    public int insertSelective(Record record) {
+        return recordMapper.insertSelective(record);
     }
 
     @Override
@@ -46,22 +45,6 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public Record selectByPrimaryKey(Long id) {
-        Record record = (Record) redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selectByPrimaryKey");
-        if(record==null){
-            record = recordMapper.selectByPrimaryKey(id);
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selectByPrimaryKey",record);
-        }
-        return record;
-    }
-
-    @Override
-    public PageInfo<Record> selectAll(int pageNum, int pageSize) {
-        PageInfo<Record> pageInfo = (PageInfo<Record>) redisTemplate.opsForHash().get(this.getClass().getSimpleName(),"selectAll");
-        if (pageInfo==null){
-            PageHelper.startPage(pageNum,pageSize);
-            pageInfo = new PageInfo(recordMapper.selectAll());
-            redisTemplate.opsForHash().put(this.getClass().getSimpleName(),"selectAll",pageInfo);
-        }
-        return pageInfo;
+        return recordMapper.selectByPrimaryKey(id);
     }
 }

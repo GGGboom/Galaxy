@@ -5,10 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.SysUserRole;
 import com.example.Galaxy.entity.User;
-import com.example.Galaxy.service.RedisCacheService;
 import com.example.Galaxy.service.SystemService;
 import com.example.Galaxy.service.UserService;
-import com.example.Galaxy.util.Crypt;
+import com.example.Galaxy.service.impl.RedisService;
+import com.example.Galaxy.util.CryptUtil;
 import com.example.Galaxy.util.FileUtil;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
@@ -16,15 +16,12 @@ import com.example.Galaxy.exception.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +43,7 @@ public class UserController {
     private SystemService systemService;
 
     @Autowired
-    private RedisCacheService redisCacheService;
+    private RedisService redisService;
 
 
     @ApiOperation("用户注册")
@@ -63,7 +60,7 @@ public class UserController {
             return new Result(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
         }
         try {
-            password = Crypt.encrypt(password);
+            password = CryptUtil.encrypt(password);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,7 +94,7 @@ public class UserController {
         String account = param.getString("account");
         String password = param.getString("password");
         try {
-            password = Crypt.encrypt(password);
+            password = CryptUtil.encrypt(password);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,7 +108,7 @@ public class UserController {
             String token = JWTUtil.sign(user.getAccount(), user.getPasswd(), user.getUserId());
             JSONObject data = (JSONObject) JSON.toJSON(user);
             data.put("token", token);
-            redisCacheService.putTokenCache(token);
+            redisService.putTokenCache(token);
             return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
         }
     }
@@ -122,7 +119,7 @@ public class UserController {
     @RequestMapping(value = "/logout", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object doLogout(HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
-        redisCacheService.deleteTokenCacheByToken(token);
+        redisService.deleteTokenCacheByToken(token);
         return Result.SUCCESS();
     }
 
@@ -163,7 +160,7 @@ public class UserController {
         }
         if (password != null) {
             try {
-                password = Crypt.encrypt(password);
+                password = CryptUtil.encrypt(password);
                 System.out.println(password);
             } catch (Exception e) {
                 throw new GalaxyException(CodeEnums.PASSWROD_CRYPT_ERROR.getCode(), CodeEnums.PASSWROD_CRYPT_ERROR.getMessage());
@@ -191,7 +188,7 @@ public class UserController {
             roles.add(item.getRoleName());
         });
         data.put("roles", roles);
-        data.put("user", userService.selectByUserId(userId));
+        data.put("user", userService.selectByPrimaryKey(userId));
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
     }
 }

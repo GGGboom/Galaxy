@@ -74,7 +74,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateSelective" parameterType="com.example.Galaxy.entity.CommentLike">
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.Galaxy.entity.CommentLike">
         update comment_like
         <set>
             <if test="commentId!=null">

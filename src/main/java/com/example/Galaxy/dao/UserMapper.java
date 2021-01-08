@@ -11,9 +11,9 @@ public interface UserMapper {
 
     int insertSelective(User record);
 
-    int updateSelective(User user);
+    int updateByPrimaryKeySelective(User user);
 
-    User selectById(Long userId);
+    User selectByPrimaryKey(Long userId);
 
     User selectByAccount(String account);
 
@@ -21,5 +21,5 @@ public interface UserMapper {
 
     List<User> selectAllUserWithRoles();
 
-    User selectUserWithRoleAndPrivilegeByUserId(Long userId);
+    User selectUserWithRoleAndPrivilegeByPrimaryKey(Long userId);
 }

@@ -5,7 +5,6 @@ import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Record;
 import com.example.Galaxy.exception.CodeEnums;
 import com.example.Galaxy.service.RecordService;
-import com.example.Galaxy.service.RedisCacheService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -23,10 +22,6 @@ public class RecordController {
 
     @Autowired
     private RecordService recordService;
-
-    @Autowired
-    private RedisCacheService redisCacheService;
-
 
     /**
      * showdoc
@@ -72,7 +67,6 @@ public class RecordController {
             record.setCreateTime(createTime);
             recordService.insertSelective(record);
         }
-        redisCacheService.deleteCacheByClass(recordService.getClass());
         return Result.SUCCESS();
     }
 
