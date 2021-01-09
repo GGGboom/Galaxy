@@ -118,4 +118,13 @@ CREATE TABLE `record`(
     PRIMARY KEY(`id`)
 );
 
+CREATE TABLE `tag`(
+    `tag_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT'主键id',
+    `association_id` bigint(20) DEFAULT NULL  COMMENT'与之相关联的id',
+    `tag_name` varchar(64) COMMENT '标签名',
+    `create_time` datetime COMMENT '创建时间',
+    `is_deleted` tinyint(1) DEFAULT'0' COMMENT'是否删除标记',
+    PRIMARY KEY(`tag_id`)
+)
+
 

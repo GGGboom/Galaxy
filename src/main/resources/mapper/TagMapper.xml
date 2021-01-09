@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Galaxy.dao.TagMapper">
+  <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.Tag">
+    <id column="tag_id" jdbcType="BIGINT" property="tagId" />
+    <result column="association_id" jdbcType="BIGINT" property="associationId" />
+    <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    tag_id, association_id, tag_name, create_time, is_deleted
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tag
+    where tag_id = #{tagId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from tag
+    where tag_id = #{tagId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.example.Galaxy.entity.Tag">
+    insert into tag (tag_id, association_id, tag_name, 
+      create_time, is_deleted)
+    values (#{tagId,jdbcType=BIGINT}, #{associationId,jdbcType=BIGINT}, #{tagName,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.Galaxy.entity.Tag">
+    insert into tag
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="tagId != null">
+        tag_id,
+      </if>
+      <if test="associationId != null">
+        association_id,
+      </if>
+      <if test="tagName != null">
+        tag_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="tagId != null">
+        #{tagId,jdbcType=BIGINT},
+      </if>
+      <if test="associationId != null">
+        #{associationId,jdbcType=BIGINT},
+      </if>
+      <if test="tagName != null">
+        #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.Galaxy.entity.Tag">
+    update tag
+    <set>
+      <if test="associationId != null">
+        association_id = #{associationId,jdbcType=BIGINT},
+      </if>
+      <if test="tagName != null">
+        tag_name = #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=BIT},
+      </if>
+    </set>
+    where tag_id = #{tagId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.Galaxy.entity.Tag">
+    update tag
+    set association_id = #{associationId,jdbcType=BIGINT},
+      tag_name = #{tagName,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=BIT}
+    where tag_id = #{tagId,jdbcType=BIGINT}
+  </update>
+</mapper>

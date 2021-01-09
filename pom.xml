@@ -124,35 +124,35 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-<!--			<plugin>-->
-<!--				<groupId>org.mybatis.generator</groupId>-->
-<!--				<artifactId>mybatis-generator-maven-plugin</artifactId>-->
-<!--				<version>1.4.0</version>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>Generate MyBatis Artifacts</id>-->
-<!--						<goals>-->
-<!--							<goal>generate</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--				<configuration>-->
-<!--					&lt;!&ndash; 输出详细信息 &ndash;&gt;-->
-<!--					<verbose>true</verbose>-->
-<!--					&lt;!&ndash; 覆盖生成文件 &ndash;&gt;-->
-<!--					<overwrite>true</overwrite>-->
-<!--					&lt;!&ndash; 定义配置文件 &ndash;&gt;-->
-<!--					<configurationFile>${basedir}/src/main/resources/mybatis-generator.xml</configurationFile>-->
-<!--				</configuration>-->
-<!--				<dependencies>-->
-<!--					<dependency>-->
-<!--						<groupId>mysql</groupId>-->
-<!--						<artifactId>mysql-connector-java</artifactId>-->
-<!--						<scope>runtime</scope>-->
-<!--						<version>8.0.13</version>-->
-<!--					</dependency>-->
-<!--				</dependencies>-->
-<!--			</plugin>-->
+			<plugin>
+				<groupId>org.mybatis.generator</groupId>
+				<artifactId>mybatis-generator-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<executions>
+					<execution>
+						<id>Generate MyBatis Artifacts</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- 输出详细信息 -->
+					<verbose>true</verbose>
+					<!-- 覆盖生成文件 -->
+					<overwrite>true</overwrite>
+					<!-- 定义配置文件 -->
+					<configurationFile>${basedir}/src/main/resources/mybatis-generator.xml</configurationFile>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<scope>runtime</scope>
+						<version>8.0.13</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
 
