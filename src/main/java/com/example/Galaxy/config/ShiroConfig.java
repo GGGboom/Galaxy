@@ -99,8 +99,8 @@ public class ShiroConfig {
         return galaxyRealm;
     }
 
-    @Bean(name = "exceptionHandler")
-    public HandlerExceptionResolver handlerExceptionResolver(){
-        return new GlobalExceptionResolver();
-    }
+//    @Bean(name = "exceptionHandler")
+//    public HandlerExceptionResolver handlerExceptionResolver(){
+//        return new GlobalExceptionResolver();
+//    }
 }

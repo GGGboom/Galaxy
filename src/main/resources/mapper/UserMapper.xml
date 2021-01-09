@@ -120,7 +120,7 @@
                 avatar=#{avatar,jdbcType=VARCHAR},
             </if>
             <if test="description!=null and description!=''">
-                avatar=#{description,jdbcType=LONGVARCHAR},
+                description=#{description,jdbcType=LONGVARCHAR},
             </if>
             <if test="account!=null and account!=''">
                 account=#{account,jdbcType=VARCHAR},

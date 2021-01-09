@@ -45,7 +45,7 @@ CREATE TABLE `sys_role_privilege`(
 CREATE TABLE `blog`(
     `blog_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT'博文id',
     `user_id` bigint(20) NOT NULL COMMENT '发表用户id',
-    `user_avatar` varchar(63) COMMENT '发表的用户头像',
+    `description` varchar(63) COMMENT 'summary',
     `blog_title` varchar(255) COMMENT '博文标题',
     `blog_content` longtext COMMENT '博文内容',
     `blog_views` bigint(20) COMMENT '浏览量',

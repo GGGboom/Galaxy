@@ -96,19 +96,18 @@ public class BlogController {
     public Object addBlog(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) throws RuntimeException {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
-        String userAvatar = params.getString("userAvatar");
+        String description = params.getString("description");
         String blogTitle = params.getString("blogTitle");
         String blogContent = params.getString("blogContent");
-        if (userAvatar == null || blogTitle == null || blogContent == null) {
+        if (description == null || blogTitle == null || blogContent == null) {
             throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
         }
         Blog blog = new Blog();
         blog.setUserId(userId);
-        blog.setUserAvatar(userAvatar);
+        blog.setDescription(description);
         blog.setBlogTitle(blogTitle);
         blog.setBlogContent(blogContent);
         blog.setCreateTime(new Date());
-        blog.setUpdateTime(new Date());
         blog.setBlogViews(0L);
         if (blogService.insertSelective(blog) != 0) {
             return Result.SUCCESS();
@@ -121,7 +120,7 @@ public class BlogController {
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object updateBlog(@RequestBody JSONObject params) {
         Long blogId = params.getLong("blogId");
-        String userAvatar = params.getString("userAvatar");
+        String description = params.getString("description");
         String blogTitle = params.getString("blogTitle");
         String blogContent = params.getString("blogContent");
         if (blogTitle == null || blogContent == null || blogId == null) {
@@ -130,8 +129,8 @@ public class BlogController {
         Blog blog = blogService.selectBlogByBlogId(blogId);
         blog.setBlogTitle(blogTitle);
         blog.setBlogContent(blogContent);
-        if (userAvatar != null) {
-            blog.setUserAvatar(userAvatar);
+        if (description != null) {
+            blog.setDescription(description);
         }
         blogService.updateBlogSelective(blog);
         return Result.SUCCESS();

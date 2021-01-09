@@ -8,7 +8,7 @@ public class Blog implements Serializable {
 
     private Long userId;
 
-    private String userAvatar;
+    private String description;
 
     private String blogTitle;
 
@@ -42,12 +42,12 @@ public class Blog implements Serializable {
         this.userId = userId;
     }
 
-    public String getUserAvatar() {
-        return userAvatar;
+    public String getDescription() {
+        return description;
     }
 
-    public void setUserAvatar(String userAvatar) {
-        this.userAvatar = userAvatar == null ? null : userAvatar.trim();
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getBlogTitle() {
