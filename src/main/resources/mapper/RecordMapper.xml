@@ -163,6 +163,7 @@
         ,
         <include refid="Blob_Column_List"/>
         from record
+        where is_deleted != 1
     </select>
     <select id="selectByUserId" resultMap="ResultMapWithBLOBs">
         select
@@ -170,6 +171,6 @@
         ,
         <include refid="Blob_Column_List"/>
         from record
-        where user_id = #{userId,jdbcType=BIGINT}
+        where user_id = #{userId,jdbcType=BIGINT} and is_deleted != 1
     </select>
 </mapper>

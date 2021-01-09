@@ -23,10 +23,6 @@ public class BlogController {
     @Autowired
     private BlogService blogService;
 
-    @Autowired
-    private UserService userService;
-
-
     /**
      * showdoc
      *
@@ -91,7 +87,7 @@ public class BlogController {
      * @url /blog/add
      */
     @ResponseBody
-    @RequiresRoles("admin")
+    @RequiresRoles("editor")
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object addBlog(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) throws RuntimeException {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();

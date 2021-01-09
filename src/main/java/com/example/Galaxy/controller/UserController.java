@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.SysUserRole;
 import com.example.Galaxy.entity.User;
+import com.example.Galaxy.service.CheckService;
 import com.example.Galaxy.service.SystemService;
 import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.service.impl.RedisService;
@@ -45,6 +46,9 @@ public class UserController {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private CheckService checkService;
+
 
     @ApiOperation("用户注册")
     @ApiImplicitParam(name = "param", value = "name:必选:String----account:必选:String----password:必选:String", required = true, dataType = "String", paramType = "body")
@@ -63,6 +67,9 @@ public class UserController {
             password = CryptUtil.encrypt(password);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (!checkService.checkAccount(account)) {
+            throw new GalaxyException(CodeEnums.ACCOUNT_DUPLICATE_ERROR.getCode(), CodeEnums.ACCOUNT_DUPLICATE_ERROR.getMessage());
         }
         User user = new User();
         user.setName(name);
@@ -120,7 +127,7 @@ public class UserController {
     public Object doLogout(HttpServletRequest httpServletRequest) {
         Long userId = JWTUtil.getUserId(httpServletRequest.getHeader("Authorization"));
         if (redisService.hget("token", userId.toString()) != null) {
-            redisService.hdel("token",userId.toString());
+            redisService.hdel("token", userId.toString());
             return Result.SUCCESS();
         }
         return new Result(CodeEnums.NOT_LOGIN.getCode(), CodeEnums.NOT_LOGIN.getMessage());

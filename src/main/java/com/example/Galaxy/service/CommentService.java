@@ -12,11 +12,17 @@ public interface CommentService {
 
     int updateSelective(Comments comments);
 
+    int deleteByBlogId(Long blogId);
+
     Long selectUnread(Long userId);
 
     Long selectCommentSumByBlogId(Long blogId);
 
+    List<Comments> selectByBlogId(Long blogId);
 
+    List<CommentLike> selectCommentsLikeByCommentId(Long commentId);
+
+    int deleteCommentsLikeByCommentId(Long commentId);
 
     int updateSelective(CommentLike commentLike);
 

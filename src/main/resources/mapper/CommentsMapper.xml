@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.Galaxy.dao.CommentsMapper">
-    <!--<resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.Galaxy.entity.Comments">-->
-    <!--<result column="comment_content" jdbcType="LONGVARCHAR" property="commentContent" />-->
-    <!--</resultMap>-->
     <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.Comments">
         <result column="comment_id" jdbcType="BIGINT" property="commentId"/>
         <result column="blog_id" jdbcType="BIGINT" property="blogId"/>
@@ -24,8 +21,9 @@
         </collection>
     </resultMap>
     <sql id="Blob_Column_List">
-      comment_content
+      comment_id,blog_id,user_id,user_avatar,parent_comment_id,create_time,update_time,comment_like_account,is_deleted,is_read,comment_content
     </sql>
+
     <insert id="insert" parameterType="com.example.Galaxy.entity.Comments">
     insert into comments (comment_id, blog_id, user_id, 
       user_avatar, parent_comment_id, create_time, 
@@ -146,7 +144,7 @@
     <select id="selectAllByParentCommentIdAndBlogId" resultMap="RecursiveMap">
       select *
       from comments
-      where parent_comment_id = #{parentCommentId,jdbcType=BIGINT} and blog_id = #{blogId,jdbcType=BIGINT}
+      where parent_comment_id = #{parentCommentId,jdbcType=BIGINT} and blog_id = #{blogId,jdbcType=BIGINT} and is_deleted != 1
     </select>
     <select id="selectUnreadSumByUserId" resultType="java.lang.Long">
       SELECT COUNT(is_read)
@@ -154,12 +152,23 @@
       WHERE is_read = 0 and user_id!=#{userId,jdbcType=BIGINT} and blog_id in (
           SELECT blog_id
           FROM blog
-          WHERE user_id = #{userId,jdbcType=BIGINT});
+          WHERE user_id = #{userId,jdbcType=BIGINT}) and is_deleted != 1;
     </select>
     <select id="selectCommentSumByBlogId" resultType="java.lang.Long">
         SELECT
         COUNT(*)
         from comments
-        where is_deleted!=1 AND blog_id = #{blogId,jdbcType=BIGINT});
+        where is_deleted != 1 AND blog_id = #{blogId,jdbcType=BIGINT});
     </select>
+    <select id="selectByBlogId" resultMap="BaseResultMap">
+        select
+        <include refid="Blob_Column_List"/>
+        from comments
+        where blog_id = #{blogId,jdbcType=BIGINT} and is_deleted != 1
+    </select>
+    <update id="deleteByBlogId">
+        UPDATE comments
+        SET is_deleted = 1
+        WHERE blog_id = #{blogId,jdbcType=BIGINT}
+    </update>
 </mapper>

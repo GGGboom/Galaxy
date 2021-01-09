@@ -17,4 +17,8 @@ public interface CommentsMapper {
     Long selectUnreadSumByUserId(Long userId);
 
     Long selectCommentSumByBlogId(Long blogId);
+
+    int deleteByBlogId(Long blogId);
+
+    List<Comments> selectByBlogId(Long blogId);
 }

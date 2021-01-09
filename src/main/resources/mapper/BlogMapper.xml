@@ -121,7 +121,7 @@
         select
         <include refid="Blob_Column_List"/>
         from blog
-        where blog_id = #{blogId,jdbcType=BIGINT}
+        where blog_id = #{blogId,jdbcType=BIGINT} and is_deleted != 1
         ORDER BY create_time desc
     </select>
     <update id="updateByPrimaryKeySelective" parameterType="com.example.Galaxy.entity.Blog">

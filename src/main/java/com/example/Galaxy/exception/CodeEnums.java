@@ -53,6 +53,8 @@ public enum CodeEnums {
 
     PASSWROD_CRYPT_ERROR(27, "密码加密错误"),
 
+    ACCOUNT_DUPLICATE_ERROR(27, "账号已存在"),
+
     EMAIL_ERROR(31, "邮件发送异常"),
 
     AUTHORITY_ERROR(41,"无权限"),

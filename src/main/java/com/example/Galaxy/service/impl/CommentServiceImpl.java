@@ -23,6 +23,26 @@ public class CommentServiceImpl implements CommentService {
     private CommentLikeMapper commentLikeMapper;
 
     @Override
+    public List<Comments> selectByBlogId(Long blogId) {
+        return commentsMapper.selectByBlogId(blogId);
+    }
+
+    @Override
+    public List<CommentLike> selectCommentsLikeByCommentId(Long commentId) {
+        return commentLikeMapper.selectByCommentId(commentId);
+    }
+
+    @Override
+    public int deleteCommentsLikeByCommentId(Long commentId) {
+        return commentLikeMapper.deleteByCommentId(commentId);
+    }
+
+    @Override
+    public int deleteByBlogId(Long blogId) {
+        return commentsMapper.deleteByBlogId(blogId);
+    }
+
+    @Override
     public Long selectUnread(Long userId) {
         return commentsMapper.selectUnreadSumByUserId(userId);
     }
@@ -32,6 +52,7 @@ public class CommentServiceImpl implements CommentService {
     public Long selectCommentSumByBlogId(Long blogId) {
         return commentsMapper.selectCommentSumByBlogId(blogId);
     }
+
 
     @Override
     @Cacheable(value = "CommentCacheSelectAll", key = "#blogId")
