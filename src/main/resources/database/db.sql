@@ -3,10 +3,11 @@
 CREATE TABLE `user`(
     `user_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name` varchar(32) DEFAULT NULL COMMENT '姓名',
-    `head_img_path` varchar(100) DEFAULT NULL COMMENT'头像图片路径',
+    `avatar` varchar(255) DEFAULT NULL COMMENT'头像路径',
+    `description` longtext COMMENT '个人简介',
     `account` varchar(32) DEFAULT NULL COMMENT'账号',
     `passwd` varchar(64) DEFAULT NULL COMMENT'密码',
-    `identity_type` smallint(6) DEFAULT NULL COMMENT'身份:1.核心成员;2.外围成员',
+    `gender` smallint(6) DEFAULT NULL COMMENT'0:女 1：男 2：保密',
     `cellphone` varchar(15) DEFAULT NULL COMMENT'手机账号',
     `email` varchar(32) DEFAULT NULL COMMENT'邮箱',
     `verify_code` varchar(16) DEFAULT NULL COMMENT '手机验证码',

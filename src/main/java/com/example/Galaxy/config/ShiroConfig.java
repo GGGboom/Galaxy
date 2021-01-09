@@ -1,5 +1,6 @@
 package com.example.Galaxy.config;
 
+import com.example.Galaxy.exception.GlobalExceptionResolver;
 import com.example.Galaxy.security.GalaxyRealm;
 import com.example.Galaxy.security.JWTFilter;
 import com.example.Galaxy.service.SystemService;
@@ -14,6 +15,7 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.Filter;
 import java.util.HashMap;
@@ -95,5 +97,10 @@ public class ShiroConfig {
         GalaxyRealm galaxyRealm = new GalaxyRealm();
         galaxyRealm.setUserService(systemService, userService);
         return galaxyRealm;
+    }
+
+    @Bean(name = "exceptionHandler")
+    public HandlerExceptionResolver handlerExceptionResolver(){
+        return new GlobalExceptionResolver();
     }
 }

@@ -17,7 +17,7 @@ package com.example.Galaxy.exception;
 public enum CodeEnums {
     SUCCESS(0, "请求成功"),
 
-    NOT_LOGIN(1, "请登录后再进行操作"),
+    NOT_LOGIN(1, "未登录"),
 
     ERROR_PASSWORD(2, "用户名或密码错误"),
 
@@ -33,7 +33,7 @@ public enum CodeEnums {
 
     ERROR_TOKEN_EXPIRED(8, "token过期"),
 
-    ERROR_TOKEN_INVALID(9,"token解析异常"),
+    ERROR_TOKEN_INVALID(9,"token无效"),
 
     PARAM_ERROR(11,"非法参数"),
 
@@ -56,6 +56,8 @@ public enum CodeEnums {
     EMAIL_ERROR(31, "邮件发送异常"),
 
     AUTHORITY_ERROR(41,"无权限"),
+
+    AUTHENTICATION_ERROR(41,"认证失败"),
 
     REDIS_ERROR(101,"redis异常"),
 

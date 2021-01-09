@@ -8,13 +8,15 @@ public class User implements Serializable {
 
     private String name;
 
-    private String headImgPath;
+    private String avatar;
+
+    private String description;
 
     private String account;
 
     private String passwd;
 
-    private Short identityType;
+    private Short gender;
 
     private String cellphone;
 
@@ -48,12 +50,20 @@ public class User implements Serializable {
         this.name = name == null ? null : name.trim();
     }
 
-    public String getHeadImgPath() {
-        return headImgPath;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setHeadImgPath(String headImgPath) {
-        this.headImgPath = headImgPath == null ? null : headImgPath.trim();
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getAccount() {
@@ -72,12 +82,12 @@ public class User implements Serializable {
         this.passwd = passwd == null ? null : passwd.trim();
     }
 
-    public Short getIdentityType() {
-        return identityType;
+    public Short getGender() {
+        return gender;
     }
 
-    public void setIdentityType(Short identityType) {
-        this.identityType = identityType;
+    public void setGender(Short gender) {
+        this.gender = gender;
     }
 
     public String getCellphone() {

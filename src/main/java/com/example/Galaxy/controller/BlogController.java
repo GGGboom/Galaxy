@@ -43,8 +43,6 @@ public class BlogController {
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectAll(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
-        System.out.println("pageNum:"+pageNum);
-        System.out.println("pageSize:"+pageSize);
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectAll(pageNum, pageSize));
     }
 

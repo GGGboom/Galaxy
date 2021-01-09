@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 //@RestControllerAdvice
-public class OverallExceptionResolver implements HandlerExceptionResolver {
+public class GlobalExceptionResolver implements HandlerExceptionResolver {
     @Override
     public ModelAndView resolveException(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object handler, Exception e) {
         CodeEnums codeEnums = CodeEnums.EXCEPTION;

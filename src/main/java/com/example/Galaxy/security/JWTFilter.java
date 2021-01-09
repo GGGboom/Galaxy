@@ -2,6 +2,7 @@ package com.example.Galaxy.security;
 
 import com.example.Galaxy.exception.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,7 +53,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             try {
                 executeLogin(request, response);
             } catch (Exception e) {
-                throw new GalaxyException(CodeEnums.AUTHORITY_ERROR.getCode(),CodeEnums.AUTHORITY_ERROR.getMessage());
+                throw new AuthenticationException();
             }
         }
         return true;

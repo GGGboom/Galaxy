@@ -6,6 +6,7 @@ import com.example.Galaxy.exception.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
 import com.example.Galaxy.service.SystemService;
 import com.example.Galaxy.service.UserService;
+import com.example.Galaxy.service.impl.RedisService;
 import com.example.Galaxy.util.JWTUtil;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -26,6 +27,9 @@ public class GalaxyRealm extends AuthorizingRealm {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private RedisService redisService;
 
     private SystemService systemService;
 
@@ -75,17 +79,18 @@ public class GalaxyRealm extends AuthorizingRealm {
 
         User user = userService.selectByAccount(account);
         if (user == null) {
-            throw new GalaxyException(CodeEnums.NO_USER.getCode(), CodeEnums.NO_USER.getMessage());
+            throw new AuthenticationException();
         }
 
         if (!JWTUtil.verify(token, account, user.getPasswd())) {
-            throw new GalaxyException(CodeEnums.ERROR_PASSWORD.getCode(), CodeEnums.ERROR_PASSWORD.getMessage());
+            throw new AuthenticationException();
         }
 
         //判断redis是否有缓存，没有缓存则认为已经注销登录
-        if (redisTemplate.opsForHash().get("tokenCache", token) == null) {
-            throw new GalaxyException(CodeEnums.ERROR_TOKEN_EXPIRED.getCode(), CodeEnums.ERROR_TOKEN_EXPIRED.getMessage());
+        if (redisService.hget("token", user.getUserId().toString()) == null) {
+            throw new AuthenticationException();
         }
+
         return new SimpleAuthenticationInfo(token, token, this.getName());
     }
 }

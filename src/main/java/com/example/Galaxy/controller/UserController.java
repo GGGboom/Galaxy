@@ -108,7 +108,7 @@ public class UserController {
             String token = JWTUtil.sign(user.getAccount(), user.getPasswd(), user.getUserId());
             JSONObject data = (JSONObject) JSON.toJSON(user);
             data.put("token", token);
-            redisService.putTokenCache(token);
+            redisService.hset("token", user.getUserId().toString(), token);
             return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
         }
     }
@@ -118,9 +118,12 @@ public class UserController {
     @ResponseBody
     @RequestMapping(value = "/logout", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object doLogout(HttpServletRequest httpServletRequest) {
-        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
-        redisService.deleteTokenCacheByToken(token);
-        return Result.SUCCESS();
+        Long userId = JWTUtil.getUserId(httpServletRequest.getHeader("Authorization"));
+        if (redisService.hget("token", userId.toString()) != null) {
+            redisService.hdel("token",userId.toString());
+            return Result.SUCCESS();
+        }
+        return new Result(CodeEnums.NOT_LOGIN.getCode(), CodeEnums.NOT_LOGIN.getMessage());
     }
 
 
@@ -132,12 +135,12 @@ public class UserController {
     public Object uploadImg(@RequestParam(value = "avatar") MultipartFile file, HttpServletRequest httpServletRequest) {
         Long userId = JWTUtil.getUserId(httpServletRequest.getHeader("Authorization"));
         try {
-            String headImgPath = FileUtil.uploadFile(file, userId.toString());
+            String avatar = FileUtil.uploadFile(file, userId.toString());
             User user = new User();
             user.setUserId(userId);
-            user.setHeadImgPath(headImgPath);
+            user.setAvatar(avatar);
             userService.updateSelective(user);
-            return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), headImgPath);
+            return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), avatar);
         } catch (IOException e) {
             return new Result(CodeEnums.UPLOAD_ERROR.getCode(), CodeEnums.UPLOAD_ERROR.getMessage());
         }
@@ -161,7 +164,6 @@ public class UserController {
         if (password != null) {
             try {
                 password = CryptUtil.encrypt(password);
-                System.out.println(password);
             } catch (Exception e) {
                 throw new GalaxyException(CodeEnums.PASSWROD_CRYPT_ERROR.getCode(), CodeEnums.PASSWROD_CRYPT_ERROR.getMessage());
             }
