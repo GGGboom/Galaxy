@@ -7,10 +7,12 @@ import com.example.Galaxy.entity.SysUserRole;
 import com.example.Galaxy.entity.User;
 import com.example.Galaxy.exception.GalaxyException;
 import com.example.Galaxy.service.SystemService;
-import com.example.Galaxy.exception.CodeEnums;
+import com.example.Galaxy.util.annotation.LogAnnotation;
+import com.example.Galaxy.util.enums.CodeEnums;
 import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
+import com.example.Galaxy.util.enums.OperationType;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ public class SystemController {
     @Autowired
     private UserService userService;
 
+    @LogAnnotation(description = "查询所有用户及其角色",operationType = OperationType.SELECT)
     @ResponseBody
     @RequiresRoles(value = {"admin"})
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -55,6 +58,7 @@ public class SystemController {
         }
     }
 
+    @LogAnnotation(description = "查询我的角色",operationType = OperationType.SELECT)
     @ResponseBody
     @RequiresUser
     @RequestMapping(value = "/myRole", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -64,6 +68,7 @@ public class SystemController {
         return Result.SUCCESS(systemService.selectRoleByUserId(userId));
     }
 
+    @LogAnnotation(description = "查询我的角色和角色对应的权限",operationType = OperationType.SELECT)
     @ResponseBody
     @RequiresRoles(value = {"admin"})
     @RequestMapping(value = "/getRoleWithPrivilege", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -71,6 +76,7 @@ public class SystemController {
         return Result.SUCCESS(systemService.selectAllRoleWIthPrivilege());
     }
 
+    @LogAnnotation(description = "设置用户的角色和权限",operationType = OperationType.UPDATE)
     @ResponseBody
     @RequiresRoles(value = {"admin"})
     @RequestMapping(value = "/setUserRole", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")

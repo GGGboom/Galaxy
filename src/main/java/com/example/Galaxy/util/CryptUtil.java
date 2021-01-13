@@ -12,7 +12,7 @@ public class CryptUtil {
     private final static String HEX = "0123456789ABCDEF";
 
     public static void main(String[] args) throws Exception {
-        System.out.println(encrypt("798208965"));
+        System.out.println(encrypt("474762414"));
     }
 
     /**

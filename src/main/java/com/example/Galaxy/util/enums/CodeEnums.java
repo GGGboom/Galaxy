@@ -1,4 +1,4 @@
-package com.example.Galaxy.exception;
+package com.example.Galaxy.util.enums;
 
 
 /**

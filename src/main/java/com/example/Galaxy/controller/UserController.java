@@ -13,8 +13,10 @@ import com.example.Galaxy.util.CryptUtil;
 import com.example.Galaxy.util.FileUtil;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
-import com.example.Galaxy.exception.CodeEnums;
+import com.example.Galaxy.util.annotation.LogAnnotation;
+import com.example.Galaxy.util.enums.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
+import com.example.Galaxy.util.enums.OperationType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -50,6 +52,7 @@ public class UserController {
     private CheckService checkService;
 
 
+    @LogAnnotation(description = "用户注册",operationType = OperationType.INSERT)
     @ApiOperation("用户注册")
     @ApiImplicitParam(name = "param", value = "name:必选:String----account:必选:String----password:必选:String", required = true, dataType = "String", paramType = "body")
     @ResponseBody
@@ -92,6 +95,7 @@ public class UserController {
     }
 
 
+    @LogAnnotation(description = "用户登录",operationType = OperationType.SELECT)
     @ApiOperation("用户登录")
     @ApiImplicitParam(name = "param", value = "account:必选:String----password:必选:String", required = true, dataType = "String", paramType = "body")
     @ResponseBody
@@ -120,6 +124,7 @@ public class UserController {
         }
     }
 
+    @LogAnnotation(description = "退出登录",operationType = OperationType.UNKNOWN)
     @ApiOperation("退出登录")
     @RequiresUser
     @ResponseBody
@@ -134,6 +139,7 @@ public class UserController {
     }
 
 
+    @LogAnnotation(description = "上传头像",operationType = OperationType.UPDATE)
     @ApiOperation("上传头像")
     @ApiImplicitParam(name = "param", value = "file:必选:form", required = true, dataType = "String", paramType = "form")
     @RequiresUser
@@ -153,6 +159,7 @@ public class UserController {
         }
     }
 
+    @LogAnnotation(description = "更新用户信息",operationType = OperationType.UPDATE)
     @ApiOperation("更新用户信息")
     @ApiImplicitParam(name = "param", value = "name:必选:String----email:必选:String----password:可选:String----cellphone:可选:String", required = true, dataType = "String", paramType = "body")
     @RequiresUser
@@ -184,6 +191,8 @@ public class UserController {
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage());
     }
 
+
+    @LogAnnotation(description = "用户信息",operationType = OperationType.SELECT)
     @ApiOperation("用户信息")
     @RequiresUser
     @ResponseBody

@@ -1,5 +1,7 @@
 package com.example.Galaxy.exception;
 
+import com.example.Galaxy.util.enums.CodeEnums;
+
 /**
  * 系统异常类
  */

@@ -2,7 +2,7 @@ package com.example.Galaxy.security;
 
 import com.example.Galaxy.entity.SysRole;
 import com.example.Galaxy.entity.User;
-import com.example.Galaxy.exception.CodeEnums;
+import com.example.Galaxy.util.enums.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
 import com.example.Galaxy.service.SystemService;
 import com.example.Galaxy.service.UserService;

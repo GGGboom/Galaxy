@@ -8,8 +8,10 @@ import com.example.Galaxy.entity.Comments;
 import com.example.Galaxy.service.CommentService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
-import com.example.Galaxy.exception.CodeEnums;
+import com.example.Galaxy.util.annotation.LogAnnotation;
+import com.example.Galaxy.util.enums.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
+import com.example.Galaxy.util.enums.OperationType;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,8 @@ public class CommentController {
      * @method post
      * @url /blog/getAll
      */
+    @LogAnnotation(description = "根据博客id获取所有评论",operationType = OperationType.SELECT)
+    @RequiresUser
     @ResponseBody
     @RequestMapping(value = "/getAll", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getAllComments(@RequestParam(name = "blogId", required = false, defaultValue = "1") Long blogId) {
@@ -53,6 +57,7 @@ public class CommentController {
      * @method post
      * @url /comment/add
      */
+    @LogAnnotation(description = "添加评论",operationType = OperationType.INSERT)
     @ResponseBody
     @RequiresUser
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -85,10 +90,11 @@ public class CommentController {
      * @return {"code":0,message:"请求成功",data:{}}
      * @catalog 博客评论
      * @title
-     * @description 添加点赞，需要登录
+     * @description 添加点赞
      * @method post
      * @url /comment/addLike
      */
+    @LogAnnotation(description = "添加点赞",operationType = OperationType.INSERT)
     @ResponseBody
     @RequiresUser
     @RequestMapping(value = "/addLike", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -129,6 +135,7 @@ public class CommentController {
      * @method post
      * @url /comment/deleteLike
      */
+    @LogAnnotation(description = "删除点赞",operationType = OperationType.UPDATE)
     @ResponseBody
     @RequiresUser
     @RequestMapping(value = "/deleteLike", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -166,6 +173,7 @@ public class CommentController {
      * @method get
      * @url /comment/unreadCommentAccount
      */
+    @LogAnnotation(description = "获取未阅读的评论总数",operationType = OperationType.SELECT)
     @ResponseBody
     @RequiresUser
     @RequestMapping(value = "/unreadCommentAccount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -174,6 +182,7 @@ public class CommentController {
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), commentService.selectUnread(JWTUtil.getUserId(token)));
     }
 
+    @LogAnnotation(description = "获取评论总数",operationType = OperationType.SELECT)
     @ResponseBody
     @RequiresUser
     @RequestMapping(value = "/getCommentSum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")

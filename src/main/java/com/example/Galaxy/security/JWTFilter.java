@@ -1,7 +1,5 @@
 package com.example.Galaxy.security;
 
-import com.example.Galaxy.exception.CodeEnums;
-import com.example.Galaxy.exception.GalaxyException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;

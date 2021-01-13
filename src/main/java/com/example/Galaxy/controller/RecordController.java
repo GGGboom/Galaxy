@@ -3,10 +3,12 @@ package com.example.Galaxy.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Record;
-import com.example.Galaxy.exception.CodeEnums;
+import com.example.Galaxy.util.annotation.LogAnnotation;
+import com.example.Galaxy.util.enums.CodeEnums;
 import com.example.Galaxy.service.RecordService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
+import com.example.Galaxy.util.enums.OperationType;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ public class RecordController {
      * @method get
      * @url /record/update
      */
+    @LogAnnotation(description = "插入或者更新记录",operationType = OperationType.UPDATE)
     @ResponseBody
     @RequiresRoles(value = {"admin"})
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -70,6 +73,7 @@ public class RecordController {
         return Result.SUCCESS();
     }
 
+    @LogAnnotation(description = "查询所有记录",operationType = OperationType.SELECT)
     @ResponseBody
     @RequiresRoles(value = {"admin"})
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -78,6 +82,7 @@ public class RecordController {
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), recordService.selectAll(pageNum, pageSize));
     }
 
+    @LogAnnotation(description = "查询我的记录",operationType = OperationType.SELECT)
     @ResponseBody
     @RequiresUser
     @RequestMapping(value = "/mine", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -87,6 +92,7 @@ public class RecordController {
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), recordService.selectByUserId(userId));
     }
 
+    @LogAnnotation(description = "删除我的记录",operationType = OperationType.UPDATE)
     @ResponseBody
     @RequiresRoles(value = {"admin"})
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")

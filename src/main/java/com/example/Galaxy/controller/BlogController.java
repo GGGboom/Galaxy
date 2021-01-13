@@ -4,11 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Blog;
 import com.example.Galaxy.service.BlogService;
-import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
-import com.example.Galaxy.exception.CodeEnums;
+import com.example.Galaxy.util.annotation.LogAnnotation;
+import com.example.Galaxy.util.enums.CodeEnums;
 import com.example.Galaxy.exception.GalaxyException;
+import com.example.Galaxy.util.enums.OperationType;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,8 @@ public class BlogController {
      * @method get
      * @url /blog/all
      */
+    @LogAnnotation(description = "查询所有博客",operationType = OperationType.SELECT)
+    @RequiresUser
     @ResponseBody
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectAll(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
@@ -53,6 +56,7 @@ public class BlogController {
      * @method get
      * @url /blog/mine
      */
+    @LogAnnotation(description = "查询我的博客",operationType = OperationType.SELECT)
     @RequiresUser
     @ResponseBody
     @RequestMapping(value = "/mine", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -64,6 +68,7 @@ public class BlogController {
         return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectBlogByUserId(userId.intValue(), pageNum, pageSize));
     }
 
+    @LogAnnotation(description = "通过博客Id获取博客",operationType = OperationType.SELECT)
     @RequiresUser
     @ResponseBody
     @RequestMapping(value = "/getBlog", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -72,6 +77,7 @@ public class BlogController {
     }
 
 
+    @LogAnnotation(description = "添加博客",operationType = OperationType.INSERT)
     /**
      * showdoc
      *
@@ -111,6 +117,7 @@ public class BlogController {
         return new Result(CodeEnums.EXCEPTION.getCode(), CodeEnums.EXCEPTION.getMessage());
     }
 
+    @LogAnnotation(description = "更新博客",operationType = OperationType.UPDATE)
     @ResponseBody
     @RequiresRoles("admin")
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -133,6 +140,7 @@ public class BlogController {
     }
 
 
+    @LogAnnotation(description = "删除博客",operationType = OperationType.UPDATE)
     @ResponseBody
     @RequiresRoles("admin")
     @RequestMapping(value = "/delete", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -160,6 +168,7 @@ public class BlogController {
      * @method post
      * @url /blog/addViews
      */
+    @LogAnnotation(description = "添加博客阅读量",operationType = OperationType.UPDATE)
     @ResponseBody
     @RequestMapping(value = "/addViews", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public Object blogViewsIncrement(@RequestBody JSONObject params) {
@@ -186,6 +195,7 @@ public class BlogController {
      * @method post
      * @url /blog/favorite
      */
+    @LogAnnotation(description = "收藏博客",operationType = OperationType.UPDATE)
     @ResponseBody
     @RequestMapping(value = "/favorite", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public Object addFavorite(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) throws RuntimeException {

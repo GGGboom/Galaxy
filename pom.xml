@@ -25,6 +25,7 @@
 		<log4j.version>1.2.17</log4j.version>
 		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
 		<springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
+		<commons-lang3.version>3.11</commons-lang3.version>
 	</properties>
 
 	<dependencies>
@@ -116,6 +117,20 @@
 		</dependency>
 		<!--swagger-->
 
+		<!-- commons-lang3 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
+		</dependency>
+        <!-- commons-lang3 -->
+
+		<!-- spring-boot aop依赖配置引入 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+		<!-- spring-boot aop依赖配置引入 -->
 	</dependencies>
 
 	<build>

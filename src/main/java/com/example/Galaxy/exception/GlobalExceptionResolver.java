@@ -1,10 +1,8 @@
 package com.example.Galaxy.exception;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.Galaxy.util.enums.CodeEnums;
 import org.apache.shiro.authz.UnauthenticatedException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -12,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 //@RestControllerAdvice
 public class GlobalExceptionResolver implements HandlerExceptionResolver {

@@ -125,6 +125,20 @@ CREATE TABLE `tag`(
     `create_time` datetime COMMENT '创建时间',
     `is_deleted` tinyint(1) DEFAULT'0' COMMENT'是否删除标记',
     PRIMARY KEY(`tag_id`)
-)
+);
+
+CREATE TABLE `operation_log`(
+    `log_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT'主键id',
+    `user_id` bigint(20) NOT NULL COMMENT'用户id',
+    `user_name` varchar(255) DEFAULT NULL COMMENT'用户名',
+    `ip` varchar(255) DEFAULT NULL COMMENT'ip地址',
+    `create_time` datetime COMMENT '请求创建时间',
+    `description` text DEFAULT NULL  COMMENT'接口描述',
+    `url`  varchar(255) DEFAULT NULL COMMENT'接口url',
+    `url_args`  varchar(255) DEFAULT NULL COMMENT'接口参数',
+    `method`  varchar(255) DEFAULT NULL COMMENT'方法名',
+    `operation_type`  varchar(255) DEFAULT NULL COMMENT'操作类型',
+    PRIMARY KEY(`log_id`)
+);
 
 
