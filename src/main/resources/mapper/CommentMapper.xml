@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Galaxy.dao.CommentMapper">
+    <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.Comment">
+        <id column="comment_id" jdbcType="BIGINT" property="commentId"/>
+        <result column="blog_id" jdbcType="BIGINT" property="blogId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="total_likes" jdbcType="BIGINT" property="totalLikes"/>
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+        <result column="is_read" jdbcType="BIT" property="isRead"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.Galaxy.entity.Comment">
+        <result column="comment_content" jdbcType="LONGVARCHAR" property="commentContent"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    comment_id, blog_id, user_id, parent_id, create_time, update_time, total_likes, is_deleted, 
+    is_read
+  </sql>
+    <sql id="Blob_Column_List">
+    comment_content
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from comment
+        where comment_id = #{commentId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from comment
+    where comment_id = #{commentId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.example.Galaxy.entity.Comment">
+    insert into comment (comment_id, blog_id, user_id, 
+      parent_id, create_time, update_time, 
+      total_likes, is_deleted, is_read, 
+      comment_content)
+    values (#{commentId,jdbcType=BIGINT}, #{blogId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, 
+      #{parentId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{totalLikes,jdbcType=BIGINT}, #{isDeleted,jdbcType=BIT}, #{isRead,jdbcType=BIT}, 
+      #{commentContent,jdbcType=LONGVARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.example.Galaxy.entity.Comment">
+        insert into comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="commentId != null">
+                comment_id,
+            </if>
+            <if test="blogId != null">
+                blog_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="totalLikes != null">
+                total_likes,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="isRead != null">
+                is_read,
+            </if>
+            <if test="commentContent != null">
+                comment_content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="commentId != null">
+                #{commentId,jdbcType=BIGINT},
+            </if>
+            <if test="blogId != null">
+                #{blogId,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="parentId != null">
+                #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="totalLikes != null">
+                #{totalLikes,jdbcType=BIGINT},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=BIT},
+            </if>
+            <if test="isRead != null">
+                #{isRead,jdbcType=BIT},
+            </if>
+            <if test="commentContent != null">
+                #{commentContent,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.Galaxy.entity.Comment">
+        update comment
+        <set>
+            <if test="blogId != null">
+                blog_id = #{blogId,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="totalLikes != null">
+                total_likes = #{totalLikes,jdbcType=BIGINT},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=BIT},
+            </if>
+            <if test="isRead != null">
+                is_read = #{isRead,jdbcType=BIT},
+            </if>
+            <if test="commentContent != null">
+                comment_content = #{commentContent,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where comment_id = #{commentId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.example.Galaxy.entity.Comment">
+    update comment
+    set blog_id = #{blogId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      total_likes = #{totalLikes,jdbcType=BIGINT},
+      is_deleted = #{isDeleted,jdbcType=BIT},
+      is_read = #{isRead,jdbcType=BIT},
+      comment_content = #{commentContent,jdbcType=LONGVARCHAR}
+    where comment_id = #{commentId,jdbcType=BIGINT}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.example.Galaxy.entity.Comment">
+    update comment
+    set blog_id = #{blogId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      total_likes = #{totalLikes,jdbcType=BIGINT},
+      is_deleted = #{isDeleted,jdbcType=BIT},
+      is_read = #{isRead,jdbcType=BIT}
+    where comment_id = #{commentId,jdbcType=BIGINT}
+  </update>
+    <resultMap id="RecursiveMap" type="com.example.Galaxy.entity.Comment" extends="ResultMapWithBLOBs">
+      <collection property="childrenList" ofType="com.example.Galaxy.entity.Comment"
+                select="com.example.Galaxy.dao.CommentMapper.selectAllByParentIdAndBlogId"
+                column="{parentId = comment_id,blogId = blog_id}">
+    </collection>
+    </resultMap>
+    <select id="selectAllByParentIdAndBlogId" resultMap="RecursiveMap">
+      select *
+      from comment
+      where parent_id = #{parentId,jdbcType=BIGINT} and blog_id = #{blogId,jdbcType=BIGINT} and is_deleted != 1
+    </select>
+    <select id="selectUnreadSumByUserId" resultType="java.lang.Long">
+      SELECT COUNT(is_read)
+      FROM comment
+      WHERE is_read = 0 and user_id!=#{userId,jdbcType=BIGINT} and blog_id in (
+          SELECT blog_id
+          FROM blog
+          WHERE user_id = #{userId,jdbcType=BIGINT}) and is_deleted != 1;
+    </select>
+    <select id="selectCommentSumByBlogId" resultType="java.lang.Long">
+        SELECT
+        COUNT(*)
+        from comment
+        where is_deleted != 1 AND blog_id = #{blogId,jdbcType=BIGINT});
+    </select>
+    <update id="deleteByBlogId">
+        UPDATE comment
+        SET is_deleted = 1
+        WHERE blog_id = #{blogId,jdbcType=BIGINT}
+    </update>
+    <select id="selectByBlogId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from comment
+        where blog_id = #{blogId,jdbcType=BIGINT} and is_deleted != 1
+    </select>
+</mapper>

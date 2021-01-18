@@ -1,6 +1,6 @@
 package com.example.Galaxy.exception;
 
-import com.example.Galaxy.util.enums.CodeEnums;
+import com.example.Galaxy.util.enums.ExceptionEnums;
 
 /**
  * 系统异常类
@@ -22,8 +22,8 @@ public class GalaxyException extends RuntimeException {
         this.message = message;
     }
 
-    public GalaxyException(CodeEnums codeEnums){
-        this(codeEnums.getCode(),codeEnums.getMessage());
+    public GalaxyException(ExceptionEnums exceptionEnums){
+        this(exceptionEnums.getCode(), exceptionEnums.getMessage());
     }
 
     public GalaxyException(Throwable cause){

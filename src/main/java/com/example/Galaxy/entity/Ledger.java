@@ -1,18 +1,19 @@
 package com.example.Galaxy.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class Record implements Serializable {
-    private Long id;
+public class Ledger {
+    private Long ledgerId;
+
+    private Long preLedgerId;
 
     private Long userId;
 
     private Long blogId;
 
-    private Long editBy;
+    private Long modifiedBy;
 
-    private Long amount;
+    private Long total;
 
     private Date createTime;
 
@@ -22,12 +23,20 @@ public class Record implements Serializable {
 
     private String reason;
 
-    public Long getId() {
-        return id;
+    public Long getLedgerId() {
+        return ledgerId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setLedgerId(Long ledgerId) {
+        this.ledgerId = ledgerId;
+    }
+
+    public Long getPreLedgerId() {
+        return preLedgerId;
+    }
+
+    public void setPreLedgerId(Long preLedgerId) {
+        this.preLedgerId = preLedgerId;
     }
 
     public Long getUserId() {
@@ -46,20 +55,20 @@ public class Record implements Serializable {
         this.blogId = blogId;
     }
 
-    public Long getEditBy() {
-        return editBy;
+    public Long getModifiedBy() {
+        return modifiedBy;
     }
 
-    public void setEditBy(Long editBy) {
-        this.editBy = editBy;
+    public void setModifiedBy(Long modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 
-    public Long getAmount() {
-        return amount;
+    public Long getTotal() {
+        return total;
     }
 
-    public void setAmount(Long amount) {
-        this.amount = amount;
+    public void setTotal(Long total) {
+        this.total = total;
     }
 
     public Date getCreateTime() {

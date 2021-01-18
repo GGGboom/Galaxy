@@ -5,34 +5,24 @@ import java.util.Date;
 import java.util.List;
 
 public class SysRole implements Serializable {
-    private Long id;
+    private Long roleId;
 
     private String roleName;
 
-    private Integer enabled;
-
-    private Long createBy;
+    private String description;
 
     private Date createTime;
 
     private Date updateTime;
 
-    private List<SysPrivilege>privilegeList;
+    private List<SysPrivilege> privilegeList;
 
-    public List<SysPrivilege> getPrivilegeList() {
-        return privilegeList;
+    public Long getRoleId() {
+        return roleId;
     }
 
-    public void setPrivilegeList(List<SysPrivilege> privilegeList) {
-        this.privilegeList = privilegeList;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
     }
 
     public String getRoleName() {
@@ -43,20 +33,12 @@ public class SysRole implements Serializable {
         this.roleName = roleName == null ? null : roleName.trim();
     }
 
-    public Integer getEnabled() {
-        return enabled;
+    public String getDescription() {
+        return description;
     }
 
-    public void setEnabled(Integer enabled) {
-        this.enabled = enabled;
-    }
-
-    public Long getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(Long createBy) {
-        this.createBy = createBy;
+    public void setDescription(String description) {
+        this.description = description == null ? null : description.trim();
     }
 
     public Date getCreateTime() {
@@ -73,5 +55,13 @@ public class SysRole implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public List<SysPrivilege> getPrivilegeList() {
+        return privilegeList;
+    }
+
+    public void setPrivilegeList(List<SysPrivilege> privilegeList) {
+        this.privilegeList = privilegeList;
     }
 }

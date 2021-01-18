@@ -1,22 +1,23 @@
 package com.example.Galaxy.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class BlogLike implements Serializable {
+public class CommentOfLike {
     private Long id;
 
-    private Long blogId;
+    private Long commentId;
 
-    private Long createBy;
+    private Long userId;
 
-    private Long likeUserId;
+    private Long userIdOfLike;
 
     private Date createTime;
 
     private Date updateTime;
 
     private Boolean isDeleted;
+
+    private Boolean isRead;
 
     public Long getId() {
         return id;
@@ -26,28 +27,28 @@ public class BlogLike implements Serializable {
         this.id = id;
     }
 
-    public Long getBlogId() {
-        return blogId;
+    public Long getCommentId() {
+        return commentId;
     }
 
-    public void setBlogId(Long blogId) {
-        this.blogId = blogId;
+    public void setCommentId(Long commentId) {
+        this.commentId = commentId;
     }
 
-    public Long getCreateBy() {
-        return createBy;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setCreateBy(Long createBy) {
-        this.createBy = createBy;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public Long getLikeUserId() {
-        return likeUserId;
+    public Long getUserIdOfLike() {
+        return userIdOfLike;
     }
 
-    public void setLikeUserId(Long likeUserId) {
-        this.likeUserId = likeUserId;
+    public void setUserIdOfLike(Long userIdOfLike) {
+        this.userIdOfLike = userIdOfLike;
     }
 
     public Date getCreateTime() {
@@ -72,5 +73,13 @@ public class BlogLike implements Serializable {
 
     public void setIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public Boolean getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(Boolean isRead) {
+        this.isRead = isRead;
     }
 }

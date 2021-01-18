@@ -1,4 +1,4 @@
-package com.example.Galaxy.service.impl;
+package com.example.Galaxy.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,22 +18,6 @@ public class RedisService {
 
     @Autowired
     private RedisTemplate redisTemplate;
-
-    public boolean putTokenCache(String token) {
-        redisTemplate.opsForHash().put("tokenCache", token, token);
-        return true;
-    }
-
-    public boolean deleteTokenCacheByToken(String token) {
-        try {
-            redisTemplate.opsForHash().delete("tokenCache", token);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
 
     /****************** common start ****************/
 

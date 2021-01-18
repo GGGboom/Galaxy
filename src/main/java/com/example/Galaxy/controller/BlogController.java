@@ -7,9 +7,10 @@ import com.example.Galaxy.service.BlogService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
 import com.example.Galaxy.util.annotation.LogAnnotation;
-import com.example.Galaxy.util.enums.CodeEnums;
+import com.example.Galaxy.util.enums.ExceptionEnums;
 import com.example.Galaxy.exception.GalaxyException;
 import com.example.Galaxy.util.enums.OperationType;
+import org.apache.log4j.Logger;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import java.util.Date;
 @RestController
 @RequestMapping(value = "/blog")
 public class BlogController {
+    private final static Logger logger = Logger.getLogger(BlogController.class);
+
     @Autowired
     private BlogService blogService;
 
@@ -42,7 +45,7 @@ public class BlogController {
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectAll(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectAll(pageNum, pageSize));
+        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), blogService.selectAll(pageNum, pageSize));
     }
 
 
@@ -65,19 +68,20 @@ public class BlogController {
                                      HttpServletRequest httpServletRequest) throws RuntimeException {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectBlogByUserId(userId.intValue(), pageNum, pageSize));
+        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), blogService.selectBlogByUserId(userId.intValue(), pageNum, pageSize));
     }
+
 
     @LogAnnotation(description = "通过博客Id获取博客",operationType = OperationType.SELECT)
     @RequiresUser
     @ResponseBody
     @RequestMapping(value = "/getBlog", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectBlogByBlogId(@RequestParam("blogId") Long blogId) {
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), blogService.selectBlogByBlogId(blogId));
+        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), blogService.selectBlogByBlogId(blogId));
     }
 
 
-    @LogAnnotation(description = "添加博客",operationType = OperationType.INSERT)
+
     /**
      * showdoc
      *
@@ -92,6 +96,7 @@ public class BlogController {
      * @method post
      * @url /blog/add
      */
+    @LogAnnotation(description = "添加博客",operationType = OperationType.INSERT)
     @ResponseBody
     @RequiresRoles("editor")
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -102,7 +107,7 @@ public class BlogController {
         String blogTitle = params.getString("blogTitle");
         String blogContent = params.getString("blogContent");
         if (description == null || blogTitle == null || blogContent == null) {
-            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         }
         Blog blog = new Blog();
         blog.setUserId(userId);
@@ -110,11 +115,11 @@ public class BlogController {
         blog.setBlogTitle(blogTitle);
         blog.setBlogContent(blogContent);
         blog.setCreateTime(new Date());
-        blog.setBlogViews(0L);
+        blog.setTotalViews(0L);
         if (blogService.insertSelective(blog) != 0) {
             return Result.SUCCESS();
         }
-        return new Result(CodeEnums.EXCEPTION.getCode(), CodeEnums.EXCEPTION.getMessage());
+        return new Result(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
     }
 
     @LogAnnotation(description = "更新博客",operationType = OperationType.UPDATE)
@@ -127,7 +132,7 @@ public class BlogController {
         String blogTitle = params.getString("blogTitle");
         String blogContent = params.getString("blogContent");
         if (blogTitle == null || blogContent == null || blogId == null) {
-            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         }
         Blog blog = blogService.selectBlogByBlogId(blogId);
         blog.setBlogTitle(blogTitle);
@@ -148,7 +153,7 @@ public class BlogController {
 //        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
 //        Long userId = JWTUtil.getUserId(token);
         if (blogId == null) {
-            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         }
         Blog blog = new Blog();
         blog.setBlogId(blogId);
@@ -174,9 +179,9 @@ public class BlogController {
     public Object blogViewsIncrement(@RequestBody JSONObject params) {
         Long blogId = params.getLong("blogId");
         if (blogId == null)
-            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         Blog blog = blogService.selectBlogByBlogId(params.getLong("blogId"));
-        blog.setBlogViews(blog.getBlogViews() + 1);
+        blog.setTotalViews(blog.getTotalViews() + 1);
         blogService.updateBlogSelective(blog);
         return Result.SUCCESS();
     }
@@ -203,7 +208,7 @@ public class BlogController {
         Long blogLikeAccount = params.getLong("blogLikeAccount");
         Long blogUserId = params.getLong("blogUserId");
         Blog blog = new Blog();
-        blog.setBlogLikeAccount(blogLikeAccount + 1);
+        blog.setTotalLikes(blogLikeAccount + 1);
         blog.setBlogId(blogId);
         blogService.updateBlogSelective(blog);
         return Result.SUCCESS();

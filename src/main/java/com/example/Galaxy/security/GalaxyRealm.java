@@ -1,12 +1,10 @@
 package com.example.Galaxy.security;
 
 import com.example.Galaxy.entity.SysRole;
-import com.example.Galaxy.entity.User;
-import com.example.Galaxy.util.enums.CodeEnums;
-import com.example.Galaxy.exception.GalaxyException;
+import com.example.Galaxy.entity.SysUser;
 import com.example.Galaxy.service.SystemService;
 import com.example.Galaxy.service.UserService;
-import com.example.Galaxy.service.impl.RedisService;
+import com.example.Galaxy.service.RedisService;
 import com.example.Galaxy.util.JWTUtil;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -17,32 +15,27 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.context.annotation.Lazy;
 
 
 import java.util.List;
 
-//@Service
 public class GalaxyRealm extends AuthorizingRealm {
 
-    @Autowired
-    private RedisTemplate redisTemplate;
-
+    @Lazy
     @Autowired
     private RedisService redisService;
 
+    @Lazy
+    @Autowired
     private SystemService systemService;
 
+    @Lazy
+    @Autowired
     private UserService userService;
 
-    //    @Autowired
-    public void setUserService(SystemService systemService, UserService userService) {
-        this.systemService = systemService;
-        this.userService = userService;
-    }
-
     /**
-     * 大坑！，必须重写此方法，不然Shiro会报错
+     * 必须重写此方法，不然Shiro会报错
      */
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -56,8 +49,8 @@ public class GalaxyRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         String account = JWTUtil.getAccount(principals.toString());
-        User user = userService.selectByAccount(account);
-        List<SysRole> sysRoles = systemService.selectRoleByUserId(user.getUserId());
+        SysUser sysUser = userService.selectByAccount(account);
+        List<SysRole> sysRoles = systemService.selectRoleByUserId(sysUser.getUserId());
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         sysRoles.forEach(item -> {
             simpleAuthorizationInfo.addRole(item.getRoleName());
@@ -74,20 +67,20 @@ public class GalaxyRealm extends AuthorizingRealm {
         // 解密获得username，用于和数据库进行对比
         String account = JWTUtil.getAccount(token);
         if (account == null) {
-            throw new GalaxyException(CodeEnums.ERROR_TOKEN_INVALID.getCode(), CodeEnums.ERROR_TOKEN_INVALID.getMessage());
-        }
-
-        User user = userService.selectByAccount(account);
-        if (user == null) {
             throw new AuthenticationException();
         }
 
-        if (!JWTUtil.verify(token, account, user.getPasswd())) {
+        SysUser sysUser = userService.selectByAccount(account);
+        if (sysUser == null) {
+            throw new AuthenticationException();
+        }
+
+        if (!JWTUtil.verify(token, account, sysUser.getPasswd())) {
             throw new AuthenticationException();
         }
 
         //判断redis是否有缓存，没有缓存则认为已经注销登录
-        if (redisService.hget("token", user.getUserId().toString()) == null) {
+        if (redisService.hget("token", sysUser.getUserId().toString()) == null) {
             throw new AuthenticationException();
         }
 

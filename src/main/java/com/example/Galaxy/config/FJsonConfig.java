@@ -1,4 +1,4 @@
-package com.example.Galaxy.config.json;
+package com.example.Galaxy.config;
 
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;

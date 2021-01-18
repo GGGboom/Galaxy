@@ -2,24 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.Galaxy.dao.SysPrivilegeMapper">
     <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.SysPrivilege">
-        <id column="id" jdbcType="BIGINT" property="id"/>
+        <id column="privilege_id" jdbcType="BIGINT" property="privilegeId"/>
         <result column="privilege_name" jdbcType="VARCHAR" property="privilegeName"/>
         <result column="privilege_url" jdbcType="VARCHAR" property="privilegeUrl"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, privilege_name, privilege_url
+    privilege_id, privilege_name, privilege_url, description, create_time, update_time
   </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_privilege
+        where privilege_id = #{privilegeId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from sys_privilege
+    where privilege_id = #{privilegeId,jdbcType=BIGINT}
+  </delete>
     <insert id="insert" parameterType="com.example.Galaxy.entity.SysPrivilege">
-    insert into sys_privilege (id, privilege_name, privilege_url
+    insert into sys_privilege (privilege_id, privilege_name, privilege_url, 
+      description, create_time, update_time
       )
-    values (#{id,jdbcType=BIGINT}, #{privilegeName,jdbcType=VARCHAR}, #{privilegeUrl,jdbcType=VARCHAR}
+    values (#{privilegeId,jdbcType=BIGINT}, #{privilegeName,jdbcType=VARCHAR}, #{privilegeUrl,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
   </insert>
     <insert id="insertSelective" parameterType="com.example.Galaxy.entity.SysPrivilege">
         insert into sys_privilege
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                id,
+            <if test="privilegeId != null">
+                privilege_id,
             </if>
             <if test="privilegeName != null">
                 privilege_name,
@@ -27,10 +42,19 @@
             <if test="privilegeUrl != null">
                 privilege_url,
             </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                #{id,jdbcType=BIGINT},
+            <if test="privilegeId != null">
+                #{privilegeId,jdbcType=BIGINT},
             </if>
             <if test="privilegeName != null">
                 #{privilegeName,jdbcType=VARCHAR},
@@ -38,13 +62,57 @@
             <if test="privilegeUrl != null">
                 #{privilegeUrl,jdbcType=VARCHAR},
             </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
         </trim>
     </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.Galaxy.entity.SysPrivilege">
+        update sys_privilege
+        <set>
+            <if test="privilegeName != null">
+                privilege_name = #{privilegeName,jdbcType=VARCHAR},
+            </if>
+            <if test="privilegeUrl != null">
+                privilege_url = #{privilegeUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where privilege_id = #{privilegeId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.example.Galaxy.entity.SysPrivilege">
+    update sys_privilege
+    set privilege_name = #{privilegeName,jdbcType=VARCHAR},
+      privilege_url = #{privilegeUrl,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where privilege_id = #{privilegeId,jdbcType=BIGINT}
+  </update>
     <select id="selectPrivilegeByRoleId" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from sys_privilege p
-        inner join sys_role_privilege rp on rp.privilege_id = p.id
-        where rp.role_id = #{roleId,jdbcType=BIGINT}
-    </select>
+    select
+    p.privilege_id,
+    p.privilege_name,
+    p.privilege_url,
+    p.description,
+    p.create_time,
+    p.update_time
+    from sys_privilege p
+    inner join sys_role_privilege rp on rp.privilege_id = p.privilege_id
+    where rp.role_id = #{roleId,jdbcType=BIGINT}
+  </select>
 </mapper>

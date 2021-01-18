@@ -4,22 +4,20 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class Comments implements Serializable {
+public class Comment implements Serializable {
     private Long commentId;
 
     private Long blogId;
 
     private Long userId;
 
-    private String userAvatar;
-
-    private Long parentCommentId;
+    private Long parentId;
 
     private Date createTime;
 
     private Date updateTime;
 
-    private Long commentLikeAccount;
+    private Long totalLikes;
 
     private Boolean isDeleted;
 
@@ -27,15 +25,7 @@ public class Comments implements Serializable {
 
     private String commentContent;
 
-    private List<Comments> childrenList;
-
-    public List<Comments> getChildrenList() {
-        return childrenList;
-    }
-
-    public void setChildrenList(List<Comments> childrenList) {
-        this.childrenList = childrenList;
-    }
+    private List<Comment> childrenList;
 
     public Long getCommentId() {
         return commentId;
@@ -61,20 +51,12 @@ public class Comments implements Serializable {
         this.userId = userId;
     }
 
-    public String getUserAvatar() {
-        return userAvatar;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public void setUserAvatar(String userAvatar) {
-        this.userAvatar = userAvatar == null ? null : userAvatar.trim();
-    }
-
-    public Long getParentCommentId() {
-        return parentCommentId;
-    }
-
-    public void setParentCommentId(Long parentCommentId) {
-        this.parentCommentId = parentCommentId;
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public Date getCreateTime() {
@@ -93,12 +75,12 @@ public class Comments implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public Long getCommentLikeAccount() {
-        return commentLikeAccount;
+    public Long getTotalLikes() {
+        return totalLikes;
     }
 
-    public void setCommentLikeAccount(Long commentLikeAccount) {
-        this.commentLikeAccount = commentLikeAccount;
+    public void setTotalLikes(Long totalLikes) {
+        this.totalLikes = totalLikes;
     }
 
     public Boolean getIsDeleted() {
@@ -123,5 +105,13 @@ public class Comments implements Serializable {
 
     public void setCommentContent(String commentContent) {
         this.commentContent = commentContent == null ? null : commentContent.trim();
+    }
+
+    public List<Comment> getChildrenList() {
+        return childrenList;
+    }
+
+    public void setChildrenList(List<Comment> childrenList) {
+        this.childrenList = childrenList;
     }
 }

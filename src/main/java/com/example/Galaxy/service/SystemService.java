@@ -1,24 +1,64 @@
 package com.example.Galaxy.service;
 
+import com.example.Galaxy.dao.SysPrivilegeMapper;
+import com.example.Galaxy.dao.SysRoleMapper;
+import com.example.Galaxy.dao.SysUserMapper;
+import com.example.Galaxy.dao.SysUserRoleMapper;
 import com.example.Galaxy.entity.SysPrivilege;
 import com.example.Galaxy.entity.SysRole;
+import com.example.Galaxy.entity.SysUser;
 import com.example.Galaxy.entity.SysUserRole;
-import com.example.Galaxy.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public interface SystemService {
-    User selectRoleAndPrivilegeByUserId(Long userId);
+@Service
+public class SystemService {
+    @Autowired
+    private SysUserMapper sysUserMapper;
 
-    List<User> selectAllUserWithRoles();
+    @Autowired
+    private SysPrivilegeMapper sysPrivilegeMapper;
 
-    List<SysPrivilege> selectPrivilegeByRoleId(Long roleId);
+    @Autowired
+    private SysRoleMapper sysRoleMapper;
 
-    List<SysRole> selectRoleByUserId(Long userId);
+    @Autowired
+    private SysUserRoleMapper sysUserRoleMapper;
 
-    List<SysRole> selectAllRoleWIthPrivilege();
+    
+    public List<SysPrivilege> selectPrivilegeByRoleId(Long roleId) {
+        return sysPrivilegeMapper.selectPrivilegeByRoleId(roleId);
+    }
 
-    int updateRoleIdByUserId(SysUserRole sysUserRole);
+    
+    public List<SysRole> selectAllRoleWIthPrivilege() {
+        return sysRoleMapper.selectAllRoleWIthPrivilege();
+    }
 
-    int insertSelective(SysUserRole sysUserRole);
+    
+    public int updateRoleIdByUserId(SysUserRole sysUserRole) {
+        return sysUserRoleMapper.updateRoleIdByUserId(sysUserRole);
+    }
+
+    
+    public int insertSelective(SysUserRole sysUserRole) {
+        return sysUserRoleMapper.insertSelective(sysUserRole);
+    }
+
+    
+    public List<SysUser> selectAllUserWithRoles() {
+        return sysUserMapper.selectAllUserWithRoles();
+    }
+
+    
+    public List<SysRole> selectRoleByUserId(Long userId) {
+        return sysRoleMapper.selectRoleWithPrivilegeByUserId(userId);
+    }
+
+    
+    public SysUser selectRoleAndPrivilegeByUserId(Long userId) {
+        return sysUserMapper.selectUserWithRoleAndPrivilegeByPrimaryKey(userId);
+    }
 }

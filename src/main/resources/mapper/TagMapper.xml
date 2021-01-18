@@ -3,13 +3,13 @@
 <mapper namespace="com.example.Galaxy.dao.TagMapper">
   <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.Tag">
     <id column="tag_id" jdbcType="BIGINT" property="tagId" />
-    <result column="association_id" jdbcType="BIGINT" property="associationId" />
+    <result column="blog_id" jdbcType="BIGINT" property="blogId" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
   </resultMap>
   <sql id="Base_Column_List">
-    tag_id, association_id, tag_name, create_time, is_deleted
+    tag_id, blog_id, tag_name, create_time, is_deleted
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -22,9 +22,9 @@
     where tag_id = #{tagId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.example.Galaxy.entity.Tag">
-    insert into tag (tag_id, association_id, tag_name, 
+    insert into tag (tag_id, blog_id, tag_name, 
       create_time, is_deleted)
-    values (#{tagId,jdbcType=BIGINT}, #{associationId,jdbcType=BIGINT}, #{tagName,jdbcType=VARCHAR}, 
+    values (#{tagId,jdbcType=BIGINT}, #{blogId,jdbcType=BIGINT}, #{tagName,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=BIT})
   </insert>
   <insert id="insertSelective" parameterType="com.example.Galaxy.entity.Tag">
@@ -33,8 +33,8 @@
       <if test="tagId != null">
         tag_id,
       </if>
-      <if test="associationId != null">
-        association_id,
+      <if test="blogId != null">
+        blog_id,
       </if>
       <if test="tagName != null">
         tag_name,
@@ -50,8 +50,8 @@
       <if test="tagId != null">
         #{tagId,jdbcType=BIGINT},
       </if>
-      <if test="associationId != null">
-        #{associationId,jdbcType=BIGINT},
+      <if test="blogId != null">
+        #{blogId,jdbcType=BIGINT},
       </if>
       <if test="tagName != null">
         #{tagName,jdbcType=VARCHAR},
@@ -67,8 +67,8 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.example.Galaxy.entity.Tag">
     update tag
     <set>
-      <if test="associationId != null">
-        association_id = #{associationId,jdbcType=BIGINT},
+      <if test="blogId != null">
+        blog_id = #{blogId,jdbcType=BIGINT},
       </if>
       <if test="tagName != null">
         tag_name = #{tagName,jdbcType=VARCHAR},
@@ -84,7 +84,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.example.Galaxy.entity.Tag">
     update tag
-    set association_id = #{associationId,jdbcType=BIGINT},
+    set blog_id = #{blogId,jdbcType=BIGINT},
       tag_name = #{tagName,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       is_deleted = #{isDeleted,jdbcType=BIT}

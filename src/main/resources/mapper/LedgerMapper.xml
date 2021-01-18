@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Galaxy.dao.LedgerMapper">
+  <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.Ledger">
+    <id column="ledger_id" jdbcType="BIGINT" property="ledgerId" />
+    <result column="pre_ledger_id" jdbcType="BIGINT" property="preLedgerId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="blog_id" jdbcType="BIGINT" property="blogId" />
+    <result column="modified_by" jdbcType="BIGINT" property="modifiedBy" />
+    <result column="total" jdbcType="BIGINT" property="total" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.Galaxy.entity.Ledger">
+    <result column="reason" jdbcType="LONGVARCHAR" property="reason" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ledger_id, pre_ledger_id, user_id, blog_id, modified_by, total, create_time, update_time, 
+    is_deleted
+  </sql>
+  <sql id="Blob_Column_List">
+    reason
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ledger
+    where ledger_id = #{ledgerId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from ledger
+    where ledger_id = #{ledgerId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.example.Galaxy.entity.Ledger">
+    insert into ledger (ledger_id, pre_ledger_id, user_id, 
+      blog_id, modified_by, total, 
+      create_time, update_time, is_deleted, 
+      reason)
+    values (#{ledgerId,jdbcType=BIGINT}, #{preLedgerId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, 
+      #{blogId,jdbcType=BIGINT}, #{modifiedBy,jdbcType=BIGINT}, #{total,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=BIT}, 
+      #{reason,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.Galaxy.entity.Ledger">
+    insert into ledger
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="ledgerId != null">
+        ledger_id,
+      </if>
+      <if test="preLedgerId != null">
+        pre_ledger_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="blogId != null">
+        blog_id,
+      </if>
+      <if test="modifiedBy != null">
+        modified_by,
+      </if>
+      <if test="total != null">
+        total,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+      <if test="reason != null">
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="ledgerId != null">
+        #{ledgerId,jdbcType=BIGINT},
+      </if>
+      <if test="preLedgerId != null">
+        #{preLedgerId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="blogId != null">
+        #{blogId,jdbcType=BIGINT},
+      </if>
+      <if test="modifiedBy != null">
+        #{modifiedBy,jdbcType=BIGINT},
+      </if>
+      <if test="total != null">
+        #{total,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=BIT},
+      </if>
+      <if test="reason != null">
+        #{reason,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.Galaxy.entity.Ledger">
+    update ledger
+    <set>
+      <if test="preLedgerId != null">
+        pre_ledger_id = #{preLedgerId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="blogId != null">
+        blog_id = #{blogId,jdbcType=BIGINT},
+      </if>
+      <if test="modifiedBy != null">
+        modified_by = #{modifiedBy,jdbcType=BIGINT},
+      </if>
+      <if test="total != null">
+        total = #{total,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=BIT},
+      </if>
+      <if test="reason != null">
+        reason = #{reason,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where ledger_id = #{ledgerId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.example.Galaxy.entity.Ledger">
+    update ledger
+    set pre_ledger_id = #{preLedgerId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      blog_id = #{blogId,jdbcType=BIGINT},
+      modified_by = #{modifiedBy,jdbcType=BIGINT},
+      total = #{total,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=BIT},
+      reason = #{reason,jdbcType=LONGVARCHAR}
+    where ledger_id = #{ledgerId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.Galaxy.entity.Ledger">
+    update ledger
+    set pre_ledger_id = #{preLedgerId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      blog_id = #{blogId,jdbcType=BIGINT},
+      modified_by = #{modifiedBy,jdbcType=BIGINT},
+      total = #{total,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=BIT}
+    where ledger_id = #{ledgerId,jdbcType=BIGINT}
+  </update>
+</mapper>

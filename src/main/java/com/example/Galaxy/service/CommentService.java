@@ -1,32 +1,102 @@
 package com.example.Galaxy.service;
 
-import com.example.Galaxy.entity.CommentLike;
-import com.example.Galaxy.entity.Comments;
+import com.example.Galaxy.dao.CommentMapper;
+import com.example.Galaxy.dao.CommentOfLikeMapper;
+import com.example.Galaxy.entity.Comment;
+import com.example.Galaxy.entity.CommentOfLike;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public interface CommentService {
-    List<Comments> selectAll(Long parentId, Long blogId);
+@Service
+public class CommentService {
+    @Autowired
+    private CommentMapper commentMapper;
 
-    int insertSelective(Comments comments);
+    @Autowired
+    private CommentOfLikeMapper commentOfLikeMapper;
 
-    int updateSelective(Comments comments);
+    
+    public List<Comment> selectByBlogId(Long blogId) {
+        return commentMapper.selectByBlogId(blogId);
+    }
 
-    int deleteByBlogId(Long blogId);
+    
+    public List<CommentOfLike> selectCommentLikeByCommentId(Long commentId) {
+        return commentOfLikeMapper.selectByCommentId(commentId);
+    }
 
-    Long selectUnread(Long userId);
+    
+    public int deleteCommentLikeByCommentId(Long commentId) {
+        return commentOfLikeMapper.deleteByCommentId(commentId);
+    }
 
-    Long selectCommentSumByBlogId(Long blogId);
+    
+    public int deleteByBlogId(Long blogId) {
+        return commentMapper.deleteByBlogId(blogId);
+    }
 
-    List<Comments> selectByBlogId(Long blogId);
+    
+    public Long selectUnread(Long userId) {
+        return commentMapper.selectUnreadSumByUserId(userId);
+    }
 
-    List<CommentLike> selectCommentsLikeByCommentId(Long commentId);
+    
+    @Cacheable(value = "selectCommentSumByBlogId", key = "#blogId")
+    public Long selectCommentSumByBlogId(Long blogId) {
+        return commentMapper.selectCommentSumByBlogId(blogId);
+    }
 
-    int deleteCommentsLikeByCommentId(Long commentId);
 
-    int updateSelective(CommentLike commentLike);
+    
+    @Cacheable(value = "CommentCacheSelectAll", key = "#blogId")
+    public List<Comment> selectAll(Long parentId, Long blogId) {
+        return commentMapper.selectAllByParentIdAndBlogId(parentId, blogId);
+    }
 
-    int insertSelective(CommentLike commentLike);
+    
+    @Caching(evict = {
+            @CacheEvict(value = "selectCommentSumByBlogId", allEntries = true),
+            @CacheEvict(value = "CommentCacheSelectAll", allEntries = true),
+    })
+    public int updateSelective(Comment comment) {
+        return commentMapper.updateByPrimaryKeySelective(comment);
+    }
 
-    CommentLike getCommentLike(CommentLike commentLike);
+
+    /**
+     * 创建评论，同时使用新的返回值的替换缓存中的值
+     * 创建评论后会将selectCommentSumByBlogId、CommentCacheSelectAll缓存全部清空
+     */
+    @Caching(evict = {
+            @CacheEvict(value = "selectCommentSumByBlogId", allEntries = true),
+            @CacheEvict(value = "CommentCacheSelectAll", allEntries = true),
+    })
+    public int insertSelective(Comment comment) {
+        return commentMapper.insertSelective(comment);
+    }
+
+
+
+    //-------------------------------------------------------------------------------
+
+
+    
+    public int insertSelective(CommentOfLike commentOfLike) {
+        return commentOfLikeMapper.insertSelective(commentOfLike);
+    }
+
+    
+    public CommentOfLike getCommentLike(CommentOfLike commentOfLike) {
+        return commentOfLikeMapper.selectByCommentIdAndCreateByAndLikeUserId(commentOfLike);
+    }
+
+    
+    public int updateSelective(CommentOfLike commentOfLike) {
+        return commentOfLikeMapper.updateByPrimaryKeySelective(commentOfLike);
+    }
 }

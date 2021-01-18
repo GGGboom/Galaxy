@@ -3,15 +3,16 @@ package com.example.Galaxy.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
-import com.example.Galaxy.entity.CommentLike;
-import com.example.Galaxy.entity.Comments;
+import com.example.Galaxy.entity.Comment;
+import com.example.Galaxy.entity.CommentOfLike;
 import com.example.Galaxy.service.CommentService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
 import com.example.Galaxy.util.annotation.LogAnnotation;
-import com.example.Galaxy.util.enums.CodeEnums;
+import com.example.Galaxy.util.enums.ExceptionEnums;
 import com.example.Galaxy.exception.GalaxyException;
 import com.example.Galaxy.util.enums.OperationType;
+import org.apache.log4j.Logger;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,8 @@ import java.util.Date;
 @RestController
 @RequestMapping(value = "/comment")
 public class CommentController {
+    private final static Logger logger = Logger.getLogger(CommentController.class);
+
     @Autowired
     private CommentService commentService;
 
@@ -39,8 +42,8 @@ public class CommentController {
     @RequiresUser
     @ResponseBody
     @RequestMapping(value = "/getAll", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public Object getAllComments(@RequestParam(name = "blogId", required = false, defaultValue = "1") Long blogId) {
-        if (blogId == null) throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+    public Object getAllComment(@RequestParam(name = "blogId", required = false, defaultValue = "1") Long blogId) {
+        if (blogId == null) throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         return new Result(commentService.selectAll(0L, blogId));
     }
 
@@ -48,7 +51,7 @@ public class CommentController {
      * showdoc
      * @param blogId                必选 Long     博客id
      * @param userAvatar            必选 String   用户头像
-     * @param parentCommentId       必选 Long     父评论id
+     * @param parentId       必选 Long     父评论id
      * @param commentContent        必选 Long     评论内容
      * @return {"code":0,message:"请求成功",data:{}}
      * @catalog 博客评论
@@ -66,15 +69,14 @@ public class CommentController {
         Long userId = JWTUtil.getUserId(token);
         Long blogId = params.getLong("blogId");
         String userAvatar = params.getString("userAvatar");
-        Long parentCommentId = params.getLong("commentId");
+        Long parentId = params.getLong("commentId");
         String commentContent = params.getString("commentContent");
-        if (blogId == null || userId == null || userAvatar == null || parentCommentId == null || commentContent == null)
-            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
-        Comments comments = new Comments();
+        if (blogId == null || userId == null || userAvatar == null || parentId == null || commentContent == null)
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
+        Comment comments = new Comment();
         comments.setBlogId(blogId);
         comments.setUserId(userId);
-        comments.setUserAvatar(userAvatar);
-        comments.setParentCommentId(parentCommentId);
+        comments.setParentId(parentId);
         comments.setCommentContent(commentContent);
         comments.setCreateTime(new Date());
         comments.setUpdateTime(new Date());
@@ -101,24 +103,24 @@ public class CommentController {
     public Object addCommentLike(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
-        Comments comments = new Comments();
-        CommentLike commentLike = new CommentLike();
+        Comment comments = new Comment();
+        CommentOfLike commentOfLike = new CommentOfLike();
         Long commentId = params.getLong("commentId");
         Long commentUserId = params.getLong("commentUserId");
-        Long commentLikeAccount = params.getLong("commentLikeAccount");
-        if (commentId == null || commentUserId == null || commentLikeAccount == null)
-            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+        Long totalLikes = params.getLong("totalLikes");
+        if (commentId == null || commentUserId == null || totalLikes == null)
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         comments.setCommentId(commentId);
-        comments.setCommentLikeAccount(commentLikeAccount + 1);
+        comments.setTotalLikes(totalLikes + 1);
         commentService.updateSelective(comments);
 
-        commentLike.setCreateBy(commentUserId);
-        commentLike.setCommentId(commentId);
-        commentLike.setLikeUserId(userId);
-        if (commentService.getCommentLike(commentLike) == null){//不存在则插入新数据
-            commentService.insertSelective(commentLike);
+        commentOfLike.setUserId(commentUserId);
+        commentOfLike.setCommentId(commentId);
+        commentOfLike.setUserIdOfLike(userId);
+        if (commentService.getCommentLike(commentOfLike) == null){//不存在则插入新数据
+            commentService.insertSelective(commentOfLike);
         }else
-            commentService.updateSelective(commentLike);
+            commentService.updateSelective(commentOfLike);
         return Result.SUCCESS();
     }
 
@@ -144,20 +146,20 @@ public class CommentController {
         Long userId = JWTUtil.getUserId(token);
         Long commentId = params.getLong("commentId");
         Long commentUserId = params.getLong("commentUserId");
-        Long commentLikeAccount = params.getLong("commentLikeAccount");
-        Comments comments = new Comments();
-        CommentLike commentLike = new CommentLike();
-        if (commentId == null || commentUserId == null || commentLikeAccount == null)
-            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+        Long totalLikes = params.getLong("totalLikes");
+        Comment comments = new Comment();
+        CommentOfLike commentOfLike = new CommentOfLike();
+        if (commentId == null || commentUserId == null || totalLikes == null)
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         comments.setCommentId(commentId);
-        comments.setCommentLikeAccount(commentLikeAccount - 1);
+        comments.setTotalLikes(totalLikes - 1);
         commentService.updateSelective(comments);
-        commentLike.setCreateBy(commentUserId);
-        commentLike.setCommentId(commentId);
-        commentLike.setLikeUserId(userId);
-        commentLike.setUpdateTime(new Date());
-        commentLike.setIsDeleted(true);
-        commentService.updateSelective(commentLike);
+        commentOfLike.setUserId(commentUserId);
+        commentOfLike.setCommentId(commentId);
+        commentOfLike.setUserIdOfLike(userId);
+        commentOfLike.setUpdateTime(new Date());
+        commentOfLike.setIsDeleted(true);
+        commentService.updateSelective(commentOfLike);
         return Result.SUCCESS();
     }
 
@@ -179,7 +181,7 @@ public class CommentController {
     @RequestMapping(value = "/unreadCommentAccount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getUnreadCommentAccount(HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), commentService.selectUnread(JWTUtil.getUserId(token)));
+        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), commentService.selectUnread(JWTUtil.getUserId(token)));
     }
 
     @LogAnnotation(description = "获取评论总数",operationType = OperationType.SELECT)

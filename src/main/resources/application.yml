@@ -16,9 +16,11 @@ spring:
     port: 6379
     database: 0
 
+
+#type-aliases-package可以简化com.example.Galaxy.entity.Blog为Blog
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
-  type-aliases-package: com.example.Galaxy
+  type-aliases-package: com.example.Galaxy.entity
 
 #pagehelper: shijishangzhezhong
 #  helperDialect: mysql

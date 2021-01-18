@@ -26,10 +26,4 @@ public class BasicConfig implements WebMvcConfigurer {
                 .maxAge(3600)
                 .allowedHeaders("*");
     }
-
-//    @Bean(name = "exceptionResolver")
-//    public OverallExceptionResolver exceptionResolver() {
-//        OverallExceptionResolver resolver = new OverallExceptionResolver();
-//        return resolver;
-//    }
 }

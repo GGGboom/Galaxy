@@ -2,32 +2,47 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.Galaxy.dao.BlogMapper">
     <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.Blog">
-        <result column="blog_id" jdbcType="BIGINT" property="blogId"/>
+        <id column="blog_id" jdbcType="BIGINT" property="blogId"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
         <result column="blog_title" jdbcType="VARCHAR" property="blogTitle"/>
-        <result column="blog_views" jdbcType="BIGINT" property="blogViews"/>
-        <result column="blog_comment_account" jdbcType="BIGINT" property="blogCommentAccount"/>
-        <result column="blog_like_account" jdbcType="BIGINT" property="blogLikeAccount"/>
+        <result column="total_views" jdbcType="BIGINT" property="totalViews"/>
+        <result column="total_comments" jdbcType="BIGINT" property="totalComments"/>
+        <result column="total_likes" jdbcType="BIGINT" property="totalLikes"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
-        <result column="blog_content" jdbcType="LONGVARCHAR" property="blogContent"/>
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.Galaxy.entity.Blog">
         <result column="blog_content" jdbcType="LONGVARCHAR" property="blogContent"/>
     </resultMap>
-    <sql id="Blob_Column_List">
-    blog_id,user_id,description,blog_title,blog_views,blog_comment_account,blog_like_account,create_time,update_time,is_deleted,blog_content
+    <sql id="Base_Column_List">
+    blog_id, user_id, description, blog_title, total_views, total_comments, total_likes, 
+    create_time, update_time, is_deleted
   </sql>
+    <sql id="Blob_Column_List">
+    blog_content
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from blog
+        where blog_id = #{blogId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from blog
+    where blog_id = #{blogId,jdbcType=BIGINT}
+  </delete>
     <insert id="insert" parameterType="com.example.Galaxy.entity.Blog">
-    insert into blog (blog_id, user_id, tag_id, description,
-      blog_title, blog_views, blog_comment_account, 
-      blog_like_account, create_time, update_time, 
+    insert into blog (blog_id, user_id, description, 
+      blog_title, total_views, total_comments, 
+      total_likes, create_time, update_time, 
       is_deleted, blog_content)
-    values (#{blogId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{tag_id,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR},
-      #{blogTitle,jdbcType=VARCHAR}, #{blogViews,jdbcType=BIGINT}, #{blogCommentAccount,jdbcType=BIGINT}, 
-      #{blogLikeAccount,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+    values (#{blogId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR}, 
+      #{blogTitle,jdbcType=VARCHAR}, #{totalViews,jdbcType=BIGINT}, #{totalComments,jdbcType=BIGINT}, 
+      #{totalLikes,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
       #{isDeleted,jdbcType=BIT}, #{blogContent,jdbcType=LONGVARCHAR})
   </insert>
     <insert id="insertSelective" parameterType="com.example.Galaxy.entity.Blog">
@@ -45,14 +60,14 @@
             <if test="blogTitle != null">
                 blog_title,
             </if>
-            <if test="blogViews != null">
-                blog_views,
+            <if test="totalViews != null">
+                total_views,
             </if>
-            <if test="blogCommentAccount != null">
-                blog_comment_account,
+            <if test="totalComments != null">
+                total_comments,
             </if>
-            <if test="blogLikeAccount != null">
-                blog_like_account,
+            <if test="totalLikes != null">
+                total_likes,
             </if>
             <if test="createTime != null">
                 create_time,
@@ -80,14 +95,14 @@
             <if test="blogTitle != null">
                 #{blogTitle,jdbcType=VARCHAR},
             </if>
-            <if test="blogViews != null">
-                #{blogViews,jdbcType=BIGINT},
+            <if test="totalViews != null">
+                #{totalViews,jdbcType=BIGINT},
             </if>
-            <if test="blogCommentAccount != null">
-                #{blogCommentAccount,jdbcType=BIGINT},
+            <if test="totalComments != null">
+                #{totalComments,jdbcType=BIGINT},
             </if>
-            <if test="blogLikeAccount != null">
-                #{blogLikeAccount,jdbcType=BIGINT},
+            <if test="totalLikes != null">
+                #{totalLikes,jdbcType=BIGINT},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
@@ -103,62 +118,91 @@
             </if>
         </trim>
     </insert>
-    <select id="selectAll" resultMap="BaseResultMap">
-        select
-        <include refid="Blob_Column_List"/>
-        from blog
-        where is_deleted!=1
-        ORDER BY create_time desc
-    </select>
-    <select id="selectByUserId" resultMap="BaseResultMap">
-        select
-        <include refid="Blob_Column_List"/>
-        from blog
-        where blog.user_id = #{userId,jdbcType = BIGINT} and blog.is_deleted != 1
-        ORDER BY create_time desc
-    </select>
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
-        select
-        <include refid="Blob_Column_List"/>
-        from blog
-        where blog_id = #{blogId,jdbcType=BIGINT} and is_deleted != 1
-        ORDER BY create_time desc
-    </select>
     <update id="updateByPrimaryKeySelective" parameterType="com.example.Galaxy.entity.Blog">
         update blog
         <set>
-            <if test="userId!=null">
+            <if test="userId != null">
                 user_id = #{userId,jdbcType=BIGINT},
             </if>
-            <if test="description!=null and description!=''">
+            <if test="description != null">
                 description = #{description,jdbcType=VARCHAR},
             </if>
-            <if test="blogTitle!=null and blogTitle!=''">
+            <if test="blogTitle != null">
                 blog_title = #{blogTitle,jdbcType=VARCHAR},
             </if>
-            <if test="blogViews!=null">
-                blog_views = #{blogViews,jdbcType=BIGINT},
+            <if test="totalViews != null">
+                total_views = #{totalViews,jdbcType=BIGINT},
             </if>
-            <if test="blogCommentAccount!=null">
-                blog_comment_account = #{blogCommentAccount,jdbcType=BIGINT},
+            <if test="totalComments != null">
+                total_comments = #{totalComments,jdbcType=BIGINT},
             </if>
-            <if test="blogContent!=null and blogContent!=''">
-                blog_content = #{blogContent,jdbcType=LONGVARCHAR},
+            <if test="totalLikes != null">
+                total_likes = #{totalLikes,jdbcType=BIGINT},
             </if>
-            <if test="createTime!=null">
+            <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
-            <if test="updateTime!=null">
+            <if test="updateTime != null">
                 update_time = #{updateTime,jdbcType=TIMESTAMP},
             </if>
-            <if test="isDeleted!=null">
+            <if test="isDeleted != null">
                 is_deleted = #{isDeleted,jdbcType=BIT},
             </if>
-            <if test="blogLikeAccount!=null">
-                blog_like_account = #{blogLikeAccount,jdbcType=BIGINT},
+            <if test="blogContent != null">
+                blog_content = #{blogContent,jdbcType=LONGVARCHAR},
             </if>
-            blog_id = #{blogId,jdbcType = BIGINT}
         </set>
-        where blog_id = #{blogId,jdbcType = BIGINT}
+        where blog_id = #{blogId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.example.Galaxy.entity.Blog">
+    update blog
+    set user_id = #{userId,jdbcType=BIGINT},
+      description = #{description,jdbcType=VARCHAR},
+      blog_title = #{blogTitle,jdbcType=VARCHAR},
+      total_views = #{totalViews,jdbcType=BIGINT},
+      total_comments = #{totalComments,jdbcType=BIGINT},
+      total_likes = #{totalLikes,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=BIT},
+      blog_content = #{blogContent,jdbcType=LONGVARCHAR}
+    where blog_id = #{blogId,jdbcType=BIGINT}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.example.Galaxy.entity.Blog">
+    update blog
+    set user_id = #{userId,jdbcType=BIGINT},
+      description = #{description,jdbcType=VARCHAR},
+      blog_title = #{blogTitle,jdbcType=VARCHAR},
+      total_views = #{totalViews,jdbcType=BIGINT},
+      total_comments = #{totalComments,jdbcType=BIGINT},
+      total_likes = #{totalLikes,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=BIT}
+    where blog_id = #{blogId,jdbcType=BIGINT}
+  </update>
+    <select id="selectAll" resultMap="ResultMapWithBLOBs">
+      select
+      <include refid="Base_Column_List"/>
+      ,
+      <include refid="Blob_Column_List"/>
+      from blog
+      where is_deleted != 1
+      ORDER BY create_time desc
+    </select>
+    <select id="selectByUserId" resultMap="ResultMapWithBLOBs">
+      select
+      <include refid="Base_Column_List"/>
+      ,
+      <include refid="Blob_Column_List"/>
+      from blog
+      where blog.user_id = #{userId,jdbcType = BIGINT} and blog.is_deleted != 1
+      ORDER BY create_time desc
+    </select>
+    <update id="addBlogOfLikeByBlogId" statementType="CALLABLE">
+        {call add_blog_of_like_by_blog_id(
+        #{blogId,mode=IN},
+        #{totalLikes,mode=OUT,jdbcType=BIGINT}
+        )}
     </update>
 </mapper>

@@ -5,7 +5,7 @@ import java.util.Date;
 public class Tag {
     private Long tagId;
 
-    private Long associationId;
+    private Long blogId;
 
     private String tagName;
 
@@ -21,12 +21,12 @@ public class Tag {
         this.tagId = tagId;
     }
 
-    public Long getAssociationId() {
-        return associationId;
+    public Long getBlogId() {
+        return blogId;
     }
 
-    public void setAssociationId(Long associationId) {
-        this.associationId = associationId;
+    public void setBlogId(Long blogId) {
+        this.blogId = blogId;
     }
 
     public String getTagName() {

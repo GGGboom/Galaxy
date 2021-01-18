@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Galaxy.dao.SysUserMapper">
+    <resultMap id="BaseResultMap" type="com.example.Galaxy.entity.SysUser">
+        <id column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
+        <result column="account" jdbcType="VARCHAR" property="account"/>
+        <result column="passwd" jdbcType="VARCHAR" property="passwd"/>
+        <result column="gender" jdbcType="SMALLINT" property="gender"/>
+        <result column="cellphone" jdbcType="VARCHAR" property="cellphone"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="verify_code" jdbcType="VARCHAR" property="verifyCode"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.Galaxy.entity.SysUser">
+        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        user_id, name, avatar, account, passwd, gender, cellphone, email, verify_code
+    </sql>
+    <sql id="Blob_Column_List">
+        description
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        u.user_id,
+        u.name,
+        u.avatar,
+        u.account,
+        u.passwd,
+        u.gender,
+        u.cellphone,
+        u.email,
+        u.verify_code,
+        u.description
+        from sys_user u
+        where user_id = #{userId,jdbcType=BIGINT}
+  </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from sys_user
+    where user_id = #{userId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.example.Galaxy.entity.SysUser">
+    insert into sys_user (user_id, name, avatar, 
+      account, passwd, gender, 
+      cellphone, email, verify_code, 
+      description)
+    values (#{userId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, 
+      #{account,jdbcType=VARCHAR}, #{passwd,jdbcType=VARCHAR}, #{gender,jdbcType=SMALLINT}, 
+      #{cellphone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{verifyCode,jdbcType=VARCHAR}, 
+      #{description,jdbcType=LONGVARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.example.Galaxy.entity.SysUser">
+        insert into sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="avatar != null">
+                avatar,
+            </if>
+            <if test="account != null">
+                account,
+            </if>
+            <if test="passwd != null">
+                passwd,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="cellphone != null">
+                cellphone,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="verifyCode != null">
+                verify_code,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="avatar != null">
+                #{avatar,jdbcType=VARCHAR},
+            </if>
+            <if test="account != null">
+                #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="passwd != null">
+                #{passwd,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                #{gender,jdbcType=SMALLINT},
+            </if>
+            <if test="cellphone != null">
+                #{cellphone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyCode != null">
+                #{verifyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.Galaxy.entity.SysUser">
+        update sys_user
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar,jdbcType=VARCHAR},
+            </if>
+            <if test="account != null">
+                account = #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="passwd != null">
+                passwd = #{passwd,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=SMALLINT},
+            </if>
+            <if test="cellphone != null">
+                cellphone = #{cellphone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyCode != null">
+                verify_code = #{verifyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.example.Galaxy.entity.SysUser">
+    update sys_user
+    set name = #{name,jdbcType=VARCHAR},
+      avatar = #{avatar,jdbcType=VARCHAR},
+      account = #{account,jdbcType=VARCHAR},
+      passwd = #{passwd,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=SMALLINT},
+      cellphone = #{cellphone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      verify_code = #{verifyCode,jdbcType=VARCHAR},
+      description = #{description,jdbcType=LONGVARCHAR}
+    where user_id = #{userId,jdbcType=BIGINT}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.example.Galaxy.entity.SysUser">
+    update sys_user
+    set name = #{name,jdbcType=VARCHAR},
+      avatar = #{avatar,jdbcType=VARCHAR},
+      account = #{account,jdbcType=VARCHAR},
+      passwd = #{passwd,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=SMALLINT},
+      cellphone = #{cellphone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      verify_code = #{verifyCode,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=BIGINT}
+  </update>
+    <select id="selectByAccount" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from sys_user
+        where account = #{account,jdbcType=VARCHAR}
+    </select>
+    <select id="login" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from sys_user
+        where account = #{account,jdbcType = VARCHAR} and passwd = #{passWd,jdbcType = VARCHAR}
+    </select>
+    <resultMap id="userWithRoleListMapSelect" type="com.example.Galaxy.entity.SysUser" extends="BaseResultMap">
+        <collection property="roleList"
+                    column="{userId = u.user_id}"
+                    select="com.example.Galaxy.dao.SysRoleMapper.selectRoleWithPrivilegeByUserId"/>
+    </resultMap>
+    <select id="selectAllUserWithRoles" resultMap="userWithRoleListMapSelect">
+        select
+        u.user_id,
+        u.name,
+        u.avatar,
+        u.account,
+        u.passwd,
+        u.gender,
+        u.cellphone,
+        u.email,
+        u.verify_code,
+        u.description
+        from sys_user u
+        inner join sys_user_role ur on ur.user_id = u.user_id
+        inner join sys_role r on r.role_id = ur.role_id
+    </select>
+    <resultMap id="userWithRoleAndPrivilegeSelectMap" type="com.example.Galaxy.entity.SysUser">
+        <collection property="roleList"
+                    column="{userId = user_id}"
+                    select="com.example.Galaxy.dao.SysRoleMapper.selectRoleAndPrivilegeByUserId"/>
+    </resultMap>
+    <select id="selectUserWithRoleAndPrivilegeByPrimaryKey" resultMap="userWithRoleAndPrivilegeSelectMap">
+        select
+        u.user_id,
+        u.name,
+        u.avatar,
+        u.account,
+        u.passwd,
+        u.gender,
+        u.cellphone,
+        u.email,
+        u.verify_code,
+        u.description
+        from sys_user u
+        where u.user_id = #{userId,jdbcType=BIGINT}
+  </select>
+</mapper>

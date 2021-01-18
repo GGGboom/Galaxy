@@ -3,18 +3,18 @@ package com.example.Galaxy.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
+import com.example.Galaxy.entity.SysUser;
 import com.example.Galaxy.entity.SysUserRole;
-import com.example.Galaxy.entity.User;
 import com.example.Galaxy.service.CheckService;
+import com.example.Galaxy.service.RedisService;
 import com.example.Galaxy.service.SystemService;
 import com.example.Galaxy.service.UserService;
-import com.example.Galaxy.service.impl.RedisService;
 import com.example.Galaxy.util.CryptUtil;
 import com.example.Galaxy.util.FileUtil;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
 import com.example.Galaxy.util.annotation.LogAnnotation;
-import com.example.Galaxy.util.enums.CodeEnums;
+import com.example.Galaxy.util.enums.ExceptionEnums;
 import com.example.Galaxy.exception.GalaxyException;
 import com.example.Galaxy.util.enums.OperationType;
 import io.swagger.annotations.Api;
@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +39,6 @@ import java.util.List;
 public class UserController {
     private static final Logger logger = Logger.getLogger(UserController.class);
 
-
     @Autowired
     private UserService userService;
 
@@ -48,11 +48,11 @@ public class UserController {
     @Autowired
     private RedisService redisService;
 
+    @Lazy
     @Autowired
     private CheckService checkService;
 
 
-    @LogAnnotation(description = "用户注册",operationType = OperationType.INSERT)
     @ApiOperation("用户注册")
     @ApiImplicitParam(name = "param", value = "name:必选:String----account:必选:String----password:必选:String", required = true, dataType = "String", paramType = "body")
     @ResponseBody
@@ -64,7 +64,7 @@ public class UserController {
         String email = param.getString("email");
         Long roleId = param.getLong("radio");
         if (name == null || account == null || password == null) {
-            return new Result(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+            return new Result(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         }
         try {
             password = CryptUtil.encrypt(password);
@@ -72,19 +72,19 @@ public class UserController {
             e.printStackTrace();
         }
         if (!checkService.checkAccount(account)) {
-            throw new GalaxyException(CodeEnums.ACCOUNT_DUPLICATE_ERROR.getCode(), CodeEnums.ACCOUNT_DUPLICATE_ERROR.getMessage());
+            throw new GalaxyException(ExceptionEnums.ACCOUNT_DUPLICATE_ERROR.getCode(), ExceptionEnums.ACCOUNT_DUPLICATE_ERROR.getMessage());
         }
-        User user = new User();
-        user.setName(name);
-        user.setAccount(account);
-        user.setPasswd(password);
-        user.setEmail(email);
-        user.setCellphone(account);
-        if (userService.insertSelective(user) != 1) {
-            return new Result(CodeEnums.EXCEPTION.getCode(), CodeEnums.EXCEPTION.getMessage());
+        SysUser sysUser = new SysUser();
+        sysUser.setName(name);
+        sysUser.setAccount(account);
+        sysUser.setPasswd(password);
+        sysUser.setEmail(email);
+        sysUser.setCellphone(account);
+        if (userService.insertSelective(sysUser) != 1) {
+            return new Result(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
         }
         SysUserRole sysUserRole = new SysUserRole();
-        sysUserRole.setUserId(user.getUserId());
+        sysUserRole.setUserId(sysUser.getUserId());
         if (roleId != null) {
             sysUserRole.setRoleId(roleId);
         } else {
@@ -95,7 +95,6 @@ public class UserController {
     }
 
 
-    @LogAnnotation(description = "用户登录",operationType = OperationType.SELECT)
     @ApiOperation("用户登录")
     @ApiImplicitParam(name = "param", value = "account:必选:String----password:必选:String", required = true, dataType = "String", paramType = "body")
     @ResponseBody
@@ -110,17 +109,18 @@ public class UserController {
             e.printStackTrace();
         }
         if (account == null || password == null) {
-            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         }
-        User user = userService.selectByAccountAndPasswd(account, password);
-        if (user == null) {
-            return new Result(CodeEnums.ERROR_PASSWORD.getCode(), CodeEnums.ERROR_PASSWORD.getMessage());
+        SysUser sysUser = userService.selectByAccountAndPasswd(account, password);
+        if (sysUser == null) {
+            return new Result(ExceptionEnums.ERROR_PASSWORD.getCode(), ExceptionEnums.ERROR_PASSWORD.getMessage());
         } else {
-            String token = JWTUtil.sign(user.getAccount(), user.getPasswd(), user.getUserId());
-            JSONObject data = (JSONObject) JSON.toJSON(user);
+            String token = JWTUtil.sign(sysUser.getAccount(), sysUser.getPasswd(), sysUser.getUserId(),sysUser.getName());
+            sysUser.setPasswd(null);
+            JSONObject data = (JSONObject) JSON.toJSON(sysUser);
             data.put("token", token);
-            redisService.hset("token", user.getUserId().toString(), token);
-            return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
+            redisService.hset("token", sysUser.getUserId().toString(), token);
+            return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), data);
         }
     }
 
@@ -135,7 +135,7 @@ public class UserController {
             redisService.hdel("token", userId.toString());
             return Result.SUCCESS();
         }
-        return new Result(CodeEnums.NOT_LOGIN.getCode(), CodeEnums.NOT_LOGIN.getMessage());
+        return new Result(ExceptionEnums.NOT_LOGIN.getCode(), ExceptionEnums.NOT_LOGIN.getMessage());
     }
 
 
@@ -149,13 +149,13 @@ public class UserController {
         Long userId = JWTUtil.getUserId(httpServletRequest.getHeader("Authorization"));
         try {
             String avatar = FileUtil.uploadFile(file, userId.toString());
-            User user = new User();
-            user.setUserId(userId);
-            user.setAvatar(avatar);
-            userService.updateSelective(user);
-            return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), avatar);
+            SysUser sysUser = new SysUser();
+            sysUser.setUserId(userId);
+            sysUser.setAvatar(avatar);
+            userService.updateSelective(sysUser);
+            return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), avatar);
         } catch (IOException e) {
-            return new Result(CodeEnums.UPLOAD_ERROR.getCode(), CodeEnums.UPLOAD_ERROR.getMessage());
+            return new Result(ExceptionEnums.UPLOAD_ERROR.getCode(), ExceptionEnums.UPLOAD_ERROR.getMessage());
         }
     }
 
@@ -167,28 +167,28 @@ public class UserController {
     @RequestMapping(value = "/updateInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Object updateInfo(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
         Long userId = JWTUtil.getUserId(httpServletRequest.getHeader("Authorization"));
-        User user = new User();
+        SysUser sysUser = new SysUser();
         String name = params.getString("name");
         String password = params.getString("password");
         String cellphone = params.getString("cellphone");
         String email = params.getString("email");
         if (name == null || email == null) {
-            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         }
         if (password != null) {
             try {
                 password = CryptUtil.encrypt(password);
             } catch (Exception e) {
-                throw new GalaxyException(CodeEnums.PASSWROD_CRYPT_ERROR.getCode(), CodeEnums.PASSWROD_CRYPT_ERROR.getMessage());
+                throw new GalaxyException(ExceptionEnums.PASSWORD_CRYPT_ERROR.getCode(), ExceptionEnums.PASSWORD_CRYPT_ERROR.getMessage());
             }
         }
-        user.setUserId(userId);
-        user.setName(name);
-        user.setPasswd(password);
-        user.setCellphone(cellphone);
-        user.setEmail(email);
-        userService.updateSelective(user);
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage());
+        sysUser.setUserId(userId);
+        sysUser.setName(name);
+        sysUser.setPasswd(password);
+        sysUser.setCellphone(cellphone);
+        sysUser.setEmail(email);
+        userService.updateSelective(sysUser);
+        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage());
     }
 
 
@@ -207,6 +207,6 @@ public class UserController {
         });
         data.put("roles", roles);
         data.put("user", userService.selectByPrimaryKey(userId));
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
+        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), data);
     }
 }

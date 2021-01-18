@@ -3,14 +3,12 @@ package com.example.Galaxy.entity;
 import java.io.Serializable;
 import java.util.List;
 
-public class User implements Serializable {
+public class SysUser implements Serializable {
     private Long userId;
 
     private String name;
 
     private String avatar;
-
-    private String description;
 
     private String account;
 
@@ -24,15 +22,9 @@ public class User implements Serializable {
 
     private String verifyCode;
 
-    private List<SysRole>roleList;
+    private String description;
 
-    public List<SysRole> getRoleList() {
-        return roleList;
-    }
-
-    public void setRoleList(List<SysRole> roleList) {
-        this.roleList = roleList;
-    }
+    private List<SysRole> roleList;
 
     public Long getUserId() {
         return userId;
@@ -55,15 +47,7 @@ public class User implements Serializable {
     }
 
     public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+        this.avatar = avatar == null ? null : avatar.trim();
     }
 
     public String getAccount() {
@@ -114,4 +98,19 @@ public class User implements Serializable {
         this.verifyCode = verifyCode == null ? null : verifyCode.trim();
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description == null ? null : description.trim();
+    }
+
+    public List<SysRole> getRoleList() {
+        return roleList;
+    }
+
+    public void setRoleList(List<SysRole> roleList) {
+        this.roleList = roleList;
+    }
 }

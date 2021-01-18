@@ -1,16 +1,15 @@
 package com.example.Galaxy.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class CommentLike implements Serializable {
+public class BlogOfLike {
     private Long id;
 
-    private Long commentId;
+    private Long blogId;
 
-    private Long createBy;
+    private Long userId;
 
-    private Long likeUserId;
+    private Long userIdOfLike;
 
     private Date createTime;
 
@@ -28,28 +27,28 @@ public class CommentLike implements Serializable {
         this.id = id;
     }
 
-    public Long getCommentId() {
-        return commentId;
+    public Long getBlogId() {
+        return blogId;
     }
 
-    public void setCommentId(Long commentId) {
-        this.commentId = commentId;
+    public void setBlogId(Long blogId) {
+        this.blogId = blogId;
     }
 
-    public Long getCreateBy() {
-        return createBy;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setCreateBy(Long createBy) {
-        this.createBy = createBy;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public Long getLikeUserId() {
-        return likeUserId;
+    public Long getUserIdOfLike() {
+        return userIdOfLike;
     }
 
-    public void setLikeUserId(Long likeUserId) {
-        this.likeUserId = likeUserId;
+    public void setUserIdOfLike(Long userIdOfLike) {
+        this.userIdOfLike = userIdOfLike;
     }
 
     public Date getCreateTime() {

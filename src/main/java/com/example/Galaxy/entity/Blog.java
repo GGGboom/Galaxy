@@ -12,11 +12,11 @@ public class Blog implements Serializable {
 
     private String blogTitle;
 
-    private Long blogViews;
+    private Long totalViews;
 
-    private Long blogCommentAccount;
+    private Long totalComments;
 
-    private Long blogLikeAccount;
+    private Long totalLikes;
 
     private Date createTime;
 
@@ -47,7 +47,7 @@ public class Blog implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description == null ? null : description.trim();
     }
 
     public String getBlogTitle() {
@@ -58,28 +58,28 @@ public class Blog implements Serializable {
         this.blogTitle = blogTitle == null ? null : blogTitle.trim();
     }
 
-    public Long getBlogViews() {
-        return blogViews;
+    public Long getTotalViews() {
+        return totalViews;
     }
 
-    public void setBlogViews(Long blogViews) {
-        this.blogViews = blogViews;
+    public void setTotalViews(Long totalViews) {
+        this.totalViews = totalViews;
     }
 
-    public Long getBlogCommentAccount() {
-        return blogCommentAccount;
+    public Long getTotalComments() {
+        return totalComments;
     }
 
-    public void setBlogCommentAccount(Long blogCommentAccount) {
-        this.blogCommentAccount = blogCommentAccount;
+    public void setTotalComments(Long totalComments) {
+        this.totalComments = totalComments;
     }
 
-    public Long getBlogLikeAccount() {
-        return blogLikeAccount;
+    public Long getTotalLikes() {
+        return totalLikes;
     }
 
-    public void setBlogLikeAccount(Long blogLikeAccount) {
-        this.blogLikeAccount = blogLikeAccount;
+    public void setTotalLikes(Long totalLikes) {
+        this.totalLikes = totalLikes;
     }
 
     public Date getCreateTime() {

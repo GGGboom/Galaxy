@@ -1,32 +1,47 @@
 package com.example.Galaxy.config;
 
 import com.example.Galaxy.config.json.FastJson2JsonRedisSerializer;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.time.Duration;
+
+
 @Configuration
-@EnableCaching
-public class RedisConfig {
-    @Bean
-    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+public class RedisConfig extends CachingConfigurerSupport {
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
+
+
+    @Bean(name = "redisTemplate")
+    public RedisTemplate<Object, Object> fastJsonRedisTemplate() {
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-
-        //使用Fastjson2JsonRedisSerializer来序列化和反序列化redis的value值
-        FastJson2JsonRedisSerializer serializer = new FastJson2JsonRedisSerializer(Object.class);
-
-        // 设置值（value）的序列化采用FastJsonRedisSerializer。
-        template.setValueSerializer(serializer);
-        template.setHashValueSerializer(serializer);
-        // 设置键（key）的序列化采用StringRedisSerializer。
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setConnectionFactory(redisConnectionFactory);
+        FastJson2JsonRedisSerializer fastJson2JsonRedisSerializer = new FastJson2JsonRedisSerializer(Object.class);
+        //redis开启事务
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        // key采用String的序列化方式
+        template.setKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(fastJson2JsonRedisSerializer);
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setHashValueSerializer(fastJson2JsonRedisSerializer);
         template.afterPropertiesSet();
         return template;
     }
+
+    //缓存管理器
+
 }

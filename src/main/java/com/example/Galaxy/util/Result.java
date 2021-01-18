@@ -1,27 +1,34 @@
 package com.example.Galaxy.util;
 
-import com.example.Galaxy.util.enums.CodeEnums;
+import com.example.Galaxy.util.enums.ExceptionEnums;
 
 public class Result {
     private int code;
     private String message;
     private Object data;
-    private final String[] map = {"成功", "失败"};
 
     public Result() {
     }
 
     public static Object SUCCESS() {
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage());
+        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage());
     }
 
     public static Object SUCCESS(Object data) {
-        return new Result(CodeEnums.SUCCESS.getCode(), CodeEnums.SUCCESS.getMessage(), data);
+        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), data);
     }
 
-    public Result(CodeEnums codeEnums) {
-        this.code = codeEnums.getCode();
-        this.message = codeEnums.getMessage();
+    public static Object FAILURE() {
+        return new Result(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
+    }
+
+    public static Object FAILURE(Object data) {
+        return new Result(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage(), data);
+    }
+
+    public Result(ExceptionEnums exceptionEnums) {
+        this.code = exceptionEnums.getCode();
+        this.message = exceptionEnums.getMessage();
     }
 
     public Result(int code, String message) {
@@ -36,8 +43,8 @@ public class Result {
     }
 
     public Result(Object data) {
-        this.setCode(CodeEnums.SUCCESS.getCode());
-        this.setMessage(CodeEnums.SUCCESS.getMessage());
+        this.setCode(ExceptionEnums.SUCCESS.getCode());
+        this.setMessage(ExceptionEnums.SUCCESS.getMessage());
         this.setData(data);
     }
 

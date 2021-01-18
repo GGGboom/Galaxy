@@ -3,16 +3,17 @@ package com.example.Galaxy.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
+import com.example.Galaxy.entity.SysUser;
 import com.example.Galaxy.entity.SysUserRole;
-import com.example.Galaxy.entity.User;
 import com.example.Galaxy.exception.GalaxyException;
 import com.example.Galaxy.service.SystemService;
-import com.example.Galaxy.util.annotation.LogAnnotation;
-import com.example.Galaxy.util.enums.CodeEnums;
 import com.example.Galaxy.service.UserService;
+import com.example.Galaxy.util.annotation.LogAnnotation;
+import com.example.Galaxy.util.enums.ExceptionEnums;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
 import com.example.Galaxy.util.enums.OperationType;
+import org.apache.log4j.Logger;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/system")
 public class SystemController {
+    private final static Logger logger = Logger.getLogger(SystemController.class);
 
     @Autowired
     private SystemService systemService;
@@ -40,21 +42,22 @@ public class SystemController {
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getUserRole() {
         try {
-            List<User> list = systemService.selectAllUserWithRoles();
+            List<SysUser> list = systemService.selectAllUserWithRoles();
             List<Map<String, Object>> userList = new ArrayList<>();
-            for (User user : list) {
+            for (SysUser sysUser : list) {
                 Map<String, Object> userMap = new HashMap<>();
-                userMap.put("userId", user.getUserId());
-                userMap.put("name", user.getName());
-                userMap.put("email", user.getEmail());
-                userMap.put("role", user.getRoleList().size() == 0 ? null : user.getRoleList().get(0));
-                userMap.put("radio", user.getRoleList().size() == 0 ? 3 : user.getRoleList().get(0).getId());
-                userMap.put("account", user.getAccount());
+                userMap.put("userId", sysUser.getUserId());
+                userMap.put("name", sysUser.getName());
+                userMap.put("email", sysUser.getEmail());
+                userMap.put("role", sysUser.getRoleList().size() == 0 ? null : sysUser.getRoleList().get(0));
+                userMap.put("radio", sysUser.getRoleList().size() == 0 ? null : sysUser.getRoleList().get(0).getRoleId());
+                userMap.put("account", sysUser.getAccount());
                 userList.add(userMap);
             }
             return Result.SUCCESS(userList);
         } catch (Exception e) {
-            throw new GalaxyException(CodeEnums.EXCEPTION.getCode(), CodeEnums.EXCEPTION.getMessage());
+            e.printStackTrace();
+            throw new GalaxyException(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
         }
     }
 
@@ -87,18 +90,18 @@ public class SystemController {
         String email = param.getString("email");
         String name = param.getString("name");
         if (userId == null || roleId == null) {
-            throw new GalaxyException(CodeEnums.MISS_INFO.getCode(), CodeEnums.MISS_INFO.getMessage());
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         }
-        User user = new User();
-        user.setUserId(userId);
-        user.setName(name);
-        user.setAccount(account);
-        user.setEmail(email);
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(userId);
+        sysUser.setName(name);
+        sysUser.setAccount(account);
+        sysUser.setEmail(email);
         SysUserRole sysUserRole = new SysUserRole();
         sysUserRole.setRoleId(roleId);
         sysUserRole.setUserId(userId);
         systemService.updateRoleIdByUserId(sysUserRole);
-        userService.updateSelective(user);
+        userService.updateSelective(sysUser);
         return Result.SUCCESS();
     }
 }
