@@ -37,9 +37,9 @@ public class LogAspect {
     private static ServletRequestAttributes attribute;
 
     @Pointcut("@annotation(com.example.Galaxy.util.annotation.LogAnnotation)")
-    public void logHandle() {
-    }
+    public void logHandle() {}
 
+    //后置增强
     @AfterReturning("logHandle()")
     public void doAfterReturning(JoinPoint joinPoint) {
         try {
@@ -53,6 +53,7 @@ public class LogAspect {
     }
 
 
+    //抛出异常增强
     @AfterThrowing(value = "logHandle()", throwing = "exception")
     public void doAfterThrowing(JoinPoint joinPoint, Exception exception) {
         try {
@@ -66,6 +67,7 @@ public class LogAspect {
         }
     }
 
+    //根据日志类型保存日志记录
     public void saveLog(JoinPoint joinPoint, Class<?> clazz, GalaxyException e) throws IllegalAccessException, InstantiationException {
         Object object = clazz.newInstance();
         attribute =

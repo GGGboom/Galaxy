@@ -3,9 +3,11 @@ package com.example.Galaxy.exception;
 
 import com.example.Galaxy.util.Result;
 import com.example.Galaxy.util.enums.ExceptionEnums;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -22,7 +24,7 @@ public class GlobalExceptionHandle {
     /**
      * Log4j日志处理
      */
-    private static final Logger log = Logger.getLogger(GlobalExceptionHandle.class);
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandle.class);
 
     /**
      * 405 - Method Not Allowed。HttpRequestMethodNotSupportedException

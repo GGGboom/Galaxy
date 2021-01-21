@@ -7,10 +7,10 @@ spring:
     password: qingren.7
     driver-class-name: com.mysql.cj.jdbc.Driver
   servlet:
-      multipart:
-        enabled: true
-        max-file-size: 300MB
-        max-request-size: 300MB
+    multipart:
+      enabled: true
+      max-file-size: 300MB
+      max-request-size: 300MB
   redis:
     host: localhost
     port: 6379
@@ -27,11 +27,3 @@ mybatis:
 #  reasonable: true
 #  supportMethodsArguments: true
 #  params: count=countSql
-
-
-#MyBatis sql日志输出
-logging:
-  level:
-    com.example.Galaxy: trace
-
-

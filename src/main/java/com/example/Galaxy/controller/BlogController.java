@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Blog;
 import com.example.Galaxy.service.BlogService;
+import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.JWTUtil;
 import com.example.Galaxy.util.Result;
 import com.example.Galaxy.util.annotation.LogAnnotation;
@@ -17,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/blog")
@@ -26,6 +29,9 @@ public class BlogController {
 
     @Autowired
     private BlogService blogService;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * showdoc
@@ -68,7 +74,7 @@ public class BlogController {
                                      HttpServletRequest httpServletRequest) throws RuntimeException {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
-        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), blogService.selectBlogByUserId(userId.intValue(), pageNum, pageSize));
+        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), blogService.selectBlogByUserId(userId, pageNum, pageSize));
     }
 
 
@@ -76,8 +82,18 @@ public class BlogController {
     @RequiresUser
     @ResponseBody
     @RequestMapping(value = "/getBlog", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public Object selectBlogByBlogId(@RequestParam("blogId") Long blogId) {
-        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), blogService.selectBlogByBlogId(blogId));
+    public Object selectBlogByBlogId(@RequestParam("blogId") Long blogId, HttpServletRequest httpServletRequest) {
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        Long userId = JWTUtil.getUserId(token);
+        Map map = null;
+        try {
+            map = blogService.mapBlog(blogService.selectBlogByBlogId(blogId), userService.selectByPrimaryKey(userId));
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), map);
     }
 
 
