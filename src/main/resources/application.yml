@@ -27,3 +27,8 @@ mybatis:
 #  reasonable: true
 #  supportMethodsArguments: true
 #  params: count=countSql
+
+#验证码的配置
+captcha:
+  expire-time: 120
+  redis-name: captcha

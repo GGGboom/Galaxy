@@ -26,6 +26,14 @@ public enum ExceptionEnums {
 
     ACCOUNT_DUPLICATE_ERROR(5,"对不起，该账号已存在"),
 
+    NOT_EXISTS_ACCOUNT(6,"对不起，该账号不存在存在"),
+
+    CAPTCHA_EXPIRE(7,"验证码过期"),
+
+    NEED_CAPTCHA(8,"请输入验证码"),
+
+    ERROR_CAPTCHA(8,"验证码错误"),
+
     ERROR_SIGN_TOKEN(11, "JWT token生成失败"),
 
     ERROR_TOKEN_EXPIRED(12, "JWT token过期"),

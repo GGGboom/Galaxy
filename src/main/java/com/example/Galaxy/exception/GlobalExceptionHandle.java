@@ -101,6 +101,11 @@ public class GlobalExceptionHandle {
         return new Result(ExceptionEnums.AUTHENTICATION_ERROR.getCode(), ExceptionEnums.AUTHENTICATION_ERROR.getMessage());
     }
 
+    @ExceptionHandler(GalaxyException.class)
+    public Object GalaxyExceptionHandle(Exception e) {
+        log.error("UnauthenticatedException Error...", e);
+        return new Result(((GalaxyException)e).getCode(), ((GalaxyException)e).getMessage());
+    }
 
 
 }

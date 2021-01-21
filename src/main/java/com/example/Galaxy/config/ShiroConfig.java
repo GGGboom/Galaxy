@@ -56,6 +56,7 @@ public class ShiroConfig {
         // 登录和注册等请求不通过我们的Filter
         filterRuleMap.put("/user/login", "anon");
         filterRuleMap.put("/user/register", "anon");
+        filterRuleMap.put("/user/captcha", "anon");
         filterRuleMap.put("/blog/**", "anon");
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);
         return factoryBean;

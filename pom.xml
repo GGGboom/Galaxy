@@ -26,6 +26,7 @@
 		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
 		<springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
 		<commons-lang3.version>3.11</commons-lang3.version>
+		<easy-captcha.version>1.6.2</easy-captcha.version>
 	</properties>
 
 	<dependencies>
@@ -131,6 +132,14 @@
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 		<!-- spring-boot aop依赖配置引入 -->
+
+		<!-- captcha验证码 -->
+		<dependency>
+			<groupId>com.github.whvcse</groupId>
+			<artifactId>easy-captcha</artifactId>
+			<version>${easy-captcha.version}</version>
+		</dependency>
+		<!-- captcha验证码 -->
 	</dependencies>
 
 	<build>
