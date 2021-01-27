@@ -22,4 +22,6 @@ public interface CommentOfLikeMapper {
     List<CommentOfLike> selectByCommentId(Long commentId);
 
     int deleteByCommentId(Long commentId);
+
+    int deleteByBlogId(Long blogId);
 }

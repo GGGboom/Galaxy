@@ -9,8 +9,6 @@ public class Ledger {
 
     private Long userId;
 
-    private Long blogId;
-
     private Long modifiedBy;
 
     private Long total;
@@ -45,14 +43,6 @@ public class Ledger {
 
     public void setUserId(Long userId) {
         this.userId = userId;
-    }
-
-    public Long getBlogId() {
-        return blogId;
-    }
-
-    public void setBlogId(Long blogId) {
-        this.blogId = blogId;
     }
 
     public Long getModifiedBy() {

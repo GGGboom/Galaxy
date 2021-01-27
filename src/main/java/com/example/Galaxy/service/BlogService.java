@@ -1,12 +1,13 @@
 package com.example.Galaxy.service;
 
 import com.example.Galaxy.dao.BlogMapper;
-import com.example.Galaxy.entity.Blog;
-import com.example.Galaxy.entity.Comment;
-import com.example.Galaxy.entity.SysUser;
+import com.example.Galaxy.dao.BlogOfLikeMapper;
+import com.example.Galaxy.dao.TagMapper;
+import com.example.Galaxy.entity.*;
 import com.example.Galaxy.util.GalaxyUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,100 +25,114 @@ import java.util.Map;
 @Service
 public class BlogService {
     @Autowired
+    private TagMapper tagMapper;
+
+    @Autowired
     private BlogMapper blogMapper;
+
+    @Autowired
+    private BlogOfLikeMapper blogOfLikeMapper;
 
     @Autowired
     private UserService userService;
 
     @Autowired
-    private CheckService checkService;
-
-    @Autowired
     private CommentService commentService;
 
 
-    @Caching(evict = {
-            @CacheEvict(value = "BlogCacheSelectAll", allEntries = true),
-            @CacheEvict(value = "BlogCacheSelectBlogByUserId", allEntries = true),
-            @CacheEvict(value = "BlogCacheSelectBlogByBlogId", allEntries = true),
-    })
+
     public int insertSelective(Blog blog) {
         return blogMapper.insertSelective(blog);
     }
 
-
-    @Caching(evict = {
-            @CacheEvict(value = "BlogCacheSelectAll", allEntries = true),
-            @CacheEvict(value = "BlogCacheSelectBlogByUserId", allEntries = true),
-            @CacheEvict(value = "BlogCacheSelectBlogByBlogId", allEntries = true),
-    })
     public int updateBlogSelective(Blog blog) {
+        return blogMapper.updateByPrimaryKeySelective(blog);
+    }
+
+    /**
+     * 删除blog需要删除blog_file、blog_of_like、comment、comment_of_like、tag
+     * @param blog
+     * @return
+     */
+    public int deleteBlogByBlogId(Blog blog) {
         int row = 0;
-        if (!checkService.checkBlog(blog.getBlogId())) {
-            List<Comment> commentList = commentService.selectByBlogId(blog.getBlogId());
-            for (Comment comment : commentList) {
-                if (!checkService.checkComment(comment.getCommentId())) {
-                    row += commentService.deleteCommentLikeByCommentId(comment.getCommentId());
-                }
-            }
-            row += commentService.deleteByBlogId(blog.getBlogId());
-        }
+        row += commentService.deleteCommentOfLikeByBlogId(blog.getBlogId());
+        row += commentService.deleteByBlogId(blog.getBlogId());
+        row += blogOfLikeMapper.deleteBlogOfLikeByBlogId(blog.getBlogId());
+        row += tagMapper.deleteByBlogId(blog.getBlogId());
         row += blogMapper.updateByPrimaryKeySelective(blog);
         return row;
     }
 
+    public int insertBlogOfLikeSelective(BlogOfLike blogOfLike) {
+        return blogOfLikeMapper.insertSelective(blogOfLike);
+    }
 
-    @Cacheable(value = "BlogCacheSelectAll", key = "#pageNum + #pageSize")
-    public PageInfo<Blog> selectAll(Integer pageNum, Integer pageSize) {
-        List<Blog> blogs = blogMapper.selectAll();
-        List<Map<String, Object>> blogList = new ArrayList<>();
+    public int addBlogOfLikeByBlogId(Long blogId) {
+        return blogMapper.addBlogOfLikeByBlogId(blogId);
+    }
+
+    public int addBlogOfLike(BlogOfLike blogOfLike) {
+        return blogOfLikeMapper.insertSelective(blogOfLike);
+    }
+
+    public int addTotalViewsOfBlog(Long BlogId) {
+        return blogMapper.addTotalViewsByBlogId(BlogId);
+    }
+
+    public BlogOfLike selectBlogOfLikeByBlogIdAndUserIdOfLike(Long blogId, Long userIdOfLike) {
+        return blogOfLikeMapper.selectBlogOfLikeByBlogIdAndUserIdOfLike(blogId, userIdOfLike);
+    }
+
+    public PageInfo<Map> selectAll(Integer pageNum, Integer pageSize, String createTime, String totalViews, String totalLikes, String totalComments) {
         PageHelper.startPage(pageNum, pageSize);
+        List<Blog> blogs = blogMapper.selectAll(createTime, totalViews, totalLikes, totalComments);
+        List<Map<String, Object>> blogList = new ArrayList<>();
         for (Blog blog : blogs) {
             Map<String, Object> map = null;
             SysUser user = userService.selectByPrimaryKey(blog.getUserId());
             try {
-                map = mapBlog(blog,user);
+                map = mapBlog(blog, user);
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
+            map.put("tagList", tagMapper.selectTagByBlogId(blog.getBlogId()));
             blogList.add(map);
         }
-        PageInfo<Blog> pageInfo = new PageInfo(blogList);
+        PageInfo<Map> pageInfo = new PageInfo(blogList);
         return pageInfo;
     }
 
-
-    @Cacheable(value = "BlogCacheSelectBlogByUserId", key = "#userId + #pageNum + #pageSize")
-    public PageInfo<Blog> selectBlogByUserId(Long userId, Integer pageNum, Integer pageSize) {
+    public PageInfo<Map> selectBlogByUserId(Long userId, Integer pageNum, Integer pageSize, String createTime, String totalViews, String totalLikes, String totalComments) {
         PageHelper.startPage(pageNum, pageSize);
-        List<Blog> blogs = blogMapper.selectByUserId(userId);
+        List<Blog> blogs = blogMapper.selectByUserId(userId, createTime, totalViews, totalLikes, totalComments);
         List<Map<String, Object>> blogList = new ArrayList<>();
         SysUser user = userService.selectByPrimaryKey(userId);
         for (Blog blog : blogs) {
             Map<String, Object> map = null;
             try {
-                map = mapBlog(blog,user);
+                map = mapBlog(blog, user);
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
+            map.put("tagList", tagMapper.selectTagByBlogId(blog.getBlogId()));
             blogList.add(map);
         }
-        PageInfo<Blog> pageInfo = new PageInfo(blogList);
+        PageInfo<Map> pageInfo = new PageInfo(blogList);
         return pageInfo;
     }
 
-
-    @Cacheable(value = "BlogCacheSelectBlogByBlogId", key = "#blogId")
     public Blog selectBlogByBlogId(Long blogId) {
         return blogMapper.selectByPrimaryKey(blogId);
     }
 
     /**
      * 将blog和user加入一个map
+     *
      * @param blog
      * @param user
      * @return

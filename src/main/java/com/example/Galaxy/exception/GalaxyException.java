@@ -12,21 +12,30 @@ public class GalaxyException extends RuntimeException {
     protected Integer code;
     protected String message;
 
-    public GalaxyException(Integer code, String message,Throwable cause){
+    public GalaxyException() {
+        super();
+    }
+
+    public GalaxyException(String message) {
+        super(message);
+    }
+
+    public GalaxyException(Integer code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;
         this.message = message;
     }
-    public GalaxyException(Integer code, String message){
+
+    public GalaxyException(Integer code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public GalaxyException(ExceptionEnums exceptionEnums){
+    public GalaxyException(ExceptionEnums exceptionEnums) {
         this(exceptionEnums.getCode(), exceptionEnums.getMessage());
     }
 
-    public GalaxyException(Throwable cause){
+    public GalaxyException(Throwable cause) {
         super(cause);
     }
 

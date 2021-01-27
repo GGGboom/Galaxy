@@ -45,7 +45,7 @@
       #{totalLikes,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
       #{isDeleted,jdbcType=BIT}, #{blogContent,jdbcType=LONGVARCHAR})
   </insert>
-    <insert id="insertSelective" parameterType="com.example.Galaxy.entity.Blog">
+    <insert id="insertSelective" parameterType="com.example.Galaxy.entity.Blog" useGeneratedKeys="true" keyProperty="BlogId">
         insert into blog
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="blogId != null">
@@ -182,27 +182,97 @@
     where blog_id = #{blogId,jdbcType=BIGINT}
   </update>
     <select id="selectAll" resultMap="ResultMapWithBLOBs">
-      select
-      <include refid="Base_Column_List"/>
-      ,
-      <include refid="Blob_Column_List"/>
-      from blog
-      where is_deleted != 1
-      ORDER BY create_time desc
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from blog
+        where is_deleted != 1
+        order by create_time
+        <choose>
+            <when test="createTime != 'desc'">
+                desc,
+            </when>
+            <otherwise>
+                asc,
+            </otherwise>
+        </choose>
+        total_views
+        <choose>
+            <when test="totalViews != 'desc'">
+                desc,
+            </when>
+            <otherwise>
+                asc,
+            </otherwise>
+        </choose>
+        total_likes
+        <choose>
+            <when test="totalLikes != 'desc'">
+                desc,
+            </when>
+            <otherwise>
+                asc,
+            </otherwise>
+        </choose>
+        total_comments
+        <choose>
+            <when test="totalComments != 'desc'">
+                desc
+            </when>
+            <otherwise>
+                asc
+            </otherwise>
+        </choose>
     </select>
     <select id="selectByUserId" resultMap="ResultMapWithBLOBs">
-      select
-      <include refid="Base_Column_List"/>
-      ,
-      <include refid="Blob_Column_List"/>
-      from blog
-      where blog.user_id = #{userId,jdbcType = BIGINT} and blog.is_deleted != 1
-      ORDER BY create_time desc
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from blog
+        where blog.user_id = #{userId,jdbcType = BIGINT} and blog.is_deleted != 1
+        order by create_time
+        <choose>
+            <when test="createTime != 'desc'">
+                desc,
+            </when>
+            <otherwise>
+                asc,
+            </otherwise>
+        </choose>
+        total_views
+        <choose>
+            <when test="totalViews != 'desc'">
+                desc,
+            </when>
+            <otherwise>
+                asc,
+            </otherwise>
+        </choose>
+        total_likes
+        <choose>
+            <when test="totalLikes != 'desc'">
+                desc,
+            </when>
+            <otherwise>
+                asc,
+            </otherwise>
+        </choose>
+        total_comments
+        <choose>
+            <when test="totalComments != 'desc'">
+                desc
+            </when>
+            <otherwise>
+                asc
+            </otherwise>
+        </choose>
     </select>
     <update id="addBlogOfLikeByBlogId" statementType="CALLABLE">
-        {call add_blog_of_like_by_blog_id(
-        #{blogId,mode=IN},
-        #{totalLikes,mode=OUT,jdbcType=BIGINT}
-        )}
+        {call add_blog_of_like_by_blog_id(#{blogId,mode=IN})}
+    </update>
+    <update id="addTotalViewsByBlogId" statementType="CALLABLE">
+        {call add_total_views_by_blog_id(#{blogId,mode=IN})}
     </update>
 </mapper>

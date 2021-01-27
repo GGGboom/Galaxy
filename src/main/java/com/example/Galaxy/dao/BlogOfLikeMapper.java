@@ -14,4 +14,8 @@ public interface BlogOfLikeMapper {
     int updateByPrimaryKeySelective(BlogOfLike record);
 
     int updateByPrimaryKey(BlogOfLike record);
+
+    BlogOfLike selectBlogOfLikeByBlogIdAndUserIdOfLike(Long blogId, Long userIdOfLike);
+
+    int deleteBlogOfLikeByBlogId(Long blogId);
 }

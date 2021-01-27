@@ -1,13 +1,11 @@
 package com.example.Galaxy.exception;
 
 
-import com.example.Galaxy.util.Result;
+import com.example.Galaxy.util.JsonResult;
 import com.example.Galaxy.util.enums.ExceptionEnums;
-//import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -24,7 +22,7 @@ public class GlobalExceptionHandle {
     /**
      * Log4j日志处理
      */
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandle.class);
+    private static final Logger log = Logger.getLogger(GlobalExceptionHandle.class);
 
     /**
      * 405 - Method Not Allowed。HttpRequestMethodNotSupportedException
@@ -35,13 +33,13 @@ public class GlobalExceptionHandle {
     public Object handleHttpRequestMethodNotSupportedException(
             HttpRequestMethodNotSupportedException e) {
         log.error("request_method_not_supported...", e);
-        return Result.FAILURE("该API的请求方法不支持");
+        return JsonResult.FAILURE("该API的请求方法不支持");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Object handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        return Result.FAILURE();
+        return JsonResult.FAILURE();
     }
 
 
@@ -54,7 +52,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler({HttpMediaTypeNotSupportedException.class})
     public Object handleHttpMediaTypeNotSupportedException(Exception e) {
         log.error("content_type_not_supported...", e);
-        return Result.FAILURE("content-type无效");
+        return JsonResult.FAILURE("content-type无效");
     }
 
     /**
@@ -64,7 +62,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(Exception.class)
     public Object handleException(Exception e) {
         log.error("Internal Server Error...", e);
-        return new Result(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
+        return new JsonResult(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
     }
 
     /**
@@ -76,7 +74,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler({NoHandlerFoundException.class})
     public Object urlNotFoundException(Exception e) {
         log.error("url is not found", e);
-        return new Result(ExceptionEnums.NOT_FOUND.getCode(), ExceptionEnums.NOT_FOUND.getMessage());
+        return new JsonResult(ExceptionEnums.NOT_FOUND.getCode(), ExceptionEnums.NOT_FOUND.getMessage());
     }
 
     /**
@@ -87,7 +85,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(UnauthorizedException.class)
     public Object unauthorizedException(Exception e) {
         log.error("unauthorizedException Error...", e);
-        return new Result(ExceptionEnums.AUTHORITY_ERROR.getCode(), ExceptionEnums.AUTHORITY_ERROR.getMessage());
+        return new JsonResult(ExceptionEnums.AUTHORITY_ERROR.getCode(), ExceptionEnums.AUTHORITY_ERROR.getMessage());
     }
 
     /**
@@ -98,13 +96,13 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(UnauthenticatedException.class)
     public Object unauthenticatedException(Exception e) {
         log.error("UnauthenticatedException Error...", e);
-        return new Result(ExceptionEnums.AUTHENTICATION_ERROR.getCode(), ExceptionEnums.AUTHENTICATION_ERROR.getMessage());
+        return new JsonResult(ExceptionEnums.AUTHENTICATION_ERROR.getCode(), ExceptionEnums.AUTHENTICATION_ERROR.getMessage());
     }
 
     @ExceptionHandler(GalaxyException.class)
     public Object GalaxyExceptionHandle(Exception e) {
         log.error("UnauthenticatedException Error...", e);
-        return new Result(((GalaxyException)e).getCode(), ((GalaxyException)e).getMessage());
+        return new JsonResult(((GalaxyException)e).getCode(), ((GalaxyException)e).getMessage());
     }
 
 

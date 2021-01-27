@@ -7,7 +7,7 @@ import com.example.Galaxy.entity.Comment;
 import com.example.Galaxy.entity.CommentOfLike;
 import com.example.Galaxy.service.CommentService;
 import com.example.Galaxy.util.JWTUtil;
-import com.example.Galaxy.util.Result;
+import com.example.Galaxy.util.JsonResult;
 import com.example.Galaxy.util.annotation.LogAnnotation;
 import com.example.Galaxy.util.enums.ExceptionEnums;
 import com.example.Galaxy.exception.GalaxyException;
@@ -44,7 +44,7 @@ public class CommentController {
     @RequestMapping(value = "/getAll", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getAllComment(@RequestParam(name = "blogId", required = false, defaultValue = "1") Long blogId) {
         if (blogId == null) throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
-        return new Result(commentService.selectAll(0L, blogId));
+        return new JsonResult(commentService.selectAll(0L, blogId));
     }
 
     /**
@@ -81,7 +81,7 @@ public class CommentController {
         comments.setCreateTime(new Date());
         comments.setUpdateTime(new Date());
         commentService.insertSelective(comments);
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS();
     }
 
     /**
@@ -121,7 +121,7 @@ public class CommentController {
             commentService.insertSelective(commentOfLike);
         }else
             commentService.updateSelective(commentOfLike);
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS();
     }
 
 
@@ -160,7 +160,7 @@ public class CommentController {
         commentOfLike.setUpdateTime(new Date());
         commentOfLike.setIsDeleted(true);
         commentService.updateSelective(commentOfLike);
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS();
     }
 
     /**
@@ -181,7 +181,7 @@ public class CommentController {
     @RequestMapping(value = "/unreadCommentAccount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getUnreadCommentAccount(HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
-        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), commentService.selectUnread(JWTUtil.getUserId(token)));
+        return new JsonResult(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), commentService.selectUnread(JWTUtil.getUserId(token)));
     }
 
     @LogAnnotation(description = "获取评论总数",operationType = OperationType.SELECT)
@@ -189,6 +189,6 @@ public class CommentController {
     @RequiresUser
     @RequestMapping(value = "/getCommentSum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object commentSum(@RequestParam(name = "blogId", required = false, defaultValue = "-1") Long blogId) {
-        return Result.SUCCESS(commentService.selectCommentSumByBlogId(blogId));
+        return JsonResult.SUCCESS(commentService.selectCommentSumByBlogId(blogId));
     }
 }

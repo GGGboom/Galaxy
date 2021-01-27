@@ -90,4 +90,17 @@
       is_deleted = #{isDeleted,jdbcType=BIT}
     where tag_id = #{tagId,jdbcType=BIGINT}
   </update>
+  <update id="deleteByBlogId">
+    UPDATE tag
+    SET tag.is_deleted = 1
+    WHERE
+        EXISTS ( SELECT * FROM blog b WHERE tag.blog_id = b.blog_id AND b.is_deleted != 1 AND b.blog_id = #{blogId,jdbcType=BIGINT})
+        AND tag.is_deleted != 1;
+  </update>
+  <select id="selectTagByBlogId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from tag
+    where tag.blog_id = #{blogId,jdbcType=BIGINT};
+  </select>
 </mapper>

@@ -60,10 +60,15 @@ public class LogAspect {
             ExceptionLog exceptionLog = new ExceptionLog();
             GalaxyException e = (GalaxyException) exception;
             saveLog(joinPoint, exceptionLog.getClass(), e);
-            exceptionReturn(e);
         } catch (Exception e1) {
             GalaxyException galaxyException = new GalaxyException(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
-            exceptionReturn(galaxyException);
+            try {
+                saveLog(joinPoint, galaxyException.getClass(), galaxyException);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -85,8 +90,23 @@ public class LogAspect {
                 json.put(paramsName[i], args[i]);
         }
         String token = JWT.decode(request.getHeader("Authorization")).getToken();
-        if (object instanceof ExceptionLog) {
-            ExceptionLog exceptionLog = (ExceptionLog) object;
+        if (object instanceof OperationLog) {
+            OperationLog operationLog = (OperationLog) object;
+            operationLog.setUserId(JWTUtil.getUserId(token));
+            operationLog.setUserName(JWTUtil.getUserName(token));
+            operationLog.setIp(IPUtil.getIpAddr(request));
+            operationLog.setUrl(request.getRequestURI());
+            operationLog.setCreateTime(new Date());
+            operationLog.setUrlArgs(json.toJSONString());
+            operationLog.setMethod(className + "." + methodName + "()");
+            LogAnnotation logAnnotation = method.getAnnotation(LogAnnotation.class);
+            if (logAnnotation != null) {
+                operationLog.setDescription(logAnnotation.description());
+                operationLog.setOperationType(logAnnotation.operationType().getOperationType());
+            }
+            logService.addOperationLog(operationLog);
+        }else {
+            ExceptionLog exceptionLog = new ExceptionLog();
             exceptionLog.setUserId(JWTUtil.getUserId(token));
             exceptionLog.setUserName(JWTUtil.getUserName(token));
             exceptionLog.setIp(IPUtil.getIpAddr(request));
@@ -104,21 +124,6 @@ public class LogAspect {
             }
             exceptionLog.setExcMsg(e.getMessage());
             logService.addExceptionLog(exceptionLog);
-        }else {
-            OperationLog operationLog = (OperationLog) object;
-            operationLog.setUserId(JWTUtil.getUserId(token));
-            operationLog.setUserName(JWTUtil.getUserName(token));
-            operationLog.setIp(IPUtil.getIpAddr(request));
-            operationLog.setUrl(request.getRequestURI());
-            operationLog.setCreateTime(new Date());
-            operationLog.setUrlArgs(json.toJSONString());
-            operationLog.setMethod(className + "." + methodName + "()");
-            LogAnnotation logAnnotation = method.getAnnotation(LogAnnotation.class);
-            if (logAnnotation != null) {
-                operationLog.setDescription(logAnnotation.description());
-                operationLog.setOperationType(logAnnotation.operationType().getOperationType());
-            }
-            logService.addOperationLog(operationLog);
         }
     }
 
@@ -144,5 +149,4 @@ public class LogAspect {
             writer.close();
         }
     }
-
 }

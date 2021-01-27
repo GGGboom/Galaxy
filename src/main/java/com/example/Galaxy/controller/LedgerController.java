@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.util.annotation.LogAnnotation;
 import com.example.Galaxy.util.JWTUtil;
-import com.example.Galaxy.util.Result;
+import com.example.Galaxy.util.JsonResult;
 import com.example.Galaxy.util.enums.OperationType;
 import org.apache.log4j.Logger;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -28,7 +28,7 @@ public class LedgerController {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
 
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS();
     }
 
 
@@ -38,7 +38,7 @@ public class LedgerController {
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectAllRecord(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                   @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS();
     }
 
 
@@ -49,6 +49,6 @@ public class LedgerController {
     public Object selectMine(HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS();
     }
 }

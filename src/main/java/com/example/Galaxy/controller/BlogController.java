@@ -3,15 +3,20 @@ package com.example.Galaxy.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.example.Galaxy.entity.Blog;
+import com.example.Galaxy.entity.BlogOfLike;
+import com.example.Galaxy.entity.Tag;
 import com.example.Galaxy.service.BlogService;
+import com.example.Galaxy.service.TagService;
 import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.JWTUtil;
-import com.example.Galaxy.util.Result;
+import com.example.Galaxy.util.JsonResult;
 import com.example.Galaxy.util.annotation.LogAnnotation;
 import com.example.Galaxy.util.enums.ExceptionEnums;
 import com.example.Galaxy.exception.GalaxyException;
 import com.example.Galaxy.util.enums.OperationType;
+import com.github.pagehelper.PageInfo;
 import org.apache.log4j.Logger;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +38,9 @@ public class BlogController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TagService tagService;
+
     /**
      * showdoc
      *
@@ -45,13 +53,19 @@ public class BlogController {
      * @method get
      * @url /blog/all
      */
-    @LogAnnotation(description = "查询所有博客",operationType = OperationType.SELECT)
+    @LogAnnotation(description = "查询所有博客", operationType = OperationType.SELECT)
     @RequiresUser
     @ResponseBody
-    @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public Object selectAll(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
-                            @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
-        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), blogService.selectAll(pageNum, pageSize));
+    @RequestMapping(value = "/getAllBlog", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public Object selectAll(@RequestParam(name = "pageNum", defaultValue = "1") Integer pageNum,
+                            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                            @RequestParam(name = "createTime", defaultValue = "desc") String createTime,
+                            @RequestParam(name = "totalViews", defaultValue = "desc") String totalViews,
+                            @RequestParam(name = "totalLikes", defaultValue = "desc") String totalLikes,
+                            @RequestParam(name = "totalComments", defaultValue = "desc") String totalComments) {
+        PageInfo<Map> mapPageInfo = blogService.selectAll(pageNum, pageSize, createTime, totalViews, totalLikes, totalComments);
+        logger.info(mapPageInfo);
+        return new JsonResult(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), mapPageInfo);
     }
 
 
@@ -65,20 +79,24 @@ public class BlogController {
      * @method get
      * @url /blog/mine
      */
-    @LogAnnotation(description = "查询我的博客",operationType = OperationType.SELECT)
+    @LogAnnotation(description = "查询我的博客", operationType = OperationType.SELECT)
     @RequiresUser
     @ResponseBody
-    @RequestMapping(value = "/mine", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/getMine", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object selectBlogByUserId(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                      @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                     @RequestParam(name = "createTime", defaultValue = "desc") String createTime,
+                                     @RequestParam(name = "totalViews", defaultValue = "desc") String totalViews,
+                                     @RequestParam(name = "totalLikes", defaultValue = "desc") String totalLikes,
+                                     @RequestParam(name = "totalComments", defaultValue = "desc") String totalComments,
                                      HttpServletRequest httpServletRequest) throws RuntimeException {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
-        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), blogService.selectBlogByUserId(userId, pageNum, pageSize));
+        return new JsonResult(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), blogService.selectBlogByUserId(userId, pageNum, pageSize, createTime, totalViews, totalLikes, totalComments));
     }
 
 
-    @LogAnnotation(description = "通过博客Id获取博客",operationType = OperationType.SELECT)
+    @LogAnnotation(description = "通过博客Id获取博客", operationType = OperationType.SELECT)
     @RequiresUser
     @ResponseBody
     @RequestMapping(value = "/getBlog", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -93,9 +111,9 @@ public class BlogController {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), map);
+        map.put("tagList", tagService.selectByBlogId(blogId));
+        return new JsonResult(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), map);
     }
-
 
 
     /**
@@ -112,16 +130,17 @@ public class BlogController {
      * @method post
      * @url /blog/add
      */
-    @LogAnnotation(description = "添加博客",operationType = OperationType.INSERT)
+    @LogAnnotation(description = "添加博客", operationType = OperationType.INSERT)
     @ResponseBody
-    @RequiresRoles("editor")
-    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Object addBlog(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) throws RuntimeException {
+    @RequiresRoles(value = {"editor", "admin"}, logical = Logical.OR)
+    @RequestMapping(value = "/postBlog", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Object postBlogHandler(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
         String description = params.getString("description");
         String blogTitle = params.getString("blogTitle");
         String blogContent = params.getString("blogContent");
+        String flag = params.getString("flag");
         if (description == null || blogTitle == null || blogContent == null) {
             throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         }
@@ -132,13 +151,23 @@ public class BlogController {
         blog.setBlogContent(blogContent);
         blog.setCreateTime(new Date());
         blog.setTotalViews(0L);
-        if (blogService.insertSelective(blog) != 0) {
-            return Result.SUCCESS();
+        blogService.insertSelective(blog);
+        //如果发布博客的时候上传了标签，那么添加标签
+        if (flag != null) {
+            String tagName = params.getString("tagName");
+            if (tagName == null || tagName.equals("")) {
+                throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
+            }
+            Tag tag = new Tag();
+            tag.setBlogId(blog.getBlogId());
+            tag.setCreateTime(new Date());
+            tag.setTagName(tagName);
+            tagService.insertSelective(tag);
         }
-        return new Result(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
+        return JsonResult.SUCCESS();
     }
 
-    @LogAnnotation(description = "更新博客",operationType = OperationType.UPDATE)
+    @LogAnnotation(description = "更新博客", operationType = OperationType.UPDATE)
     @ResponseBody
     @RequiresRoles("admin")
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -157,25 +186,23 @@ public class BlogController {
             blog.setDescription(description);
         }
         blogService.updateBlogSelective(blog);
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS();
     }
 
 
-    @LogAnnotation(description = "删除博客",operationType = OperationType.UPDATE)
+    @LogAnnotation(description = "删除博客", operationType = OperationType.UPDATE)
     @ResponseBody
     @RequiresRoles("admin")
-    @RequestMapping(value = "/delete", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public Object deleteBlog(@RequestParam(name = "blogId", required = true) Long blogId, HttpServletRequest httpServletRequest) {
-//        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
-//        Long userId = JWTUtil.getUserId(token);
+    @RequestMapping(value = "/deleteBlog/{blogId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
+    public Object deleteBlogHandler(@PathVariable("blogId") Long blogId) {
         if (blogId == null) {
             throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         }
         Blog blog = new Blog();
         blog.setBlogId(blogId);
         blog.setIsDeleted(true);
-        blogService.updateBlogSelective(blog);
-        return Result.SUCCESS();
+        blogService.deleteBlogByBlogId(blog);
+        return JsonResult.SUCCESS();
     }
 
     /**
@@ -189,17 +216,14 @@ public class BlogController {
      * @method post
      * @url /blog/addViews
      */
-    @LogAnnotation(description = "添加博客阅读量",operationType = OperationType.UPDATE)
+    @LogAnnotation(description = "添加博客阅读量", operationType = OperationType.UPDATE)
     @ResponseBody
-    @RequestMapping(value = "/addViews", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public Object blogViewsIncrement(@RequestBody JSONObject params) {
-        Long blogId = params.getLong("blogId");
+    @RequiresUser
+    @RequestMapping(value = "/addViews/{blogId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public Object blogViewsIncrement(@PathVariable("blogId") Long blogId) {
         if (blogId == null)
             throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
-        Blog blog = blogService.selectBlogByBlogId(params.getLong("blogId"));
-        blog.setTotalViews(blog.getTotalViews() + 1);
-        blogService.updateBlogSelective(blog);
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS(blogService.addTotalViewsOfBlog(blogId));
     }
 
 
@@ -216,18 +240,31 @@ public class BlogController {
      * @method post
      * @url /blog/favorite
      */
-    @LogAnnotation(description = "收藏博客",operationType = OperationType.UPDATE)
+    @LogAnnotation(description = "收藏博客", operationType = OperationType.UPDATE)
     @ResponseBody
-    @RequestMapping(value = "/favorite", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public Object addFavorite(@RequestBody JSONObject params, HttpServletRequest httpServletRequest) throws RuntimeException {
-        Long blogId = params.getLong("blogId");
-        Long blogLikeAccount = params.getLong("blogLikeAccount");
-        Long blogUserId = params.getLong("blogUserId");
-        Blog blog = new Blog();
-        blog.setTotalLikes(blogLikeAccount + 1);
-        blog.setBlogId(blogId);
-        blogService.updateBlogSelective(blog);
-        return Result.SUCCESS();
+    @RequiresUser
+    @RequestMapping(value = "/addLike/{blogId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public Object addLikeHandler(@PathVariable("blogId") Long blogId, HttpServletRequest httpServletRequest) {
+        String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
+        Long userId = JWTUtil.getUserId(token);
+        if (blogId == null) {
+            throw new GalaxyException(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
+        }
+        Blog blog = blogService.selectBlogByBlogId(blogId);
+        if (blog == null) {
+            throw new GalaxyException(ExceptionEnums.NOT_EXIST_BLOG.getCode(), ExceptionEnums.NOT_EXIST_BLOG.getMessage());
+        }
+        blogService.addBlogOfLikeByBlogId(blogId);
+        BlogOfLike blogOfLike = blogService.selectBlogOfLikeByBlogIdAndUserIdOfLike(blogId, userId);
+        if (blogOfLike == null) {
+            blogOfLike = new BlogOfLike();
+            blogOfLike.setBlogId(blogId);
+            blogOfLike.setUserId(blog.getUserId());
+            blogOfLike.setUserIdOfLike(userId);
+            blogOfLike.setCreateTime(new Date());
+            blogOfLike.setUpdateTime(new Date());
+        }
+        blogService.insertBlogOfLikeSelective(blogOfLike);
+        return JsonResult.SUCCESS();
     }
-
 }

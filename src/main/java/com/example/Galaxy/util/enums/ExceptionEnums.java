@@ -44,6 +44,8 @@ public enum ExceptionEnums {
 
     UPLOAD_ERROR(22, "文件上传异常"),
 
+    NOT_EXIST_BLOG(23, "博客不存在"),
+
     AUTHORITY_ERROR(31,"无权限"),
 
     AUTHENTICATION_ERROR(32,"认证失败"),

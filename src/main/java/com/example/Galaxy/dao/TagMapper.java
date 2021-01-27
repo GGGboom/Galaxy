@@ -2,6 +2,8 @@ package com.example.Galaxy.dao;
 
 import com.example.Galaxy.entity.Tag;
 
+import java.util.List;
+
 public interface TagMapper {
     int deleteByPrimaryKey(Long tagId);
 
@@ -14,4 +16,8 @@ public interface TagMapper {
     int updateByPrimaryKeySelective(Tag record);
 
     int updateByPrimaryKey(Tag record);
+
+    int deleteByBlogId(Long blogId);
+
+    List<Tag> selectTagByBlogId(Long blogId);
 }

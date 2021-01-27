@@ -18,7 +18,7 @@
         select
         <include refid="Base_Column_List"/>
         from comment_of_like
-        where id = #{id,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT} and is_deleted != 1
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from comment_of_like
@@ -128,19 +128,35 @@
     <select id="selectByCommentIdAndCreateByAndLikeUserId" resultMap="BaseResultMap">
       select
       <include refid="Base_Column_List"/>
-      from comment_like
+      from comment_of_like
       where comment_id  = #{commentId,jdbcType=BIGINT} and create_by  = #{createBy,jdbcType=BIGINT}
       and like_user_id  = #{likeUserId,jdbcType=BIGINT} and is_deleted != 1
     </select>
     <select id="selectByCommentId" resultMap="BaseResultMap">
       SELECT
       <include refid="Base_Column_List"/>
-      FROM comment_like
+      FROM comment_of_like
       WHERE comment_id = #{commentId,jdbcType = BIGINT} and is_deleted != 1
     </select>
     <update id="deleteByCommentId">
-        update comment_like
+        update comment_of_like
         set is_deleted = 1
-        where comment_id = #{commentId,jdbcType=BIGINT}
+        where comment_id = #{commentId,jdbcType=BIGINT} and is_deleted != 1
+    </update>
+    <update id="deleteByBlogId">
+        UPDATE comment_of_like
+        SET comment_of_like.is_deleted = 1
+        WHERE
+            EXISTS (
+            SELECT
+                *
+            FROM
+                `comment` c
+            WHERE
+                c.comment_id = comment_of_like.comment_id
+                AND EXISTS ( SELECT * FROM blog b WHERE b.blog_id = c.blog_id AND b.is_deleted != 1 AND b.blog_id = #{blogId,jdbcType=BIGINT})
+                AND c.is_deleted != 1
+            )
+            AND comment_of_like.is_deleted != 1;
     </update>
 </mapper>

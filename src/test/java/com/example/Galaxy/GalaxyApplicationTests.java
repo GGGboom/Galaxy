@@ -22,24 +22,8 @@ public class GalaxyApplicationTests {
 
 
     @Test
-    void contextLoads() throws InvocationTargetException, IllegalAccessException {
-        Blog blog = blogMapper.selectByPrimaryKey(1L);
-        mapBlog(blog, blog.getUserId());
-    }
-
-    private Map mapBlog(Blog blog, Long userId) throws InvocationTargetException, IllegalAccessException {
-        Map<String, Object> map = new HashMap<>();
-        Class<? extends Blog> clazz = blog.getClass();
-        Method[] methods = clazz.getDeclaredMethods();
-        for (Method method : methods) {
-            String methodName = method.getName();
-            if (methodName.startsWith("get")) {
-                String fieldName = methodName.substring(methodName.indexOf("get") + 3);
-                fieldName = fieldName.toLowerCase().charAt(0) + fieldName.substring(1);
-                Object value = method.invoke(blog, (Object[]) null);
-                map.put(fieldName, value);
-            }
-        }
-        return map;
+    void contextLoads() {
+        System.out.println(blogMapper.addTotalViewsByBlogId(1L));
+        System.out.println(blogMapper.addBlogOfLikeByBlogId(1L));
     }
 }

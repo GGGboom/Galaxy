@@ -39,7 +39,7 @@ INSERT INTO `sys_role` VALUES (1, 'admin', '系统管理员', '2020-09-27 14:09:
 INSERT INTO `sys_role` VALUES (2, 'editor', '博客管理员', '2020-09-27 14:10:14', '2020-09-27 14:10:16');
 INSERT INTO `sys_role` VALUES (3, 'visitor', '游客', '2021-01-06 20:28:47', '2021-01-06 20:28:49');
 INSERT INTO `sys_role` VALUES (4, 'logAdmin', '日志管理员', '2021-01-06 20:28:47', '2021-01-06 20:28:49');
-
+INSERT INTO `sys_role` VALUES (5, 'ledgerAdmin', '账单管理员', '2021-01-06 20:28:47', '2021-01-06 20:28:49');
 
 
 DROP TABLE IF EXISTS `sys_privilege`;
@@ -55,6 +55,7 @@ CREATE TABLE `sys_privilege`  (
 INSERT INTO `sys_privilege` VALUES (1, '用户管理权限', NULL, NULL, NULL, NULL);
 INSERT INTO `sys_privilege` VALUES (2, '博客管理权限', NULL, NULL, NULL, NULL);
 INSERT INTO `sys_privilege` VALUES (3, '一般权限', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_privilege` VALUES (4, '账单管理权限', NULL, NULL, NULL, NULL);
 
 
 DROP TABLE IF EXISTS `sys_user_role`;
@@ -97,6 +98,7 @@ INSERT INTO `sys_role_privilege` VALUES (3, 1, 3, NULL, NULL);
 INSERT INTO `sys_role_privilege` VALUES (4, 2, 2, NULL, NULL);
 INSERT INTO `sys_role_privilege` VALUES (5, 2, 3, NULL, NULL);
 INSERT INTO `sys_role_privilege` VALUES (6, 3, 3, NULL, NULL);
+INSERT INTO `sys_role_privilege` VALUES (7, 5, 4, NULL, NULL);
 
 
 DROP TABLE IF EXISTS `blog`;
@@ -245,15 +247,13 @@ CREATE TABLE `ledger`  (
   `ledger_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `pre_ledger_id` bigint(20) NOT NULL COMMENT '之前的记录id',
   `user_id` bigint(20) NOT NULL COMMENT '记录所属用户',
-  `blog_id` bigint(20) NOT NULL COMMENT '博客id',
   `modified_by` bigint(20) NOT NULL COMMENT '修改人',
   `reason` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '具体原因',
   `total` bigint(20) NULL DEFAULT NULL COMMENT '总数',
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) NULL DEFAULT 0 COMMENT '是否删除标记',
-  PRIMARY KEY (`record_id`) USING BTREE,
+  PRIMARY KEY (`ledger_id`) USING BTREE,
   CONSTRAINT `FK_LEDGER_USER_USERID` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`),
-  CONSTRAINT `FK_LEDGER_MODIFIEDBY` FOREIGN KEY (`modified_by`) REFERENCES `sys_user` (`user_id`),
-  CONSTRAINT `FK_LEDGER_BLOG` FOREIGN KEY (`blog_id`) REFERENCES `blog` (`blog_id`)
+  CONSTRAINT `FK_LEDGER_MODIFIEDBY` FOREIGN KEY (`modified_by`) REFERENCES `sys_user` (`user_id`)
 )  ENGINE=InnoDB DEFAULT CHARSET=utf8;

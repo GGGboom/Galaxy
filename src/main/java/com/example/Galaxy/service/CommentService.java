@@ -31,10 +31,13 @@ public class CommentService {
     }
 
     
-    public int deleteCommentLikeByCommentId(Long commentId) {
+    public int deleteCommentOfLikeByCommentId(Long commentId) {
         return commentOfLikeMapper.deleteByCommentId(commentId);
     }
 
+    public int deleteCommentOfLikeByBlogId(Long blogId) {
+        return commentOfLikeMapper.deleteByCommentId(blogId);
+    }
     
     public int deleteByBlogId(Long blogId) {
         return commentMapper.deleteByBlogId(blogId);

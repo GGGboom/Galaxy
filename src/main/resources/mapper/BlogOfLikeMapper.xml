@@ -125,4 +125,18 @@
       is_read = #{isRead,jdbcType=BIT}
     where id = #{id,jdbcType=BIGINT}
   </update>
+    <select id="selectBlogOfLikeByBlogIdAndUserIdOfLike" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from blog_of_like
+        where blog_id = #{blogId, jdbcType=BIGINT} and user_id_of_like = #{userIdOfLike, jdbcType=BIGINT}
+        and is_deleted != 1
+    </select>
+    <update id="deleteBlogOfLikeByBlogId">
+        UPDATE blog_of_like
+        SET blog_of_like.is_deleted = 1
+        WHERE
+            EXISTS ( SELECT * FROM blog b WHERE b.blog_id = blog_of_like.blog_id AND b.is_deleted != 1 AND b.blog_id = #{blogId,jdbcType=BIGINT} )
+            AND blog_of_like.is_deleted != 1;
+    </update>
 </mapper>

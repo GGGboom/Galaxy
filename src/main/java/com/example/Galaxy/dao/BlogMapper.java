@@ -20,9 +20,15 @@ public interface BlogMapper {
 
     int updateByPrimaryKey(Blog record);
 
-    List<Blog> selectAll();
+    List<Blog> selectAll(String createTime, String totalViews, String totalLikes, String totalComments);
 
-    List<Blog> selectByUserId(@Param("userId") Long userId);
+    List<Blog> selectByUserId(@Param("userId") Long userId,
+                              @Param("createTime") String createTime,
+                              @Param("totalViews") String totalViews,
+                              @Param("totalLikes") String totalLikes,
+                              @Param("totalComments") String totalComments);
 
-    int addBlogOfLikeByBlogId(Blog blog);
+    int addBlogOfLikeByBlogId(Long blogId);
+
+    int addTotalViewsByBlogId(Long blogId);
 }

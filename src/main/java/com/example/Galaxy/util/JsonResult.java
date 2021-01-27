@@ -2,47 +2,47 @@ package com.example.Galaxy.util;
 
 import com.example.Galaxy.util.enums.ExceptionEnums;
 
-public class Result {
+public class JsonResult {
     private int code;
     private String message;
     private Object data;
 
-    public Result() {
+    public JsonResult() {
     }
 
     public static Object SUCCESS() {
-        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage());
+        return new JsonResult(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage());
     }
 
     public static Object SUCCESS(Object data) {
-        return new Result(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), data);
+        return new JsonResult(ExceptionEnums.SUCCESS.getCode(), ExceptionEnums.SUCCESS.getMessage(), data);
     }
 
     public static Object FAILURE() {
-        return new Result(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
+        return new JsonResult(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
     }
 
     public static Object FAILURE(Object data) {
-        return new Result(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage(), data);
+        return new JsonResult(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage(), data);
     }
 
-    public Result(ExceptionEnums exceptionEnums) {
+    public JsonResult(ExceptionEnums exceptionEnums) {
         this.code = exceptionEnums.getCode();
         this.message = exceptionEnums.getMessage();
     }
 
-    public Result(int code, String message) {
+    public JsonResult(int code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public Result(int code, String message, Object data) {
+    public JsonResult(int code, String message, Object data) {
         this.code = code;
         this.message = message;
         this.data = data;
     }
 
-    public Result(Object data) {
+    public JsonResult(Object data) {
         this.setCode(ExceptionEnums.SUCCESS.getCode());
         this.setMessage(ExceptionEnums.SUCCESS.getMessage());
         this.setData(data);

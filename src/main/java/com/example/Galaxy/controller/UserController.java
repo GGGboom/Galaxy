@@ -70,7 +70,7 @@ public class UserController {
         String email = param.getString("email");
         Long roleId = param.getLong("radio");
         if (name == null || account == null || password == null) {
-            return new Result(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
+            return new JsonResult(ExceptionEnums.MISS_INFO.getCode(), ExceptionEnums.MISS_INFO.getMessage());
         }
         try {
             password = CryptUtil.encrypt(password);
@@ -87,7 +87,7 @@ public class UserController {
         sysUser.setEmail(email);
         sysUser.setCellphone(account);
         if (userService.insertSelective(sysUser) != 1) {
-            return new Result(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
+            return new JsonResult(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
         }
         SysUserRole sysUserRole = new SysUserRole();
         sysUserRole.setUserId(sysUser.getUserId());
@@ -97,7 +97,7 @@ public class UserController {
             sysUserRole.setRoleId(3L);
         }
         systemService.insertSelective(sysUserRole);
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS();
     }
 
 
@@ -119,7 +119,7 @@ public class UserController {
         }
         SysUser sysUser = userService.selectByAccountAndPasswd(account, password);
         if (sysUser == null) {
-            return new Result(ExceptionEnums.ERROR_PASSWORD.getCode(), ExceptionEnums.ERROR_PASSWORD.getMessage());
+            return new JsonResult(ExceptionEnums.ERROR_PASSWORD.getCode(), ExceptionEnums.ERROR_PASSWORD.getMessage());
         } else {
             String token = JWTUtil.sign(sysUser.getAccount(), sysUser.getPasswd(), sysUser.getUserId(), sysUser.getName());
             JSONObject data = null;
@@ -132,7 +132,7 @@ public class UserController {
             }
             data.put("token", token);
             redisService.hset("token", sysUser.getUserId().toString(), token);
-            return Result.SUCCESS(data);
+            return JsonResult.SUCCESS(data);
         }
     }
 
@@ -165,7 +165,7 @@ public class UserController {
         }
         SysUser sysUser = userService.selectByAccountAndPasswd(account, password);
         if (sysUser == null) {
-            return new Result(ExceptionEnums.ERROR_PASSWORD.getCode(), ExceptionEnums.ERROR_PASSWORD.getMessage());
+            return new JsonResult(ExceptionEnums.ERROR_PASSWORD.getCode(), ExceptionEnums.ERROR_PASSWORD.getMessage());
         } else {
             String token = JWTUtil.sign(sysUser.getAccount(), sysUser.getPasswd(), sysUser.getUserId(), sysUser.getName());
             JSONObject data = null;
@@ -178,7 +178,7 @@ public class UserController {
             }
             data.put("token", token);
             redisService.hset("token", sysUser.getUserId().toString(), token);
-            return Result.SUCCESS(data);
+            return JsonResult.SUCCESS(data);
         }
     }
 
@@ -191,9 +191,9 @@ public class UserController {
         Long userId = JWTUtil.getUserId(httpServletRequest.getHeader("Authorization"));
         if (redisService.hget("token", userId.toString()) != null) {
             redisService.hdel("token", userId.toString());
-            return Result.SUCCESS();
+            return JsonResult.SUCCESS();
         }
-        return new Result(ExceptionEnums.NOT_LOGIN.getCode(), ExceptionEnums.NOT_LOGIN.getMessage());
+        return new JsonResult(ExceptionEnums.NOT_LOGIN.getCode(), ExceptionEnums.NOT_LOGIN.getMessage());
     }
 
 
@@ -211,9 +211,9 @@ public class UserController {
             sysUser.setUserId(userId);
             sysUser.setAvatar(avatar);
             userService.updateSelective(sysUser);
-            return Result.SUCCESS(avatar);
+            return JsonResult.SUCCESS(avatar);
         } catch (IOException e) {
-            return new Result(ExceptionEnums.UPLOAD_ERROR.getCode(), ExceptionEnums.UPLOAD_ERROR.getMessage());
+            return new JsonResult(ExceptionEnums.UPLOAD_ERROR.getCode(), ExceptionEnums.UPLOAD_ERROR.getMessage());
         }
     }
 
@@ -246,7 +246,7 @@ public class UserController {
         sysUser.setCellphone(cellphone);
         sysUser.setEmail(email);
         userService.updateSelective(sysUser);
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS();
     }
 
 
@@ -268,7 +268,7 @@ public class UserController {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        return Result.SUCCESS(data);
+        return JsonResult.SUCCESS(data);
     }
 
     @ResponseBody
@@ -289,6 +289,6 @@ public class UserController {
         // 将key和base64返回给前端
         Map<String, Object> map = new HashMap<>();
         map.put("image", captcha.toBase64());
-        return Result.SUCCESS(map);
+        return JsonResult.SUCCESS(map);
     }
 }

@@ -11,7 +11,7 @@ import com.example.Galaxy.service.UserService;
 import com.example.Galaxy.util.annotation.LogAnnotation;
 import com.example.Galaxy.util.enums.ExceptionEnums;
 import com.example.Galaxy.util.JWTUtil;
-import com.example.Galaxy.util.Result;
+import com.example.Galaxy.util.JsonResult;
 import com.example.Galaxy.util.enums.OperationType;
 import org.apache.log4j.Logger;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -54,7 +54,7 @@ public class SystemController {
                 userMap.put("account", sysUser.getAccount());
                 userList.add(userMap);
             }
-            return Result.SUCCESS(userList);
+            return JsonResult.SUCCESS(userList);
         } catch (Exception e) {
             e.printStackTrace();
             throw new GalaxyException(ExceptionEnums.EXCEPTION.getCode(), ExceptionEnums.EXCEPTION.getMessage());
@@ -68,7 +68,7 @@ public class SystemController {
     public Object getMyRole(HttpServletRequest httpServletRequest) {
         String token = JWT.decode(httpServletRequest.getHeader("Authorization")).getToken();
         Long userId = JWTUtil.getUserId(token);
-        return Result.SUCCESS(systemService.selectRoleByUserId(userId));
+        return JsonResult.SUCCESS(systemService.selectRoleByUserId(userId));
     }
 
     @LogAnnotation(description = "查询我的角色和角色对应的权限",operationType = OperationType.SELECT)
@@ -76,7 +76,7 @@ public class SystemController {
     @RequiresRoles(value = {"admin"})
     @RequestMapping(value = "/getRoleWithPrivilege", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object getAllRole() {
-        return Result.SUCCESS(systemService.selectAllRoleWIthPrivilege());
+        return JsonResult.SUCCESS(systemService.selectAllRoleWIthPrivilege());
     }
 
     @LogAnnotation(description = "设置用户的角色和权限",operationType = OperationType.UPDATE)
@@ -102,6 +102,6 @@ public class SystemController {
         sysUserRole.setUserId(userId);
         systemService.updateRoleIdByUserId(sysUserRole);
         userService.updateSelective(sysUser);
-        return Result.SUCCESS();
+        return JsonResult.SUCCESS();
     }
 }
