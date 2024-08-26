@@ -24,7 +24,7 @@
 		<shiro-spring.version>1.5.2</shiro-spring.version>
 		<log4j.version>1.2.17</log4j.version>
 		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
-		<springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
+		<springfox-swagger-ui.version>2.10.0</springfox-swagger-ui.version>
 		<commons-lang3.version>3.11</commons-lang3.version>
 		<easy-captcha.version>1.6.2</easy-captcha.version>
 	</properties>
